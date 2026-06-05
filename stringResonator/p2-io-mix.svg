@@ -1,0 +1,56 @@
+<svg viewBox="0 0 389 316" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P2 — I/O + Mix Bus ZOIA Grid Layout">
+  <title>P2 — I/O + Mix Bus</title>
+  <desc>Audio In/Out · Wet VCA · Dry VCA · Audio Balance stereo — grid shows actual block footprint per module (number badge = block count)</desc>
+  <rect width="389" height="316" fill="#0a0a0a" rx="6"/>
+  <text x="8" y="20" font-size="10" font-weight="700" fill="#ffffff" font-family="monospace">P2 — I/O + Mix Bus</text>
+  <text x="8" y="32" font-size="7" fill="#666666" font-family="monospace">Audio In/Out · Wet VCA · Dry VCA · Audio Balance stereo</text>
+  <line x1="8" y1="40" x2="381" y2="40" stroke="#282828" stroke-width="0.5"/>
+  <rect x="8" y="44" width="91" height="44" rx="4" fill="#001a23" stroke="#00BFFF" stroke-width="1.5"/>
+<rect x="85" y="48" width="13" height="10" rx="2" fill="#00BFFF" opacity="0.5"/>
+<text x="91.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="53" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">AUDIO</text>
+<text x="53" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">IN</text>
+<rect x="149" y="44" width="138" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<rect x="273" y="48" width="13" height="10" rx="2" fill="#00FFFF" opacity="0.5"/>
+<text x="279.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">WET</text>
+<text x="218" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">VCA</text>
+<rect x="149" y="91" width="138" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<rect x="273" y="95" width="13" height="10" rx="2" fill="#00FFFF" opacity="0.5"/>
+<text x="279.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DRY</text>
+<text x="218" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">VCA</text>
+<rect x="8" y="138" width="326" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<rect x="320" y="142" width="13" height="10" rx="2" fill="#00FFFF" opacity="0.5"/>
+<text x="326.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">7</text>
+<text x="171" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">AUDIO BALANCE</text>
+<text x="171" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">stereo mix 7blk</text>
+<rect x="8" y="232" width="138" height="44" rx="4" fill="#001a23" stroke="#00BFFF" stroke-width="1.5"/>
+<rect x="132" y="236" width="13" height="10" rx="2" fill="#00BFFF" opacity="0.5"/>
+<text x="138.5" y="244" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="250" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">AUDIO</text>
+<text x="77" y="260" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">OUT</text>
+<rect x="102" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+  <rect x="8" y="290" width="10" height="10" rx="2" fill="#001a23" stroke="#00BFFF" stroke-width="1.2"/><text x="22" y="299" font-size="8" fill="#cccccc" font-family="monospace">I/O</text><rect x="48.5" y="290" width="10" height="10" rx="2" fill="#002323" stroke="#00FFFF" stroke-width="1.2"/><text x="62.5" y="299" font-size="8" fill="#cccccc" font-family="monospace">Mix Bus</text><rect x="249" y="288" width="11" height="9" rx="2" fill="#555" opacity="0.5"/><text x="254.5" y="295.5" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">N</text><text x="264" y="296" font-size="7" fill="#aaa" font-family="monospace">= block count</text>
+</svg>

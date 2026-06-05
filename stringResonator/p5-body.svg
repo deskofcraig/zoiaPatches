@@ -1,0 +1,52 @@
+<svg viewBox="0 0 389 316" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P5 — Piano Body + Reverb ZOIA Grid Layout">
+  <title>P5 — Piano Body + Reverb</title>
+  <desc>Tone Control 9blk · Reverb Lite 5blk · VCA Send/Return 3blk each — grid shows actual block footprint per module (number badge = block count)</desc>
+  <rect width="389" height="316" fill="#0a0a0a" rx="6"/>
+  <text x="8" y="20" font-size="10" font-weight="700" fill="#ffffff" font-family="monospace">P5 — Piano Body + Reverb</text>
+  <text x="8" y="32" font-size="7" fill="#666666" font-family="monospace">Tone Control 9blk · Reverb Lite 5blk · VCA Send/Return 3blk each</text>
+  <line x1="8" y1="40" x2="381" y2="40" stroke="#282828" stroke-width="0.5"/>
+  <rect x="8" y="44" width="373" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<rect x="367" y="48" width="13" height="10" rx="2" fill="#00FFFF" opacity="0.5"/>
+<text x="373.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">8</text>
+<text x="194" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">TONE CONTROL</text>
+<text x="194" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">BODY EQ row0 (8)</text>
+<rect x="8" y="91" width="44" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<text x="30" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">TC</text>
+<text x="30" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">cont</text>
+<rect x="55" y="91" width="232" height="44" rx="4" fill="#230023" stroke="#FF00FF" stroke-width="1.5"/>
+<rect x="273" y="95" width="13" height="10" rx="2" fill="#FF00FF" opacity="0.5"/>
+<text x="279.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">5</text>
+<text x="171" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">REVERB LITE</text>
+<text x="171" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">RESONANCE 5blk</text>
+<rect x="8" y="138" width="138" height="44" rx="4" fill="#230023" stroke="#FF00FF" stroke-width="1.5"/>
+<rect x="132" y="142" width="13" height="10" rx="2" fill="#FF00FF" opacity="0.5"/>
+<text x="138.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">VCA</text>
+<text x="77" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">REV SEND 3blk</text>
+<rect x="149" y="138" width="138" height="44" rx="4" fill="#230023" stroke="#FF00FF" stroke-width="1.5"/>
+<rect x="273" y="142" width="13" height="10" rx="2" fill="#FF00FF" opacity="0.5"/>
+<text x="279.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">VCA</text>
+<text x="218" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">REV RETURN 3blk</text>
+<rect x="290" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+  <rect x="8" y="290" width="10" height="10" rx="2" fill="#002323" stroke="#00FFFF" stroke-width="1.2"/><text x="22" y="299" font-size="8" fill="#cccccc" font-family="monospace">Piano Body EQ</text><rect x="103.5" y="290" width="10" height="10" rx="2" fill="#230023" stroke="#FF00FF" stroke-width="1.2"/><text x="117.5" y="299" font-size="8" fill="#cccccc" font-family="monospace">Reverb + VCAs</text><rect x="249" y="288" width="11" height="9" rx="2" fill="#555" opacity="0.5"/><text x="254.5" y="295.5" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">N</text><text x="264" y="296" font-size="7" fill="#aaa" font-family="monospace">= block count</text>
+</svg>
