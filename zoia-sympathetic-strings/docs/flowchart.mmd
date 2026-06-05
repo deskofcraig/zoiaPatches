@@ -1,0 +1,148 @@
+%%{init:{'theme':'base','themeVariables':{'primaryColor':'#0a0a0a','primaryTextColor':'#e0e0e0','primaryBorderColor':'#333','lineColor':'#666','secondaryColor':'#111','tertiaryColor':'#1a1a1a','edgeLabelBackground':'#111','clusterBkg':'#111','clusterBorder':'#333'}}}%%
+flowchart LR
+
+subgraph P1["P1 · UI CONTROLS"]
+  direction TB
+  K_PITCH["Knob PITCH\n0st default\nCC2"]
+  K_OT["Knob OVERTONES\n45% default\nCC74"]
+  K_SP["Knob SPREAD\n9ms default\nCC1"]
+  K_DA["Knob DAMPENING\n3.5kHz default\nCC11"]
+  K_DC["Knob DECAY\n2.8s default\nCC72"]
+  K_PS["Knob PIANO SIZE\n55% default\nCC73"]
+  K_RL["Knob REVERB LVL\n28% default\nCC91"]
+  K_WV["Knob WET VOL\n45% default\nCC7"]
+  K_DV["Knob DRY VOL\n85% default\nCC7"]
+  S_BY["Stomp BYPASS\ntoggle CC80"]
+  S_PH["Stomp PITCH HOLD\ntoggle CC64"]
+  S_DK["Stomp DECAY KILL\nmomentary CC82"]
+end
+
+subgraph P2["P2 · I/O + MIX BUS"]
+  direction TB
+  AIN["Audio Input\nGUITAR IN\n0.3%"]
+  WVCA["VCA WET VCA\n45% gain"]
+  DVCA["VCA DRY VCA\n85% gain"]
+  SMIX["Mixer STEREO MIX"]
+  AOUT["Audio Output\nSTEREO OUT\n1.0%"]
+end
+
+subgraph P3["P3 · PITCH TRACKING"]
+  direction TB
+  PDET["Pitch Detector\nTRACKER\n70% sens · 60Hz min\n3.5%"]
+  SLIM["Filter LPF\nSOFT LIMITER\n3kHz fixed\n2.5%"]
+  CVOFF["CV Adder\nPITCH OFFSET\n0.2%"]
+  SNH["Sample+Hold\nPITCH HOLD\n0.2%"]
+  ADSR["ADSR\nGATE ENVELOPE\nA8 D30 S100 R60ms\n0.5%"]
+end
+
+subgraph P4["P4 · RESONATOR BANK"]
+  direction TB
+  VH["Value HARM SCALE\n+12st out_a\n+19st out_b"]
+  VD["Value DECAY SCALE\n1.0x/0.85x/0.7x/1.0x"]
+  VO["Value OVERTONES SCALE\n80%/55% of env"]
+  V4A["CV Adder V4+7ST"]
+  V1["Resonator V1\nFUNDAMENTAL\ndecay 2.8s · 9%"]
+  V2["Resonator V2\nOCTAVE +12st\ndecay 2.4s · 9%"]
+  V3["Resonator V3\nFIFTH +19st\ndecay 2.0s · 9%"]
+  V4["Resonator V4\nUPPER +7st\ndecay 2.8s · 9%"]
+  DLL["Delay Line\nSPREAD L 9ms\n2.5%"]
+  DLR["Delay Line\nSPREAD R 11ms\n2.5%"]
+  DLPF["Filter LPF\nDAMPENING\n3.5kHz default · 2.5%"]
+end
+
+subgraph P5["P5 · PIANO BODY"]
+  direction TB
+  VB["Value BODY SCALE\n55% default"]
+  TEQP["Tone Control\nBODY EQ · 2%"]
+  CHOR["Chorus\nSTEREO WIDTH\nrate=0Hz · 3%"]
+end
+
+subgraph P6["P6 · REVERB"]
+  direction TB
+  RSND["VCA REVERB SEND\n28% gain"]
+  RVBM["Reverb SIMPLE\ndecay 1.8s · pre 12ms · 5%"]
+  RRET["VCA REVERB RETURN\n75% fixed"]
+end
+
+%% ── AUDIO CONNECTIONS ──
+AIN -->|"audio 100% → SOFT LIMITER audio_in"| SLIM
+AIN -->|"audio 100% → TRACKER audio_in"| PDET
+AIN -->|"audio 100% dry split → DRY VCA audio_in"| DVCA
+
+SLIM -->|"audio 100%"| V1
+SLIM -->|"audio 85%"| V2
+SLIM -->|"audio 70%"| V3
+SLIM -->|"audio 55%"| V4
+SLIM -->|"audio 90%"| DLL
+SLIM -->|"audio 90%"| DLR
+
+V1 & V2 & V3 & V4 & DLL & DLR -->|"audio 100% → sum_in"| DLPF
+
+DLPF -->|"audio 100%"| TEQP
+TEQP -->|"audio 100%"| CHOR
+CHOR -->|"audio stereo 100%"| RSND
+RSND -->|"audio 100%"| RVBM
+RVBM -->|"audio 100%"| RRET
+RRET -->|"audio 100%"| WVCA
+WVCA -->|"audio 100% → in_A"| SMIX
+DVCA -->|"audio 100% → in_B"| SMIX
+SMIX -->|"audio stereo 100%"| AOUT
+
+%% ── CV CONNECTIONS ──
+PDET -.->|"cv pitch_cv → cv_in_a"| CVOFF
+PDET -.->|"cv gate → trigger_in"| SNH
+PDET -.->|"cv gate → trigger_in"| ADSR
+CVOFF -.->|"cv → signal_in"| SNH
+SNH -.->|"cv pitch 0st → pitch_cv_in"| V1
+SNH -.->|"cv → cv_in"| VH
+SNH -.->|"cv → cv_in_a (+7st adder)"| V4A
+SNH -.->|"cv → freq_cv"| DLL
+SNH -.->|"cv → freq_cv"| DLR
+VH -.->|"cv +12st → pitch_cv_in"| V2
+VH -.->|"cv +19st → pitch_cv_in"| V3
+V4A -.->|"cv → pitch_cv_in"| V4
+VD -.->|"cv 2.8s 100%"| V1
+VD -.->|"cv 2.4s 85%"| V2
+VD -.->|"cv 2.0s 70%"| V3
+VD -.->|"cv 2.8s 100%"| V4
+ADSR -.->|"cv env 100%"| V1
+ADSR -.->|"cv env → env_in"| VO
+ADSR -.->|"cv env 100%"| V4
+VO -.->|"cv 80% → level_cv_in"| V2
+VO -.->|"cv 55% → level_cv_in"| V3
+VB -.->|"cv +2.2dB → low_shelf_cv"| TEQP
+VB -.->|"cv 280Hz → mid_freq_cv"| TEQP
+VB -.->|"cv 65% → depth_cv"| CHOR
+
+%% ── KNOB CVs ──
+K_PITCH -.->|"cv 0st → cv_in_b"| CVOFF
+K_OT -.->|"cv 45% → scale_cv"| VO
+K_SP -.->|"cv 9ms → time_cv"| DLL
+K_SP -.->|"cv 11ms → time_cv"| DLR
+K_DA -.->|"cv 3.5kHz → cutoff_cv"| DLPF
+K_DC -.->|"cv 2.8s → cv_in"| VD
+K_PS -.->|"cv 55% → cv_in"| VB
+K_RL -.->|"cv 28% → gain_cv"| RSND
+K_WV -.->|"cv 45% → gain_cv"| WVCA
+K_DV -.->|"cv 85% → gain_cv"| DVCA
+S_BY -.->|"cv toggle → gain override 0"| WVCA
+S_DK -.->|"cv → cv_in min"| VD
+
+%% ── STYLES ──
+classDef io      fill:#001b23,stroke:#00BFFF,color:#d4e4ff
+classDef pitch   fill:#002300,stroke:#00FF00,color:#b8f5cb
+classDef res     fill:#230000,stroke:#FF0000,color:#ffd4d4
+classDef body    fill:#003a3a,stroke:#00cccc,color:#b0f0f0
+classDef rev     fill:#3a003a,stroke:#dd44dd,color:#f5b8f5
+classDef mix     fill:#170b00,stroke:#FFA500,color:#d4d4ff
+classDef ctrl    fill:#1c1c1c,stroke:#FFFFFF,color:#f0f0f0
+classDef val     fill:#232300,stroke:#FFFF00,color:#fff0a0
+
+class AIN,AOUT io
+class PDET,SLIM,CVOFF,SNH,ADSR pitch
+class V1,V2,V3,V4,DLL,DLR,DLPF,VH,VD,VO,V4A res
+class TEQP,CHOR,VB body
+class RSND,RVBM,RRET rev
+class WVCA,DVCA,SMIX mix
+class K_PITCH,K_OT,K_SP,K_DA,K_DC,K_PS,K_RL,K_WV,K_DV,S_BY,S_PH,S_DK ctrl
+class VH,VD,VO,VB val

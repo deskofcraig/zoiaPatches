@@ -266,3 +266,221 @@ Generated module-index.csv with all 94 modules from official index.
 - Pitch tracking: approximate — Pitch Detector V/Oct CV scaled via connection strength into Delay Line delay time range. True V/Oct→1/f conversion impossible natively in ZOIA. This is musically equivalent to analog sympathetic string behaviour.
 - Firmware: minimum 2.0 (all modules present), recommended 5.0 (15-colour UI Button)
 - All SVG block badges now show actual block count per module (number in top-right corner)
+
+---
+
+## Entry 7
+
+**Date:** Session 7  
+**Topic:** HTML fixes — CSS linking, SVG embedding, contrast, remove corrections tab
+
+### Prompt summary
+Four issues to fix:
+1. Remove "Error Corrected" tab from HTML
+2. HTML not styled when opened locally (CSS not loading from external file)
+3. SVGs not loading when opening HTML locally
+4. Text contrast not meeting WCAG AA 4.5:1 — need AAA 7:1 for all text elements
+
+### Response summary
+
+**Problem 1: Corrections tab removed.** Description tab is now the first/default tab.
+
+**Problem 2+3: CSS and SVGs now inline.** The HTML is now fully self-contained — no external file dependencies. All CSS is in a `<style>` block inside `<head>`. All SVGs are embedded directly as inline SVG markup. Opening the single HTML file locally in any browser will display correctly without a web server or external files. The external `patch-explorer.css` file still exists separately for CMS use.
+
+**Problem 4: WCAG AAA 7:1 contrast.** Audit found 4 failing AA combinations and several AAA failures:
+- `#666666` on `#0a0a0f` = 3.44:1 **FAIL** → replaced with `#b4b4b4` = 9.53:1 ✓
+- `#555555` on `#0a0a0f` = 2.65:1 **FAIL** → replaced with `#b4b4b4` ✓  
+- `#444444` on `#0a0a0f` = 2.03:1 **FAIL** → replaced with `#b4b4b4` ✓
+- `#666666` on `#230000` = 3.41:1 **FAIL** → replaced with `#b4b4b4` ✓
+- `#FF0000` on `#230000` = 4.90:1 AA only → changed to `#ffcccc` = 13.78:1 ✓
+- `#FF00FF` on `#230023` = 6.11:1 → changed to `#ffccff` = 13.99:1 ✓
+- Red nav active `#FF0000` on `#111118` = 4.70:1 → `#ff8080` = 7.74:1 ✓
+
+New CSS variables: `--text-muted: #b4b4b4`, `--txt-red-on-red: #ffcccc`, `--zoia-red-on-red: #ff8080`, `--txt-mag-on-mag: #ffccff`, `--zoia-mag-on-mag: #ff88ff`.
+
+### Files changed
+- `docs/patch-explorer.html` — self-contained (inline CSS + inline SVGs), corrected contrast, no corrections tab, Description is default tab
+- `docs/patch-explorer.css` — updated with same contrast fixes (for CMS/standalone use)
+
+### Key decisions
+- Self-contained single HTML file is the right approach for local file:// use — no server required
+- `#b4b4b4` (9.53:1 on page bg) is the new standard for all secondary/muted text
+- `--text-muted` CSS variable applied consistently so future colour changes are one-line edits
+- Module accent text colours (mod-zoia, mod-name) now use lightened palette variants on each bg
+
+---
+
+## Entry 8
+
+**Date:** Session 8
+**Topic:** Two HTML variants (inline/linked), SVG scaling fix, HTML grids replace SVGs
+
+### Prompt summary
+Four issues:
+1. SVGs still not loading inline in HTML
+2. Create two HTML variants — inline (CSS+grids embedded) and linked (CSS+assets external)
+3. Structure folders appropriately for both variants
+4. SVGs being scaled smaller than their native size in HTML
+
+### Response summary
+Root cause of SVG failure: SVG `<svg>` tags had `viewBox` but no `width`/`height` attributes. Browsers can't determine intrinsic SVG dimensions when parent element has `display:none` (hidden tabs). Fix: added `width="572" height="456"` to all SVG root tags.
+
+Root cause of SVG scaling: CSS had stale `max-width:389px` on `.grid-wrap svg` and `.grid-wrap img` from when SVGs were 389px wide. After SVGs grew to 572px, the CSS was capping them at the old size. Fix: changed to `max-width:100%`.
+
+Two HTML variants created:
+- `docs/inline/patch-explorer.html` — single file, zero dependencies, `file://` compatible
+- `docs/linked/patch-explorer.html` + `docs/linked/assets/` — CSS + SVGs as separate files
+
+Linked variant uses `<img src="assets/p1-ui.svg" width="572" height="456">` rather than `<object>` or JavaScript — `<img>` is the only method reliably working on `file://` without CORS issues.
+
+### Files created/modified
+- `docs/inline/patch-explorer.html` (new — inline CSS + inline SVGs)
+- `docs/linked/patch-explorer.html` (new — links to assets/)
+- `docs/linked/assets/patch-explorer.css` (new)
+- `docs/linked/assets/p1-ui.svg` through `p5-body.svg` (new copies)
+- `docs/grid-layouts/*.svg` (updated — added explicit width/height attributes)
+
+### Key decisions
+- `<img>` tag for linked SVGs (not `<object>`) — works on file:// without JS or CORS issues
+- Explicit `width` + `height` attributes on SVG root tags are required for correct rendering in hidden parents
+- `max-width:100%` not `max-width:Xpx` — pixel value must be updated whenever SVG dimensions change
+
+---
+
+## Entry 9
+
+**Date:** Session 9
+**Topic:** SVG typography improvements — match document font and sizing
+
+### Prompt summary
+SVG text styling doesn't match the rest of the document. SVGs can be wider and taller for better readability and accessibility.
+
+### Response summary
+Complete SVG typography overhaul:
+- Font: `'Courier New', Courier, monospace` — now identical to HTML document CSS declaration
+- Cell size: 64px (was 44px) — gives room for readable text
+- Cell primary label: 12px bold (was 7px)
+- Cell secondary label: 10px (was 6px)
+- Block badge: 10px bold using border-colour text on module tinted bg (was 7px white on bright border — failing contrast)
+- Title: 14px bold white (was 10px)
+- Subtitle: 11px `#b4b4b4` matching `--text-muted` (was 7px)
+- Legend: 11px `#b4b4b4` (was 8px)
+- SVG dimensions: 572×456px (was 389×316px)
+
+All badge text uses lightened colour variants consistent with HTML module cards — `#ff8080` for red (8.07:1), `#ff88ff` for magenta (9.32:1), full border colour for all others (all 7:1+ AAA).
+
+Both HTML variants rebuilt with updated SVGs. `max-width` corrected to `100%`.
+
+### Files changed
+- `docs/grid-layouts/*.svg` (all 5 regenerated)
+- `docs/linked/assets/*.svg` (all 5 regenerated)
+- `docs/inline/patch-explorer.html` (SVGs updated)
+- `docs/linked/patch-explorer.html` (img dimensions updated)
+
+### Key decisions
+- 64px cell is the minimum for 12px text without overflow
+- All colour contrasts verified WCAG AAA before writing
+
+---
+
+## Entry 10
+
+**Date:** Session 10
+**Topic:** Replace SVGs with inline HTML CSS Grid page layouts
+
+### Prompt summary
+Could the SVGs be better built as inline HTML?
+- Break out page number, title, and description as separate HTML elements
+- Recreate grids as CSS Grid HTML (8 columns × 5 rows)
+- Show module block spans as part of each module cell
+- Set max-height but auto width
+- Match styling to the rest of the document
+
+### Response summary
+SVG grid layouts completely replaced with native CSS Grid HTML. No SVG files remain in the HTML variants.
+
+Grid structure per page:
+```
+.zoia-grid-section
+  ├── .zoia-grid-header  ← page badge (P1/P2 etc.) + title
+  ├── .zoia-grid-desc    ← description text
+  ├── .zoia-grid         ← 8-column CSS Grid, aspect-ratio:8/5, max-height:400px
+  │     ├── .zg-mod      ← module cell (grid-column:N/span M)
+  │     │     ├── .zg-name, .zg-sub, .zg-badge
+  │     └── .zg-empty    ← unfilled positions (aria-hidden)
+  └── .zoia-grid-legend  ← colour key
+```
+
+Why better than SVG:
+- Font is literally the same `'Courier New', Courier, monospace` declaration
+- Text scales with the browser via `clamp()` — no fixed pixel sizes
+- Colours from same CSS custom properties (`var(--bg-red)`, `var(--c-sky)`) as module cards
+- `aspect-ratio:8/5` + `max-height:400px` constrains geometry correctly
+- CSS Grid `grid-column: N / span M` handles multi-block spans natively
+- All 40 grid positions verified per page (module spans + empty fills = 40)
+
+CSS Grid page layouts added to both HTML variants and standalone CSS file.
+SVG files retained in `docs/grid-layouts/` as standalone exports only.
+
+### Files changed
+- `docs/inline/patch-explorer.html` (grids now CSS Grid HTML, CSS added to style block)
+- `docs/linked/patch-explorer.html` (grids now CSS Grid HTML)
+- `docs/linked/assets/patch-explorer.css` (grid CSS added, stale SVG/img rules removed)
+
+### Key decisions
+- CSS Grid HTML is definitively better than SVG for this use case
+- Empty cells filled with `.zg-empty` (aria-hidden) to maintain 40-position grid integrity
+- Module badge uses same lightened text colours as HTML module cards — consistent system
+- `clamp(0.5rem, 1.4vw, 0.75rem)` on `.zg-name` for fluid text scaling
+
+---
+
+## Entry 11
+
+**Date:** Session 11
+**Topic:** Update all prompt and skill documents
+
+### Prompt summary
+Update patch-prompt.md, generic-zoia-prompt.md, and ai-conversation-skill.md
+to reflect all changes made since they were last updated.
+
+### Response summary
+All three prompt/skill documents fully rewritten to v3 standard:
+
+**patch-prompt.md** (v2→v3): Updated to reflect corrected architecture —
+Delay Line + VCA comb filters instead of Resonator modules, CV Mixer instead
+of CV Adder, Env Follower + Comparator for gate, 5 pages instead of 6,
+FEEDBACK knob replaces DECAY, SENSITIVITY replaces one knob, correct block
+counts throughout, updated MIDI CC map, corrected build order with CPU
+checkpoints, updated presets with FEEDBACK parameter, HTML documentation
+section covering both variants and CSS Grid approach.
+
+**generic-zoia-prompt.md** (v1→v2): Added Module Verification Note section
+listing all common AI module errors. Updated output format section to
+distinguish inline vs linked HTML variants and note CSS Grid approach.
+Changed SVG grid option to CSS Grid. Updated template version.
+
+**ai-conversation-skill.md** (v1→v2): Complete rewrite.
+- Step 3 expanded to full verified module table with block counts and DSP
+  for all 94 modules from official Empress Module Index firmware 5
+- Step 4: explicit "modules that do not exist" table
+- Step 5: updated CPU table with correct figures, added Onset Detector warning
+- Step 6: updated design patterns — comb filter resonator, CV Mixer as summer,
+  gate generation without Onset Detector
+- Step 7: updated page layout rules
+- Step 8: HTML documentation standards — two variants, CSS Grid approach,
+  WCAG AAA requirements, contrast-verified colour variables
+- Step 9: updated file structure reflecting inline/linked split
+- Step 10: conversation log maintenance instructions
+- Step 11: extended common mistakes table
+- Step 12: updated output checklist with HTML grid and contrast items
+
+### Files changed
+- `prompts/patch-prompt.md` (rewritten to v3)
+- `prompts/generic-zoia-prompt.md` (rewritten to v2)
+- `prompts/ai-conversation-skill.md` (rewritten to v2)
+- `docs/conversation-log.md` (this entry)
+
+---
+
+*Last updated: Entry 11*

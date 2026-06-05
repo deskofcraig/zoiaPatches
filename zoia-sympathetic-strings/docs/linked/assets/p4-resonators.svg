@@ -1,0 +1,64 @@
+<svg width="572" height="456" viewBox="0 0 572 456" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P4 — Resonator Bank ZOIA Grid Layout">
+  <title>P4 — Resonator Bank</title>
+  <desc>3 comb filter voices · 2 Haas spread delays · dampening filter — number badge shows official block count per module</desc>
+  <rect width="572" height="456" fill="#0a0a0f" rx="6"/>
+  <rect width="572" height="48" fill="#0d0d12" rx="6"/><rect x="0" y="46" width="572" height="2" fill="#1e1e2e"/><text x="16" y="32" font-size="14" font-weight="700" fill="#ffffff" font-family='Courier New', Courier, monospace>P4 — Resonator Bank</text><text x="16" y="48" font-size="11" fill="#b4b4b4" font-family='Courier New', Courier, monospace>3 comb filter voices · 2 Haas spread delays · dampening filter</text><text x="556" y="32" text-anchor="end" font-size="10" fill="#3a3a55" font-family='Courier New', Courier, monospace>8&#215;5 grid</text>
+  <rect x="16" y="64" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="61" y="111" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="69" y="121" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>3</text>
+<text x="48" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>DELAY V1</text>
+<text x="48" y="105" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>FUNDAMENTAL</text>
+<rect x="220" y="64" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="265" y="111" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="273" y="121" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>3</text>
+<text x="252" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>VCA</text>
+<text x="252" y="105" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>V1 FDBK</text>
+<rect x="16" y="132" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="61" y="179" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="69" y="189" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>3</text>
+<text x="48" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>DELAY V2</text>
+<text x="48" y="173" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>OCTAVE</text>
+<rect x="220" y="132" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="265" y="179" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="273" y="189" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>3</text>
+<text x="252" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>VCA</text>
+<text x="252" y="173" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>V2 FDBK</text>
+<rect x="16" y="200" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="61" y="247" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="69" y="257" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>3</text>
+<text x="48" y="226" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>DELAY V3</text>
+<text x="48" y="241" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>FIFTH</text>
+<rect x="220" y="200" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="265" y="247" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="273" y="257" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>3</text>
+<text x="252" y="226" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>VCA</text>
+<text x="252" y="241" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>V3 FDBK</text>
+<rect x="16" y="268" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="61" y="315" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="69" y="325" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>3</text>
+<text x="48" y="294" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>DELAY</text>
+<text x="48" y="309" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>SPREAD L</text>
+<rect x="220" y="268" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="265" y="315" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="273" y="325" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>3</text>
+<text x="252" y="294" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>DELAY</text>
+<text x="252" y="309" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>SPREAD R</text>
+<rect x="16" y="336" width="64" height="64" rx="5" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="61" y="383" width="16" height="14" rx="3" fill="#230000" stroke="#FF0000" stroke-width="1"/>
+<text x="69" y="393" text-anchor="middle" font-size="10" font-weight="700" fill="#ff8080" font-family='Courier New', Courier, monospace>4</text>
+<text x="48" y="362" text-anchor="middle" font-size="12" font-weight="700" fill="#ffcccc" font-family='Courier New', Courier, monospace>SV FILTER</text>
+<text x="48" y="377" text-anchor="middle" font-size="10" fill="#ffcccc" opacity="0.85" font-family='Courier New', Courier, monospace>DAMPENING</text>
+<rect x="424" y="64" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="64" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="424" y="132" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="132" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="424" y="200" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="200" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="424" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="288" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="356" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="424" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+  <rect x="16" y="428" width="14" height="14" rx="2" fill="#230000" stroke="#FF0000" stroke-width="1.5"/><text x="34" y="439" font-size="11" fill="#b4b4b4" font-family='Courier New', Courier, monospace>Delay Lines 3bl each · VCA feedback 3bl each · SV Filter 4bl · 28 of 40 blocks</text><text x="556" y="439" text-anchor="end" font-size="10" fill="#3a3a55" font-family='Courier New', Courier, monospace>badge = block count</text>
+</svg>

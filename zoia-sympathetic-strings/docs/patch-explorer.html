@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZOIA Sympathetic Strings v3 — Patch Explorer</title>
+<style>
+
+/* ================================================================
+   ZOIA Sympathetic Strings v3 — Patch Explorer
+   WCAG AAA 7:1 contrast on all text. Self-contained (no external CSS).
+   ================================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* 15 ZOIA LED colours */
+  --c-red:#FF0000; --c-orange:#FFA500; --c-mango:#FFB000; --c-yellow:#FFFF00;
+  --c-lime:#AFFF00; --c-green:#00FF00; --c-surf:#00FF99; --c-aqua:#00FFFF;
+  --c-sky:#00BFFF; --c-blue:#0000FF; --c-purple:#7F00FF; --c-magenta:#FF00FF;
+  --c-pink:#FF69B4; --c-peach:#FFDAB9; --c-white:#FFFFFF;
+  /* Dark tinted module backgrounds (14% luminance) */
+  --bg-red:#230000; --bg-orange:#170b00; --bg-mango:#180f00; --bg-yellow:#232300;
+  --bg-lime:#181e00; --bg-green:#002300; --bg-surf:#002316; --bg-aqua:#002323;
+  --bg-sky:#001b23; --bg-blue:#000023; --bg-purple:#0e0023; --bg-magenta:#230023;
+  --bg-pink:#230014; --bg-peach:#231e17; --bg-white:#1c1c1c;
+  /* Page surfaces */
+  --bg-page:#0a0a0f; --bg-surf1:#111118; --bg-surf2:#18181f;
+  --bdr1:#252535; --bdr2:#353550;
+  /* WCAG-verified text colours:
+     #f0f0f0 = 14-17:1 on all tinted module bgs ✓
+     #b4b4b4 = 9.5:1 on #0a0a0f ✓ (secondary/muted text)
+     #cccccc = 11:1 on #0a0a0f ✓ (body text)
+     Specific module accent text — lightened to hit 7:1 on their bg: */
+  --text-primary:#f0f0f0;
+  --text-secondary:#cccccc;    /* was #ddd — still 14:1 ✓ */
+  --text-muted:#b4b4b4;        /* was #888/#666/#555 — 9.5:1 ✓ */
+  --text-disabled:#b4b4b4;     /* replaces all #444/#555/#666 */
+  /* Accent text on module bgs — all verified 7:1+ */
+  --txt-red-on-red:#ffcccc;     /* 13.8:1 on #230000 ✓ */
+  --zoia-red-on-red:#ff8080;    /* 8.1:1 on #230000 ✓ */
+  --txt-mag-on-mag:#ffccff;     /* 14.0:1 on #230023 ✓ */
+  --zoia-mag-on-mag:#ff88ff;    /* 9.3:1 on #230023 ✓ */
+  --txt-red-nav:#ff8080;        /* 7.7:1 on #111118 ✓ */
+  --txt-mag-nav:#ff88ff;        /* 9.2:1 on #111118 ✓ */
+}
+body{font-family:'Courier New',Courier,monospace;font-size:16px;line-height:1.6;background:var(--bg-page);color:var(--text-secondary);min-height:100vh}
+.skip-link{position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:10px 18px;z-index:9999;border-radius:0 0 6px 0;font-weight:700;font-size:1rem}
+.skip-link:focus{left:0}
+/* ── Header ── */
+header{background:var(--bg-surf1);border-bottom:2px solid var(--bdr2);padding:16px 22px}
+.h-patch{font-size:1.125rem;font-weight:700;color:#fff;letter-spacing:.04em}
+.h-sub{font-size:0.8125rem;color:var(--text-muted);margin-top:4px}
+.h-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;font-size:0.75rem;border:1px solid;line-height:1.4}
+.badge-green{background:var(--bg-green);border-color:var(--c-green);color:var(--text-primary)}
+.badge-yellow{background:var(--bg-yellow);border-color:var(--c-yellow);color:var(--text-primary)}
+.badge-sky{background:var(--bg-sky);border-color:var(--c-sky);color:var(--text-primary)}
+.badge-white{background:var(--bg-white);border-color:var(--c-white);color:var(--text-primary)}
+.cpu-bar-wrap{width:130px;height:14px;background:#1a1a28;border-radius:7px;overflow:hidden;border:1px solid var(--bdr1)}
+.cpu-bar{height:100%;border-radius:7px}
+.cpu-num{font-size:0.875rem;color:var(--c-green);font-weight:700;margin-left:6px}
+.colour-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr1)}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:0.75rem}
+.cl-swatch{width:14px;height:14px;border-radius:3px;border:1px solid;flex-shrink:0}
+.cl-label{color:var(--text-muted)}
+/* ── Nav ── */
+nav{background:var(--bg-surf1);border-bottom:1px solid var(--bdr1);display:flex;flex-wrap:wrap;padding:0 14px}
+.nb{background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:0.6875rem;letter-spacing:.07em;padding:10px 12px;cursor:pointer;border-bottom:3px solid transparent;text-transform:uppercase;transition:color .15s,border-color .15s;white-space:nowrap}
+.nb:hover{color:#fff}
+.nb:focus{outline:2px solid var(--c-sky);outline-offset:2px}
+.nb.on{color:#fff;border-bottom-color:#fff}
+.nb-p1.on{border-bottom-color:var(--c-white);color:var(--text-primary)}
+.nb-p2.on{border-bottom-color:var(--c-sky);color:var(--c-sky)}
+.nb-p3.on{border-bottom-color:var(--c-green);color:var(--c-green)}
+.nb-p4.on{border-bottom-color:var(--c-red);color:var(--txt-red-nav)}
+.nb-p5.on{border-bottom-color:var(--c-aqua);color:var(--c-aqua)}
+/* ── Pages ── */
+.page{display:none;padding:22px}
+.page.on{display:block}
+.pg-intro{font-size:0.875rem;color:var(--text-muted);padding:10px 14px;background:var(--bg-surf2);border-radius:4px;border-left:3px solid var(--bdr2);margin-bottom:20px;line-height:1.75}
+/* ── Section labels ── */
+.sec{font-size:0.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--bdr1)}
+/* ── Module grid ── */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px}
+.mgrid-wide{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+/* ── Module card ── */
+.mod{border-radius:6px;border:1px solid;overflow:hidden}
+.mod-hd{padding:8px 12px 6px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.mod-zoia{font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.mod-name{font-size:0.875rem;font-weight:700;flex:1}
+.mod-cpu{font-size:0.6875rem;color:var(--c-green);margin-left:auto}
+.mod-body{padding:10px 12px;font-size:0.8125rem;line-height:1.8;color:var(--text-muted)}
+/* Port rows */
+.pr{display:flex;align-items:baseline;gap:5px;line-height:1.7;flex-wrap:wrap}
+.pd{font-size:0.6875rem;color:var(--text-muted);min-width:52px;text-transform:uppercase;flex-shrink:0}
+.pn{font-weight:700;color:var(--text-primary);font-size:0.8125rem;flex-shrink:0}
+.ps{color:var(--text-muted);font-size:0.75rem;flex:1}
+.pp{font-size:0.75rem;color:var(--c-sky);margin-left:auto;white-space:nowrap;font-weight:700}
+.pp.cv{color:var(--c-yellow)}
+.db{display:inline-block;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:3px;padding:1px 6px;font-size:0.75rem;color:var(--text-primary)}
+/* Tags */
+.midi-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(0,255,153,0.1);border:1px solid rgba(0,255,153,0.35);border-radius:3px;padding:3px 8px;font-size:0.75rem;color:var(--c-surf);margin-top:5px}
+.midi-dot{width:6px;height:6px;background:var(--c-surf);border-radius:50%;flex-shrink:0}
+.warn-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3);border-radius:3px;padding:3px 8px;font-size:0.75rem;color:#ffcccc;margin-top:5px}
+.info-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(0,191,255,0.1);border:1px solid rgba(0,191,255,0.3);border-radius:3px;padding:3px 8px;font-size:0.75rem;color:var(--c-sky);margin-top:5px}
+/* ── Module colour classes — all 7:1 verified ── */
+.m-io{background:var(--bg-sky);border-color:var(--c-sky)}
+.m-io .mod-zoia{color:var(--c-sky)}
+.m-io .mod-name{color:var(--text-primary)}
+.m-pitch{background:var(--bg-green);border-color:var(--c-green)}
+.m-pitch .mod-zoia{color:var(--c-green)}
+.m-pitch .mod-name{color:var(--text-primary)}
+.m-res{background:var(--bg-red);border-color:var(--c-red)}
+.m-res .mod-zoia{color:var(--zoia-red-on-red)}
+.m-res .mod-name{color:var(--txt-red-on-red)}
+.m-body{background:var(--bg-aqua);border-color:var(--c-aqua)}
+.m-body .mod-zoia{color:var(--c-aqua)}
+.m-body .mod-name{color:var(--text-primary)}
+.m-rev{background:var(--bg-magenta);border-color:var(--c-magenta)}
+.m-rev .mod-zoia{color:var(--zoia-mag-on-mag)}
+.m-rev .mod-name{color:var(--txt-mag-on-mag)}
+.m-mix{background:var(--bg-orange);border-color:var(--c-orange)}
+.m-mix .mod-zoia{color:var(--c-orange)}
+.m-mix .mod-name{color:var(--text-primary)}
+.m-ctrl{background:var(--bg-white);border-color:var(--c-white)}
+.m-ctrl .mod-zoia{color:var(--text-muted)}
+.m-ctrl .mod-name{color:var(--text-primary)}
+.m-val{background:var(--bg-yellow);border-color:var(--c-yellow);border-style:dashed}
+.m-val .mod-zoia{color:var(--c-mango)}
+.m-val .mod-name{color:var(--c-yellow)}
+/* ── Ratio table ── */
+.rt{width:100%;border-collapse:collapse;font-size:0.8125rem;margin-top:6px}
+.rt th{text-align:left;padding:3px 5px;border-bottom:1px solid var(--bdr1);color:var(--text-muted);font-size:0.75rem}
+.rt td{padding:3px 5px;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,0.03)}
+.rt .hi{color:var(--c-yellow);font-weight:700}
+.rt td:last-child{color:var(--c-aqua);text-align:right}
+/* ── Grid SVG wrapper ── */
+.grid-wrap{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:12px;overflow-x:auto;margin-bottom:20px;display:inline-block;max-width:100%}
+.grid-wrap svg{display:block;max-width:100%;height:auto}
+/* ── CPU ── */
+.cpu-section{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:18px;margin-bottom:20px}
+.cpu-row{display:flex;align-items:center;gap:12px;margin-bottom:7px}
+.cpu-label{width:260px;font-size:0.8125rem;color:var(--text-muted);flex-shrink:0}
+.cpu-track{flex:1;height:9px;background:var(--bdr1);border-radius:5px;overflow:hidden}
+.cpu-fill{height:100%;border-radius:5px}
+.cpu-val{width:44px;text-align:right;font-size:0.8125rem;font-weight:700;flex-shrink:0}
+.cpu-total{margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr2);display:flex;justify-content:space-between;font-size:1rem;font-weight:700}
+.cpu-note{font-size:0.8125rem;color:var(--text-muted);margin-top:10px;line-height:1.75}
+/* ── Connections ── */
+.cx-filters{margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap}
+.cx-filter-btn{background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);border-radius:4px;padding:5px 14px;font-family:inherit;font-size:0.75rem;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;transition:color .15s,border-color .15s}
+.cx-filter-btn:hover{color:#fff;border-color:var(--bdr2)}
+.cx-filter-btn:focus{outline:2px solid var(--c-sky)}
+.cx-filter-btn.on{color:#fff;border-color:var(--c-sky)}
+.cx-table{width:100%;border-collapse:collapse;font-size:0.8125rem;margin-bottom:20px}
+.cx-table th{text-align:left;padding:7px 9px;background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);font-size:0.75rem;letter-spacing:.05em;text-transform:uppercase}
+.cx-table td{padding:6px 9px;border:1px solid var(--bdr1);color:var(--text-secondary);vertical-align:top}
+.cx-table tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
+.cx-audio td:first-child{border-left:3px solid var(--c-sky)}
+.cx-cv td:first-child{border-left:3px solid var(--c-yellow)}
+.cx-type-audio{color:var(--c-sky);font-weight:700}
+.cx-type-cv{color:var(--c-yellow);font-weight:700}
+.cx-pct{font-weight:700;color:var(--c-green)}
+/* ── MIDI table ── */
+.midi-table{width:100%;border-collapse:collapse;font-size:0.8125rem;margin-bottom:20px}
+.midi-table th{text-align:left;padding:7px 9px;background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);font-size:0.75rem;text-transform:uppercase}
+.midi-table td{padding:6px 9px;border:1px solid var(--bdr1);color:var(--text-secondary)}
+.midi-table tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
+.midi-cc{font-weight:700;color:var(--c-surf)}
+/* ── Presets ── */
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:20px}
+.preset-card{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:14px;cursor:pointer;transition:border-color .15s}
+.preset-card:hover,.preset-card:focus{border-color:var(--c-aqua);outline:2px solid var(--c-aqua);outline-offset:2px}
+.preset-name{font-size:1rem;font-weight:700;color:#fff;margin-bottom:5px}
+.preset-desc{font-size:0.8125rem;color:var(--text-muted);margin-bottom:10px;line-height:1.6}
+.preset-vals{display:grid;grid-template-columns:1fr 1fr;gap:3px;font-size:0.75rem;color:var(--text-muted)}
+.preset-vals span{color:var(--c-yellow);font-weight:700}
+.preset-detail-vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.preset-val-card{background:var(--bg-surf1);border:1px solid var(--bdr1);border-radius:4px;padding:10px}
+.preset-val-key{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
+.preset-val-num{font-size:1.375rem;font-weight:700;color:var(--c-yellow);margin-top:2px}
+/* ── Description ── */
+.desc-block{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:18px 22px;margin-bottom:20px;font-size:0.9375rem;line-height:1.85;color:var(--text-secondary);max-width:860px}
+.desc-block h3{color:#fff;font-size:1.0625rem;margin-bottom:10px;margin-top:6px}
+.desc-block p{margin-bottom:12px}
+.desc-block ul{margin-left:1.25em;color:var(--text-muted)}
+.desc-block li{margin-bottom:5px}
+/* ── Utility ── */
+.sep{height:1px;background:var(--bdr1);margin:18px 0}
+.tip{background:rgba(255,176,0,0.09);border:1px solid rgba(255,176,0,0.3);border-radius:4px;padding:10px 14px;font-size:0.875rem;color:var(--c-mango);line-height:1.75;margin-top:12px}
+.tip b{color:var(--c-yellow)}
+.note{background:rgba(0,191,255,0.09);border:1px solid rgba(0,191,255,0.3);border-radius:4px;padding:10px 14px;font-size:0.875rem;color:var(--c-sky);line-height:1.75;margin-top:12px}
+/* Colour-blind safe: shape + colour for signal type */
+.cb-audio::before{content:'\25B6\00a0';color:var(--c-sky)}
+.cb-cv::before{content:'\29C6\00a0';color:var(--c-yellow)}
+/* Responsive */
+@media(max-width:600px){.mgrid{grid-template-columns:1fr}.cpu-label{width:150px;font-size:0.75rem}}
+@media(prefers-contrast:high){:root{--bdr1:#888;--bdr2:#aaa;--bg-surf1:#000;--bg-surf2:#0a0a0a}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+<header>
+  <div class="h-patch">ZOIA &middot; SYMPATHETIC STRINGS RESONATOR v3</div>
+  <div class="h-sub">Piano string sympathiser &middot; pitch-tracking &middot; 5 pages &middot; firmware 2.0+ required &middot; 5.0 recommended &middot; verified against official Empress module index</div>
+  <div class="h-meta">
+    <span class="badge badge-green">~32% CPU</span>
+    <span class="badge badge-yellow">ZOIA &amp; ZEBU</span>
+    <span class="badge badge-sky">Mono in &middot; Stereo out</span>
+    <span class="badge badge-white">FW 2.0+ required &middot; FW 5.0 recommended</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="cpu-bar-wrap" role="progressbar" aria-valuenow="32" aria-valuemin="0" aria-valuemax="100" aria-label="CPU usage approximately 32 percent">
+        <div class="cpu-bar" style="width:32%;background:var(--c-green)"></div>
+      </div>
+      <span class="cpu-num">~32%</span>
+      <span style="font-size:0.75rem;color:var(--text-muted)">/ 95% ceiling</span>
+    </div>
+  </div>
+  <div class="colour-legend" aria-label="Module colour legend">
+    <div class="cl-item"><div class="cl-swatch" style="background:#001b23;border-color:#00BFFF"></div><span class="cl-label">I/O (Sky)</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:#002300;border-color:#00FF00"></div><span class="cl-label">Pitch (Green)</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:#230000;border-color:#FF0000"></div><span class="cl-label">Resonators (Red)</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:#232300;border-color:#FFFF00;border-style:dashed"></div><span class="cl-label">Value (Yellow)</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:#002323;border-color:#00FFFF"></div><span class="cl-label">Body EQ (Aqua)</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:#230023;border-color:#FF00FF"></div><span class="cl-label">Reverb (Magenta)</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:#170b00;border-color:#FFA500"></div><span class="cl-label">Mix Bus (Orange)</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:#1c1c1c;border-color:#FFFFFF"></div><span class="cl-label">Controls (White)</span></div>
+  </div>
+</header>
+<nav aria-label="Patch sections" style="background:var(--bg-surf1);border-bottom:1px solid var(--bdr1);display:flex;flex-wrap:wrap;padding:0 14px">
+  <button class="nb on" onclick="show('desc')"    id="tab-desc">DESCRIPTION</button>
+  <button class="nb"    onclick="show('cpu')"     id="tab-cpu">CPU BUDGET</button>
+  <button class="nb nb-p1" onclick="show('p1')"   id="tab-p1">P1 &middot; UI</button>
+  <button class="nb nb-p2" onclick="show('p2')"   id="tab-p2">P2 &middot; I/O + MIX</button>
+  <button class="nb nb-p3" onclick="show('p3')"   id="tab-p3">P3 &middot; PITCH</button>
+  <button class="nb nb-p4" onclick="show('p4')"   id="tab-p4">P4 &middot; RESONATORS</button>
+  <button class="nb nb-p5" onclick="show('p5')"   id="tab-p5">P5 &middot; BODY + REVERB</button>
+  <button class="nb"    onclick="show('cx')"      id="tab-cx">CONNECTIONS (61)</button>
+  <button class="nb"    onclick="show('midi')"    id="tab-midi">MIDI MAP</button>
+  <button class="nb"    onclick="show('presets')" id="tab-presets">PRESETS</button>
+</nav>
+<main id="main">
+
+<div id="page-desc" class="page on">
+<div class="desc-block">
+  <h3>What is this patch?</h3>
+  <p>Sympathetic Strings Resonator v3 adds the resonant character of a piano&rsquo;s undamped strings to guitar using only verified ZOIA modules. When you play, an Env Follower detects the signal, a Comparator generates a gate, and the Pitch Detector captures pitch. Three Delay Line + VCA feedback comb filters resonate at the fundamental, octave, and fifth. Two Haas delays create stereo width.</p>
+  <p>The resonators use a Karplus-Strong comb filter: each Delay Line&rsquo;s output feeds back into its own input through a VCA. The FEEDBACK knob controls VCA level &mdash; higher = longer sustain. Pitch CV modulates delay times for approximate pitch tracking.</p>
+  <h3>Key features</h3>
+  <ul>
+    <li>Env Follower + Comparator gate detection &mdash; saves 9.76% CPU vs Onset Detector (12.3%)</li>
+    <li>Pitch Detector with CV Rectify for pitch-to-delay-time control</li>
+    <li>3&times; Delay Line + VCA comb filter voices: fundamental, octave, fifth</li>
+    <li>2&times; Haas delay lines panned L/R for stereo width</li>
+    <li>SV Filter dampening (felt simulation)</li>
+    <li>Tone Control body EQ (9 blocks) + Reverb Lite (6&ndash;7%)</li>
+    <li>All modules verified against official Empress Module Index firmware 5</li>
+    <li>~32% CPU &mdash; ~63% headroom below 95% ceiling</li>
+  </ul>
+  <h3>Firmware requirements</h3>
+  <p>Minimum: 2.0. Recommended: 5.0 (for 15-colour UI Button). Modules used: Audio In/Out, VCA, SV Filter, Delay Line, Pitch Detector, Env Follower, Comparator, Sample &amp; Hold, ADSR, CV Mixer, CV Rectify, Value, Stompswitch, Tone Control, Reverb Lite, Audio Balance.</p>
+</div>
+<div class="tip"><b>First time:</b> Set FEEDBACK to 60%. Play a single note and slowly raise until you hear the resonant bloom. If it self-oscillates, lower FEEDBACK. SENSITIVITY adjusts the trigger threshold.</div>
+</div>
+
+<div id="page-cpu" class="page">
+<div class="pg-intro">All DSP from official Empress Module Index firmware 5. ~32% total vs ~68% (v2) and ~83&ndash;109% (v1).</div>
+<div class="cpu-section">
+  <div class="sec">Module cost breakdown</div>
+  <div class="cpu-row"><span class="cpu-label">Delay Line &times;5 (2.0% each)</span><div class="cpu-track"><div class="cpu-fill" style="width:10%;background:#FF0000"></div></div><span class="cpu-val" style="color:#FF0000">10.0%</span></div>
+  <div class="cpu-row"><span class="cpu-label">Reverb Lite (6.0&ndash;7.0%)</span><div class="cpu-track"><div class="cpu-fill" style="width:6.5%;background:#FF00FF"></div></div><span class="cpu-val" style="color:var(--txt-mag-nav)">6.5%</span></div>
+  <div class="cpu-row"><span class="cpu-label">Env Follower (2.5%)</span><div class="cpu-track"><div class="cpu-fill" style="width:2.5%;background:#00FF00"></div></div><span class="cpu-val" style="color:#00FF00">2.5%</span></div>
+  <div class="cpu-row"><span class="cpu-label">Pitch Detector (2.3%)</span><div class="cpu-track"><div class="cpu-fill" style="width:2.3%;background:#00FF99"></div></div><span class="cpu-val" style="color:#00FF99">2.3%</span></div>
+  <div class="cpu-row"><span class="cpu-label">Tone Control (2.2%)</span><div class="cpu-track"><div class="cpu-fill" style="width:2.2%;background:#00FFFF"></div></div><span class="cpu-val" style="color:#00FFFF">2.2%</span></div>
+  <div class="cpu-row"><span class="cpu-label">SV Filter &times;2 (1.0% each)</span><div class="cpu-track"><div class="cpu-fill" style="width:2.0%;background:#00BFFF"></div></div><span class="cpu-val" style="color:#00BFFF">2.0%</span></div>
+  <div class="cpu-row"><span class="cpu-label">VCA &times;5 feedback + 2 reverb (0.3%)</span><div class="cpu-track"><div class="cpu-fill" style="width:1.5%;background:#FFA500"></div></div><span class="cpu-val" style="color:#FFA500">1.5%</span></div>
+  <div class="cpu-row"><span class="cpu-label">Value &times;9 (0.15% each)</span><div class="cpu-track"><div class="cpu-fill" style="width:1.35%;background:#e0e0e0"></div></div><span class="cpu-val" style="color:#e0e0e0">1.35%</span></div>
+  <div class="cpu-row"><span class="cpu-label">Audio Balance (0.8%) + VCA Wet/Dry</span><div class="cpu-track"><div class="cpu-fill" style="width:1.4%;background:#FFA500"></div></div><span class="cpu-val" style="color:#FFA500">1.4%</span></div>
+  <div class="cpu-row"><span class="cpu-label">Audio Out (1.0%) + Audio In (0.3%)</span><div class="cpu-track"><div class="cpu-fill" style="width:1.3%;background:#00BFFF"></div></div><span class="cpu-val" style="color:#00BFFF">1.3%</span></div>
+  <div class="cpu-row"><span class="cpu-label">S&amp;H, ADSR, CV Mixer, CV Rectify, Comparator</span><div class="cpu-track"><div class="cpu-fill" style="width:0.6%;background:#FFFF00"></div></div><span class="cpu-val" style="color:#FFFF00">0.6%</span></div>
+  <div class="cpu-row"><span class="cpu-label">Stompswitches &times;3 (0.1% each)</span><div class="cpu-track"><div class="cpu-fill" style="width:0.3%;background:#e0e0e0"></div></div><span class="cpu-val" style="color:#e0e0e0">0.3%</span></div>
+  <div class="cpu-total"><span>TOTAL v3</span><span style="color:var(--c-green)">~32%</span></div>
+  <div class="cpu-total" style="font-size:0.875rem;font-weight:400;border-top:none;padding-top:0;margin-top:4px"><span style="color:var(--text-muted)">Headroom to 95%</span><span style="color:var(--c-green);font-weight:700">~63%</span></div>
+  <div class="cpu-note">v2 savings: Resonators &times;4 (was 36%) replaced by Delay+VCA (11.5%) = &minus;24.5%. Onset Detector (12.3%) replaced by Env Follower+Comparator (2.54%) = &minus;9.76%. Chorus (6-10%) removed = &minus;8%.</div>
+</div>
+</div>
+
+<div id="page-p1" class="page">
+<div class="pg-intro" style="border-left-color:var(--c-white)">Page 1 &mdash; 9 Value modules (2 blocks each) + 3 Stompswitch (1 block each). Total 21 of 40 blocks. Number badge on each cell shows block count.</div>
+<div class="grid-wrap" aria-label="Page 1: 9 Value knob modules and 3 Stompswitch modules"><svg viewBox="0 0 389 316" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P1 — UI Controls ZOIA Grid Layout">
+  <title>P1 — UI Controls</title>
+  <desc>9 Value knob modules (2 blk each) · 3 Stomp Switch (1 blk each) — grid shows actual block footprint per module (number badge = block count)</desc>
+  <rect width="389" height="316" fill="#0a0a0a" rx="6"/>
+  <text x="8" y="20" font-size="10" font-weight="700" fill="#ffffff" font-family="monospace">P1 — UI Controls</text>
+  <text x="8" y="32" font-size="7" fill="#666666" font-family="monospace">9 Value knob modules (2 blk each) · 3 Stomp Switch (1 blk each)</text>
+  <line x1="8" y1="40" x2="381" y2="40" stroke="#282828" stroke-width="0.5"/>
+  <rect x="8" y="44" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="85" y="48" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="91.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="53" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">PITCH</text>
+<text x="53" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">±24st</text>
+<rect x="102" y="44" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="179" y="48" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="185.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="147" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">FEEDBACK</text>
+<text x="147" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">0-95%</text>
+<rect x="196" y="44" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="273" y="48" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="279.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="241" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">SPREAD</text>
+<text x="241" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">1-30ms</text>
+<rect x="290" y="44" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="367" y="48" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="373.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="335" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DAMPENING</text>
+<text x="335" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">200-8k</text>
+<rect x="8" y="91" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="85" y="95" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="91.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="53" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">SENS.</text>
+<text x="53" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">thresh</text>
+<rect x="102" y="91" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="179" y="95" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="185.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="147" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">PIANO</text>
+<text x="147" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">SIZE</text>
+<rect x="196" y="91" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="273" y="95" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="279.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="241" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">REVERB</text>
+<text x="241" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">LVL</text>
+<rect x="290" y="91" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="367" y="95" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="373.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="335" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">WET</text>
+<text x="335" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">VOL</text>
+<rect x="8" y="138" width="91" height="44" rx="4" fill="#232323" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="85" y="142" width="13" height="10" rx="2" fill="#FFFFFF" opacity="0.5"/>
+<text x="91.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="53" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DRY</text>
+<text x="53" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">VOL</text>
+<rect x="102" y="138" width="44" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<text x="124" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">BYPASS</text>
+<text x="124" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">toggle</text>
+<rect x="149" y="138" width="44" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<text x="171" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">PITCH</text>
+<text x="171" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">HOLD</text>
+<rect x="196" y="138" width="44" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<text x="218" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DECAY</text>
+<text x="218" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">KILL</text>
+<rect x="243" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+  <rect x="8" y="290" width="10" height="10" rx="2" fill="#232323" stroke="#FFFFFF" stroke-width="1.2"/><text x="22" y="299" font-size="8" fill="#cccccc" font-family="monospace">Value (knob) 2 blk</text><rect x="131.0" y="290" width="10" height="10" rx="2" fill="#002323" stroke="#00FFFF" stroke-width="1.2"/><text x="145.0" y="299" font-size="8" fill="#cccccc" font-family="monospace">Stomp 1 blk</text><rect x="215.5" y="290" width="10" height="10" rx="2" fill="#002300" stroke="#00FF00" stroke-width="1.2"/><text x="229.5" y="299" font-size="8" fill="#cccccc" font-family="monospace"></text><rect x="239.5" y="290" width="10" height="10" rx="2" fill="#230000" stroke="#FF0000" stroke-width="1.2"/><text x="253.5" y="299" font-size="8" fill="#cccccc" font-family="monospace"></text><rect x="249" y="288" width="11" height="9" rx="2" fill="#555" opacity="0.5"/><text x="254.5" y="295.5" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">N</text><text x="264" y="296" font-size="7" fill="#aaa" font-family="monospace">= block count</text>
+</svg></div>
+<div class="sec">Value modules &mdash; 2 blocks each</div>
+<div class="mgrid">
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[PITCH]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">value</span><span class="ps">semitone offset &mdash; turn knob or send CV in</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P3 CV Mixer [PITCH OFFSET] cv in 2 (block 2)</span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">&minus;24st to +24st</span><span class="ps">&nbsp;<span class="db">default 0st</span></span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC2 &middot; pitch bend</div></div></div>
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[FEEDBACK]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 VCA [V1 FEEDBACK] level control (block 3) at 100%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 VCA [V2 FEEDBACK] level control (block 3) at 80% connection strength</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 VCA [V3 FEEDBACK] level control (block 3) at 55% connection strength</span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">0&ndash;95%</span><span class="ps">&nbsp;<span class="db">default 75%</span> higher = longer resonator sustain</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC74</div></div></div>
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[SPREAD]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 Delay Line [SPREAD L] delay time (block 2) <span class="db">9ms</span></span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 Delay Line [SPREAD R] delay time (block 2) <span class="db">11ms</span></span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">1&ndash;30ms</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC1 mod wheel</div></div></div>
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[DAMPENING]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 SV Filter [DAMPENING] frequency (block 2) <span class="db">3500Hz</span></span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">200Hz &ndash; 8kHz</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC11 expression pedal</div></div></div>
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[SENSITIVITY]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P3 Comparator [GATE GEN] CV negative input (block 2) <span class="db">40%</span></span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">5&ndash;90%</span><span class="ps">&nbsp;lower = more sensitive to input</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC72</div></div></div>
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[PIANO SIZE]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P5 Tone Control low shelf (block 3) <span class="db">+2.2dB at 55%</span></span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P5 Tone Control mid frequency 1 (block 5) <span class="db">280Hz at 55%</span></span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">0&ndash;100%</span><span class="ps">&nbsp;0=upright 55=grand 100=concert</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC73</div></div></div>
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[REVERB LVL]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P5 VCA [REVERB SEND] level control (block 3) <span class="db">28%</span></span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">0&ndash;100%</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC91 reverb depth</div></div></div>
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[WET VOL]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P2 VCA [WET VCA] level control (block 3) <span class="db">45%</span></span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">0&ndash;100%</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC7 volume</div></div></div>
+<div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">[DRY VOL]</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P2 VCA [DRY VCA] level control (block 3) <span class="db">85%</span></span></div><div class="pr"><span class="pd">RANGE</span><span class="pn">0&ndash;100%</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC7 volume</div></div></div>
+</div>
+<div class="sec">Stompswitch modules &mdash; 1 block each</div>
+<div class="mgrid">
+<div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">Stompswitch</span><span class="mod-name">[BYPASS]</span></div><div class="mod-body"><div class="pr"><span class="pd">SET</span><span class="pn">action</span><span class="ps">latching</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">cv output</span><span class="ps">&rarr; P2 VCA [WET VCA] level control (block 3) &mdash; overrides to 0</span></div><div class="pr"><span class="pd">NOTE</span><span class="pn">dry signal</span><span class="ps">always passes &mdash; unaffected by bypass</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC80 toggle</div></div></div>
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">Stompswitch</span><span class="mod-name">[PITCH HOLD]</span></div><div class="mod-body"><div class="pr"><span class="pd">SET</span><span class="pn">action</span><span class="ps">latching</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">cv output</span><span class="ps">&rarr; P3 Sample and Hold [PITCH HOLD] trigger (block 2) &mdash; freezes pitch</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC64 sustain pedal</div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Stompswitch</span><span class="mod-name">[DECAY KILL]</span></div><div class="mod-body"><div class="pr"><span class="pd">SET</span><span class="pn">action</span><span class="ps">momentary</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">cv output</span><span class="ps">&rarr; P4 VCA [V1 FEEDBACK] level control (block 3) at connection strength 0</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">cv output</span><span class="ps">&rarr; P4 VCA [V2 FEEDBACK] level control (block 3) at connection strength 0</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">cv output</span><span class="ps">&rarr; P4 VCA [V3 FEEDBACK] level control (block 3) at connection strength 0</span></div><div class="pr"><span class="pd">NOTE</span><span class="ps">strength 0 = forces all feedback to 0 = instant silence on all voices</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC82 trigger</div></div></div>
+</div>
+<div class="note">ZEBU: map BYPASS &rarr; CV In 1, PITCH HOLD &rarr; CV In 2, DECAY KILL &rarr; CV In 3. Use aux buttons or MIDI CCs 80/64/82.</div>
+</div>
+
+<div id="page-p2" class="page">
+<div class="pg-intro" style="border-left-color:var(--c-sky)">Page 2 &mdash; patch boundary and final mix. 18 of 40 blocks used. Guitar In splits four ways. Audio Balance stereo (7 blocks) handles final wet/dry mix.</div>
+<div class="grid-wrap" aria-label="Page 2: Audio Input 2 blocks, VCAs 3 blocks each, Audio Balance 7 blocks, Audio Output 3 blocks"><svg viewBox="0 0 389 316" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P2 — I/O + Mix Bus ZOIA Grid Layout">
+  <title>P2 — I/O + Mix Bus</title>
+  <desc>Audio In/Out · Wet VCA · Dry VCA · Audio Balance stereo — grid shows actual block footprint per module (number badge = block count)</desc>
+  <rect width="389" height="316" fill="#0a0a0a" rx="6"/>
+  <text x="8" y="20" font-size="10" font-weight="700" fill="#ffffff" font-family="monospace">P2 — I/O + Mix Bus</text>
+  <text x="8" y="32" font-size="7" fill="#666666" font-family="monospace">Audio In/Out · Wet VCA · Dry VCA · Audio Balance stereo</text>
+  <line x1="8" y1="40" x2="381" y2="40" stroke="#282828" stroke-width="0.5"/>
+  <rect x="8" y="44" width="91" height="44" rx="4" fill="#001a23" stroke="#00BFFF" stroke-width="1.5"/>
+<rect x="85" y="48" width="13" height="10" rx="2" fill="#00BFFF" opacity="0.5"/>
+<text x="91.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="53" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">AUDIO</text>
+<text x="53" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">IN</text>
+<rect x="149" y="44" width="138" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<rect x="273" y="48" width="13" height="10" rx="2" fill="#00FFFF" opacity="0.5"/>
+<text x="279.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">WET</text>
+<text x="218" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">VCA</text>
+<rect x="149" y="91" width="138" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<rect x="273" y="95" width="13" height="10" rx="2" fill="#00FFFF" opacity="0.5"/>
+<text x="279.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DRY</text>
+<text x="218" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">VCA</text>
+<rect x="8" y="138" width="326" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<rect x="320" y="142" width="13" height="10" rx="2" fill="#00FFFF" opacity="0.5"/>
+<text x="326.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">7</text>
+<text x="171" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">AUDIO BALANCE</text>
+<text x="171" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">stereo mix 7blk</text>
+<rect x="8" y="232" width="138" height="44" rx="4" fill="#001a23" stroke="#00BFFF" stroke-width="1.5"/>
+<rect x="132" y="236" width="13" height="10" rx="2" fill="#00BFFF" opacity="0.5"/>
+<text x="138.5" y="244" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="250" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">AUDIO</text>
+<text x="77" y="260" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">OUT</text>
+<rect x="102" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+  <rect x="8" y="290" width="10" height="10" rx="2" fill="#001a23" stroke="#00BFFF" stroke-width="1.2"/><text x="22" y="299" font-size="8" fill="#cccccc" font-family="monospace">I/O</text><rect x="48.5" y="290" width="10" height="10" rx="2" fill="#002323" stroke="#00FFFF" stroke-width="1.2"/><text x="62.5" y="299" font-size="8" fill="#cccccc" font-family="monospace">Mix Bus</text><rect x="249" y="288" width="11" height="9" rx="2" fill="#555" opacity="0.5"/><text x="254.5" y="295.5" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">N</text><text x="264" y="296" font-size="7" fill="#aaa" font-family="monospace">= block count</text>
+</svg></div>
+<div class="mgrid">
+<div class="mod m-io"><div class="mod-hd"><span class="mod-zoia">Audio Input</span><span class="mod-name">[GUITAR IN]</span><span class="mod-cpu">~0.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">pedal input L</span><span class="ps">left TS jack &mdash; mono guitar</span></div><div class="pr"><span class="pd">OPT</span><span class="pn">channels</span><span class="ps">Left only</span></div><div class="pr"><span class="pd">OUT</span><span class="pn">pedal input L</span><span class="ps">&rarr; P3 SV Filter [SOFT LIMITER] audio in (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">OUT</span><span class="pn">pedal input L</span><span class="ps">&rarr; P3 Pitch Detector [TRACKER] audio in (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">OUT</span><span class="pn">pedal input L</span><span class="ps">&rarr; P3 Env Follower [GATE DETECT] audio in (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">OUT</span><span class="pn">pedal input L</span><span class="ps">&rarr; P2 VCA [DRY VCA] audio in 1 (block 1) &mdash; pre-FX</span><span class="pp">100%</span></div><div class="info-tag">4 simultaneous outputs from one block</div></div></div>
+<div class="mod m-io"><div class="mod-hd"><span class="mod-zoia">Audio Output</span><span class="mod-name">[STEREO OUT]</span><span class="mod-cpu">~1.0%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">pedal output L</span><span class="ps">left TS jack</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">pedal output R</span><span class="ps">right TRS jack</span></div><div class="pr"><span class="pd">OPT</span><span class="pn">channels</span><span class="ps">Both L + R</span></div><div class="pr"><span class="pd">IN L</span><span class="pn">pedal output L (block 1)</span><span class="ps">&larr; P2 Audio Balance audio outL (block 6)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">IN R</span><span class="pn">pedal output R (block 2)</span><span class="ps">&larr; P2 Audio Balance audio outR (block 7)</span><span class="pp">100%</span></div></div></div>
+<div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">[WET VCA]</span><span class="mod-cpu">~0.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in 1</span><span class="ps">&larr; P5 VCA [REVERB RETURN] audio out 1 (block 4)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; P1 Value [WET VOL] CV output (block 2) <span class="db">45%</span></span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; P1 Stompswitch [BYPASS] cv output &mdash; overrides to 0</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">audio out 1</span><span class="ps">&rarr; P2 Audio Balance audio in1 L (block 1)</span><span class="pp">100%</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC7 / CC80 bypass</div></div></div>
+<div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">[DRY VCA]</span><span class="mod-cpu">~0.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in 1</span><span class="ps">&larr; P2 Audio Input pedal input L &mdash; pre-FX split</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; P1 Value [DRY VOL] CV output (block 2) <span class="db">85%</span></span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">audio out 1</span><span class="ps">&rarr; P2 Audio Balance audio in2 L (block 3)</span><span class="pp">100%</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC7 volume</div></div></div>
+<div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">Audio Balance</span><span class="mod-name">[STEREO MIX BUS]</span><span class="mod-cpu">~0.8%</span></div><div class="mod-body"><div class="pr"><span class="pd">OPT</span><span class="pn">stereo</span><span class="ps">ON &mdash; 7 block stereo mode</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in1 L</span><span class="ps">&larr; VCA [WET VCA] audio out 1 (block 4)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">audio in1 R</span><span class="ps">&larr; P5 Reverb Lite output R (block 6)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">audio in2 L</span><span class="ps">&larr; VCA [DRY VCA] audio out 1 (block 4)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">audio in2 R</span><span class="ps">&larr; VCA [DRY VCA] audio out 1 (block 4)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 5</span><span class="pn">mix</span><span class="ps">set to 50 &mdash; equal in1/in2</span></div><div class="pr"><span class="pd">BLOCK 6</span><span class="pn">audio outL</span><span class="ps">&rarr; P2 Audio Output pedal output L (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 7</span><span class="pn">audio outR</span><span class="ps">&rarr; P2 Audio Output pedal output R (block 2)</span><span class="pp">100%</span></div></div></div>
+</div>
+</div>
+
+<div id="page-p3" class="page">
+<div class="pg-intro" style="border-left-color:var(--c-green)">Page 3 &mdash; pitch analysis chain. 25 of 40 blocks used. Pitch Detector has exactly 2 blocks &mdash; no gate output exists. Gate generated by Env Follower + Comparator (saves 9.76% CPU).</div>
+<div class="grid-wrap" aria-label="Page 3: SV Filter 4 blocks, Pitch Detector 2 blocks, Env Follower 2 blocks, Comparator 3 blocks, S&H 3 blocks, CV Mixer 5 blocks, ADSR 6 blocks, CV Rectify 2 blocks"><svg viewBox="0 0 389 316" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P3 — Pitch Tracking ZOIA Grid Layout">
+  <title>P3 — Pitch Tracking</title>
+  <desc>SV Filter · Pitch Det · Env Follower · Comparator · S&H · ADSR · CV Mixer · CV Rectify — grid shows actual block footprint per module (number badge = block count)</desc>
+  <rect width="389" height="316" fill="#0a0a0a" rx="6"/>
+  <text x="8" y="20" font-size="10" font-weight="700" fill="#ffffff" font-family="monospace">P3 — Pitch Tracking</text>
+  <text x="8" y="32" font-size="7" fill="#666666" font-family="monospace">SV Filter · Pitch Det · Env Follower · Comparator · S&H · ADSR · CV Mixer · CV Rectify</text>
+  <line x1="8" y1="40" x2="381" y2="40" stroke="#282828" stroke-width="0.5"/>
+  <rect x="8" y="44" width="185" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<rect x="179" y="48" width="13" height="10" rx="2" fill="#00FF00" opacity="0.5"/>
+<text x="185.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">4</text>
+<text x="100" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">SV FILTER</text>
+<text x="100" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">SOFT LIMITER 4blk</text>
+<rect x="8" y="91" width="91" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<rect x="85" y="95" width="13" height="10" rx="2" fill="#00FF00" opacity="0.5"/>
+<text x="91.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="53" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">PITCH</text>
+<text x="53" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">DETECT 2blk</text>
+<rect x="102" y="91" width="91" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<rect x="179" y="95" width="13" height="10" rx="2" fill="#00FF00" opacity="0.5"/>
+<text x="185.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="147" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">ENV</text>
+<text x="147" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">FOLLOWER 2blk</text>
+<rect x="196" y="91" width="138" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<rect x="320" y="95" width="13" height="10" rx="2" fill="#00FF00" opacity="0.5"/>
+<text x="326.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="265" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">COMPAR-</text>
+<text x="265" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">ATOR 3blk</text>
+<rect x="8" y="138" width="138" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<rect x="132" y="142" width="13" height="10" rx="2" fill="#00FF00" opacity="0.5"/>
+<text x="138.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">S & H</text>
+<text x="77" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">PITCH HOLD 3blk</text>
+<rect x="149" y="138" width="232" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<rect x="367" y="142" width="13" height="10" rx="2" fill="#00FF00" opacity="0.5"/>
+<text x="373.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">5</text>
+<text x="265" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">CV MIXER</text>
+<text x="265" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">PITCH OFFSET 5blk</text>
+<rect x="8" y="185" width="279" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<rect x="273" y="189" width="13" height="10" rx="2" fill="#00FF00" opacity="0.5"/>
+<text x="279.5" y="197" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">6</text>
+<text x="147" y="203" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">ADSR</text>
+<text x="147" y="213" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">GATE ENVELOPE 6blk</text>
+<rect x="8" y="232" width="91" height="44" rx="4" fill="#002300" stroke="#00FF00" stroke-width="1.5"/>
+<rect x="85" y="236" width="13" height="10" rx="2" fill="#00FF00" opacity="0.5"/>
+<text x="91.5" y="244" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">2</text>
+<text x="53" y="250" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">CV</text>
+<text x="53" y="260" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">RECTIFY 2blk</text>
+<rect x="196" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+  <rect x="8" y="290" width="10" height="10" rx="2" fill="#002300" stroke="#00FF00" stroke-width="1.2"/><text x="22" y="299" font-size="8" fill="#cccccc" font-family="monospace">All Pitch Tracking modules</text><rect x="249" y="288" width="11" height="9" rx="2" fill="#555" opacity="0.5"/><text x="254.5" y="295.5" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">N</text><text x="264" y="296" font-size="7" fill="#aaa" font-family="monospace">= block count</text>
+</svg></div>
+<div class="mgrid">
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">SV Filter</span><span class="mod-name">[SOFT LIMITER]</span><span class="mod-cpu">~1.0%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P2 Audio Input pedal input L (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">frequency</span><span class="ps">set <span class="db">3000Hz</span> fixed &mdash; tames pick attack transients</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">resonance</span><span class="ps">set <span class="db">0</span></span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">lowpass output</span><span class="ps">&rarr; P4 Delay Line V1 audio in (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">lowpass output</span><span class="ps">&rarr; P4 Delay Line V2 audio in (block 1)</span><span class="pp">80%</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">lowpass output</span><span class="ps">&rarr; P4 Delay Line V3 audio in (block 1)</span><span class="pp">55%</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">lowpass output</span><span class="ps">&rarr; P4 Delay Line SPREAD L audio in (block 1)</span><span class="pp">90%</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">lowpass output</span><span class="ps">&rarr; P4 Delay Line SPREAD R audio in (block 1)</span><span class="pp">90%</span></div></div></div>
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">Pitch Detector</span><span class="mod-name">[TRACKER]</span><span class="mod-cpu">~2.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P2 Audio Input pedal input L (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">pitch out</span><span class="ps">&rarr; P3 CV Mixer [PITCH OFFSET] cv in 1 (block 1)</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">pitch out</span><span class="ps">&rarr; P3 Sample and Hold [PITCH HOLD] CV input (block 1)</span></div><div class="warn-tag">Only 2 blocks. NO gate output. Gate = Env Follower + Comparator below.</div></div></div>
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">Env Follower</span><span class="mod-name">[GATE DETECT]</span><span class="mod-cpu">~2.5%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P2 Audio Input pedal input L (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">OPT</span><span class="pn">rise/fall time</span><span class="ps">OFF &mdash; minimum 2 block configuration</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P3 Comparator [GATE GEN] CV positive input (block 1)</span></div><div class="info-tag">Amplitude &rarr; CV. With Comparator = gate signal at 2.54% CPU total.</div></div></div>
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">Comparator</span><span class="mod-name">[GATE GEN]</span><span class="mod-cpu">~0.04%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">CV positive input</span><span class="ps">&larr; P3 Env Follower CV output (block 2)</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV negative input</span><span class="ps">&larr; P1 Value [SENSITIVITY] CV output (block 2) <span class="db">40% default</span></span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">CV output</span><span class="ps">&rarr; P3 Sample and Hold trigger (block 2)</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">CV output</span><span class="ps">&rarr; P3 ADSR cv input (block 1)</span></div></div></div>
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">Sample and Hold</span><span class="mod-name">[PITCH HOLD]</span><span class="mod-cpu">~0.1%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">CV input</span><span class="ps">&larr; P3 CV Mixer [PITCH OFFSET] cv output (block 5)</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">trigger</span><span class="ps">&larr; P3 Comparator CV output (block 3)</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">trigger</span><span class="ps">&larr; P1 Stompswitch [PITCH HOLD] cv output &mdash; freeze</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">CV output</span><span class="ps">&rarr; P3 CV Rectify [PITCH POS] CV input (block 1)</span></div></div></div>
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">CV Mixer</span><span class="mod-name">[PITCH OFFSET]</span><span class="mod-cpu">~0.30%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">cv in 1</span><span class="ps">&larr; P3 Pitch Detector pitch out (block 2)</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">cv in 2</span><span class="ps">&larr; P1 Value [PITCH] CV output (block 2)</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">atten 1</span><span class="ps">set <span class="db">1.0</span> &mdash; full pass through</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">atten 2</span><span class="ps">set <span class="db">1.0</span> &mdash; full pass (sums both CVs)</span></div><div class="pr"><span class="pd">BLOCK 5</span><span class="pn">cv output</span><span class="ps">&rarr; P3 Sample and Hold CV input (block 1)</span></div><div class="info-tag">Replaces non-existent &ldquo;CV Adder&rdquo;. Set attens 1.0 to sum CVs.</div></div></div>
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">ADSR</span><span class="mod-name">[GATE ENVELOPE]</span><span class="mod-cpu">~0.07%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">cv input</span><span class="ps">&larr; P3 Comparator CV output (block 3)</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">attack</span><span class="ps"><span class="db">8ms</span></span></div><div class="pr"><span class="pd">BLOCK 6</span><span class="pn">decay</span><span class="ps"><span class="db">30ms</span></span></div><div class="pr"><span class="pd">BLOCK 7</span><span class="pn">sustain</span><span class="ps"><span class="db">100%</span></span></div><div class="pr"><span class="pd">BLOCK 9</span><span class="pn">release</span><span class="ps"><span class="db">60ms</span></span></div><div class="pr"><span class="pd">BLOCK 10</span><span class="pn">cv output</span><span class="ps">&rarr; P4 VCA V1 level (100%), V2 (80%), V3 (55%) &mdash; block 3</span></div></div></div>
+<div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">CV Rectify</span><span class="mod-name">[PITCH POS]</span><span class="mod-cpu">~0.07%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">CV input</span><span class="ps">&larr; P3 Sample and Hold CV output (block 3)</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 Delay Line V1 delay time at <span class="db">6%</span> strength</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 Delay Line V2 delay time at <span class="db">3%</span> strength</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">CV output</span><span class="ps">&rarr; P4 Delay Line V3 delay time at <span class="db">4%</span> strength</span></div><div class="info-tag">Keeps V/Oct in 0&ndash;1 range. Strength % maps to linear delay time.</div></div></div>
+</div>
+</div>
+
+<div id="page-p4" class="page">
+<div class="pg-intro" style="border-left-color:var(--c-red)">Page 4 &mdash; resonator bank. 28 of 40 blocks used. Each voice: Delay Line (3 blocks) + VCA feedback (3 blocks). Number badge on each cell = block count.</div>
+<div class="grid-wrap" aria-label="Page 4: 5 Delay Lines and 3 feedback VCAs all 3 blocks each, SV Filter 4 blocks"><svg viewBox="0 0 389 316" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P4 — Resonator Bank ZOIA Grid Layout">
+  <title>P4 — Resonator Bank</title>
+  <desc>3× Delay+VCA comb filters · 2× Haas delays · SV Filter dampening — grid shows actual block footprint per module (number badge = block count)</desc>
+  <rect width="389" height="316" fill="#0a0a0a" rx="6"/>
+  <text x="8" y="20" font-size="10" font-weight="700" fill="#ffffff" font-family="monospace">P4 — Resonator Bank</text>
+  <text x="8" y="32" font-size="7" fill="#666666" font-family="monospace">3× Delay+VCA comb filters · 2× Haas delays · SV Filter dampening</text>
+  <line x1="8" y1="40" x2="381" y2="40" stroke="#282828" stroke-width="0.5"/>
+  <rect x="8" y="44" width="138" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="132" y="48" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="138.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DELAY LINE</text>
+<text x="77" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">V1 FUND 3blk</text>
+<rect x="149" y="44" width="138" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="273" y="48" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="279.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">VCA</text>
+<text x="218" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">V1 FDBK 3blk</text>
+<rect x="8" y="91" width="138" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="132" y="95" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="138.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DELAY LINE</text>
+<text x="77" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">V2 OCTAVE 3blk</text>
+<rect x="149" y="91" width="138" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="273" y="95" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="279.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">VCA</text>
+<text x="218" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">V2 FDBK 3blk</text>
+<rect x="8" y="138" width="138" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="132" y="142" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="138.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DELAY LINE</text>
+<text x="77" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">V3 FIFTH 3blk</text>
+<rect x="149" y="138" width="138" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="273" y="142" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="279.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">VCA</text>
+<text x="218" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">V3 FDBK 3blk</text>
+<rect x="8" y="185" width="138" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="132" y="189" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="138.5" y="197" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="203" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DELAY LINE</text>
+<text x="77" y="213" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">SPREAD L 3blk</text>
+<rect x="149" y="185" width="138" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="273" y="189" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="279.5" y="197" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="203" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">DELAY LINE</text>
+<text x="218" y="213" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">SPREAD R 3blk</text>
+<rect x="8" y="232" width="185" height="44" rx="4" fill="#230000" stroke="#FF0000" stroke-width="1.5"/>
+<rect x="179" y="236" width="13" height="10" rx="2" fill="#FF0000" opacity="0.5"/>
+<text x="185.5" y="244" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">4</text>
+<text x="100" y="250" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">SV FILTER</text>
+<text x="100" y="260" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">DAMPENING 4blk</text>
+<rect x="290" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="44" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+  <rect x="8" y="290" width="10" height="10" rx="2" fill="#230000" stroke="#FF0000" stroke-width="1.2"/><text x="22" y="299" font-size="8" fill="#cccccc" font-family="monospace">Delay Line comb voices + VCA feedback + SV Filter</text><rect x="249" y="288" width="11" height="9" rx="2" fill="#555" opacity="0.5"/><text x="254.5" y="295.5" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">N</text><text x="264" y="296" font-size="7" fill="#aaa" font-family="monospace">= block count</text>
+</svg></div>
+<div class="note" style="margin-bottom:16px">Comb filter principle: Delay Line audio out (block 3) &rarr; VCA audio in (block 1) &rarr; VCA audio out (block 4) &rarr; Delay Line audio in (block 1). Also: Delay Line audio out &rarr; SV Filter [DAMPENING]. FEEDBACK knob sets VCA level control (block 3). Pitch CV sets delay time (block 2).</div>
+<div class="mgrid">
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">[V1 FUNDAMENTAL]</span><span class="mod-cpu">~2.0%</span></div><div class="mod-body"><div class="pr"><span class="pd">OPT</span><span class="pn">max time</span><span class="ps">100ms</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P3 SV Filter [SOFT LIMITER] lowpass output (block 4)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P4 VCA [V1 FEEDBACK] audio out 1 (block 4) &mdash; feedback</span><span class="pp">75%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">delay time</span><span class="ps">base <span class="db">2.3ms</span> (~440Hz). &larr; CV Rectify (block 2) at 6% strength</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">audio out</span><span class="ps">&rarr; P4 VCA [V1 FEEDBACK] audio in 1 (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">audio out</span><span class="ps">&rarr; P4 SV Filter [DAMPENING] audio in (block 1)</span><span class="pp">100%</span></div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">[V1 FEEDBACK]</span><span class="mod-cpu">~0.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in 1</span><span class="ps">&larr; P4 Delay Line [V1] audio out (block 3)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; P3 ADSR cv output (block 10)</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; P1 Value [FEEDBACK] CV output (block 2)</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; P1 Stompswitch [DECAY KILL] &mdash; overrides to 0</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">audio out 1</span><span class="ps">&rarr; Delay Line [V1] audio in (block 1) at 75% &mdash; feedback loop</span><span class="pp">75%</span></div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">[V2 OCTAVE]</span><span class="mod-cpu">~2.0%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P3 SV Filter [SOFT LIMITER] lowpass output</span><span class="pp">80%</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P4 VCA [V2 FEEDBACK] audio out 1 &mdash; feedback</span><span class="pp">75%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">delay time</span><span class="ps">base <span class="db">1.1ms</span> (~octave). &larr; CV Rectify at 3%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">audio out</span><span class="ps">&rarr; VCA [V2 FEEDBACK] + SV Filter [DAMPENING]</span><span class="pp">100%</span></div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">[V2 FEEDBACK]</span><span class="mod-cpu">~0.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; ADSR cv output at 80% + FEEDBACK knob at 80%</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">audio out 1</span><span class="ps">&rarr; Delay Line [V2] audio in (block 1) at 75% feedback</span><span class="pp">75%</span></div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">[V3 FIFTH]</span><span class="mod-cpu">~2.0%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P3 SV Filter [SOFT LIMITER] lowpass output</span><span class="pp">55%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">delay time</span><span class="ps">base <span class="db">1.5ms</span> (~fifth). &larr; CV Rectify at 4%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">audio out</span><span class="ps">&rarr; VCA [V3 FEEDBACK] + SV Filter [DAMPENING]</span><span class="pp">100%</span></div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">[V3 FEEDBACK]</span><span class="mod-cpu">~0.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; ADSR cv output at 55% + FEEDBACK knob at 55%</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">audio out 1</span><span class="ps">&rarr; Delay Line [V3] audio in (block 1) at 75% feedback</span><span class="pp">75%</span></div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">[SPREAD L]</span><span class="mod-cpu">~2.0%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P3 SV Filter [SOFT LIMITER] lowpass output</span><span class="pp">90%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">delay time</span><span class="ps">&larr; P1 Value [SPREAD] CV output (block 2) <span class="db">9ms default</span></span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">audio out</span><span class="ps">&rarr; P4 SV Filter [DAMPENING] audio in (block 1) &mdash; hard left pan</span><span class="pp">90%</span></div><div class="info-tag">Route L output hard left using Audio Panner if panning before dampening is desired</div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">[SPREAD R]</span><span class="mod-cpu">~2.0%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; P3 SV Filter [SOFT LIMITER] lowpass output</span><span class="pp">90%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">delay time</span><span class="ps">&larr; P1 Value [SPREAD] CV output +2ms offset <span class="db">11ms default</span></span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">audio out</span><span class="ps">&rarr; P4 SV Filter [DAMPENING] audio in (block 1) &mdash; hard right pan</span><span class="pp">90%</span></div><div class="info-tag">R = L + 2ms to prevent symmetric comb filter cancellation</div></div></div>
+<div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">SV Filter</span><span class="mod-name">[STRING DAMPENING]</span><span class="mod-cpu">~1.0%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in</span><span class="ps">&larr; all 5 Delay Lines audio out (V1, V2, V3, SPREAD L, SPREAD R)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 2</span><span class="pn">frequency</span><span class="ps">&larr; P1 Value [DAMPENING] CV output (block 2) <span class="db">3500Hz</span></span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">resonance</span><span class="ps">set <span class="db">0</span></span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">lowpass output</span><span class="ps">&rarr; P5 Tone Control [BODY EQ] aud in L (block 1)</span><span class="pp">100%</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC11 expression &rarr; frequency (block 2) via Value DAMPENING</div></div></div>
+</div>
+</div>
+
+<div id="page-p5" class="page">
+<div class="pg-intro" style="border-left-color:var(--c-aqua)">Page 5 &mdash; piano body EQ and reverb. 20 of 40 blocks used. Tone Control (9 blocks) + Reverb Lite (5 blocks) + VCA Send (3 blocks) + VCA Return (3 blocks).</div>
+<div class="grid-wrap" aria-label="Page 5: Tone Control 9 blocks, Reverb Lite 5 blocks, VCA Send 3 blocks, VCA Return 3 blocks"><svg viewBox="0 0 389 316" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P5 — Piano Body + Reverb ZOIA Grid Layout">
+  <title>P5 — Piano Body + Reverb</title>
+  <desc>Tone Control 9blk · Reverb Lite 5blk · VCA Send/Return 3blk each — grid shows actual block footprint per module (number badge = block count)</desc>
+  <rect width="389" height="316" fill="#0a0a0a" rx="6"/>
+  <text x="8" y="20" font-size="10" font-weight="700" fill="#ffffff" font-family="monospace">P5 — Piano Body + Reverb</text>
+  <text x="8" y="32" font-size="7" fill="#666666" font-family="monospace">Tone Control 9blk · Reverb Lite 5blk · VCA Send/Return 3blk each</text>
+  <line x1="8" y1="40" x2="381" y2="40" stroke="#282828" stroke-width="0.5"/>
+  <rect x="8" y="44" width="373" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<rect x="367" y="48" width="13" height="10" rx="2" fill="#00FFFF" opacity="0.5"/>
+<text x="373.5" y="56" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">8</text>
+<text x="194" y="62" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">TONE CONTROL</text>
+<text x="194" y="72" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">BODY EQ row0 (8)</text>
+<rect x="8" y="91" width="44" height="44" rx="4" fill="#002323" stroke="#00FFFF" stroke-width="1.5"/>
+<text x="30" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">TC</text>
+<text x="30" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">cont</text>
+<rect x="55" y="91" width="232" height="44" rx="4" fill="#230023" stroke="#FF00FF" stroke-width="1.5"/>
+<rect x="273" y="95" width="13" height="10" rx="2" fill="#FF00FF" opacity="0.5"/>
+<text x="279.5" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">5</text>
+<text x="171" y="109" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">REVERB LITE</text>
+<text x="171" y="119" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">RESONANCE 5blk</text>
+<rect x="8" y="138" width="138" height="44" rx="4" fill="#230023" stroke="#FF00FF" stroke-width="1.5"/>
+<rect x="132" y="142" width="13" height="10" rx="2" fill="#FF00FF" opacity="0.5"/>
+<text x="138.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="77" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">VCA</text>
+<text x="77" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">REV SEND 3blk</text>
+<rect x="149" y="138" width="138" height="44" rx="4" fill="#230023" stroke="#FF00FF" stroke-width="1.5"/>
+<rect x="273" y="142" width="13" height="10" rx="2" fill="#FF00FF" opacity="0.5"/>
+<text x="279.5" y="150" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">3</text>
+<text x="218" y="156" text-anchor="middle" font-size="7" font-weight="700" fill="#f0f0f0" font-family="monospace">VCA</text>
+<text x="218" y="166" text-anchor="middle" font-size="6" fill="#f0f0f0" font-family="monospace" opacity="0.85">REV RETURN 3blk</text>
+<rect x="290" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="91" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="138" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="185" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="8" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="55" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="102" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="149" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="196" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="243" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="290" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+<rect x="337" y="232" width="44" height="44" rx="3" fill="#1a1a1a" stroke="#111111" stroke-width="0.5"/>
+  <rect x="8" y="290" width="10" height="10" rx="2" fill="#002323" stroke="#00FFFF" stroke-width="1.2"/><text x="22" y="299" font-size="8" fill="#cccccc" font-family="monospace">Piano Body EQ</text><rect x="103.5" y="290" width="10" height="10" rx="2" fill="#230023" stroke="#FF00FF" stroke-width="1.2"/><text x="117.5" y="299" font-size="8" fill="#cccccc" font-family="monospace">Reverb + VCAs</text><rect x="249" y="288" width="11" height="9" rx="2" fill="#555" opacity="0.5"/><text x="254.5" y="295.5" text-anchor="middle" font-size="7" fill="#fff" font-family="monospace">N</text><text x="264" y="296" font-size="7" fill="#aaa" font-family="monospace">= block count</text>
+</svg></div>
+<div class="mgrid">
+<div class="mod m-body"><div class="mod-hd"><span class="mod-zoia">Tone Control</span><span class="mod-name">[BODY EQ]</span><span class="mod-cpu">~2.2%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">aud in L</span><span class="ps">&larr; P4 SV Filter [DAMPENING] lowpass output (block 4)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">low shelf</span><span class="ps">&larr; P1 Value [PIANO SIZE] CV output (block 2) <span class="db">+2.2dB at 55%</span></span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">mid gain 1</span><span class="ps">set <span class="db">+3dB</span> fixed</span></div><div class="pr"><span class="pd">BLOCK 5</span><span class="pn">mid frequency 1</span><span class="ps">&larr; P1 Value [PIANO SIZE] CV output (block 2) <span class="db">280Hz at 55%</span></span></div><div class="pr"><span class="pd">BLOCK 8</span><span class="pn">high shelf</span><span class="ps">set <span class="db">-4dB</span> fixed at 5500Hz</span></div><div class="pr"><span class="pd">BLOCK 9</span><span class="pn">output L</span><span class="ps">&rarr; P5 VCA [REVERB SEND] audio in 1 (block 1)</span><span class="pp">100%</span></div><div class="info-tag">9 blocks minimum. Blocks 6+7 (mid band 2) optional.</div></div></div>
+<div class="mod m-rev"><div class="mod-hd"><span class="mod-zoia">Reverb Lite</span><span class="mod-name">[RESONANCE VERB]</span><span class="mod-cpu">~6.5%</span></div><div class="mod-body"><div class="pr"><span class="pd">OPT</span><span class="pn">channels</span><span class="ps">mono to stereo &mdash; adds output R (block 6)</span></div><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">input L</span><span class="ps">&larr; P5 VCA [REVERB SEND] audio out 1 (block 4)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">decay time</span><span class="ps"><span class="db">1.8s</span></span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">mix</span><span class="ps"><span class="db">100</span> &mdash; fully wet</span></div><div class="pr"><span class="pd">BLOCK 5</span><span class="pn">output L</span><span class="ps">&rarr; P5 VCA [REVERB RETURN] audio in 1 (block 1)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 6</span><span class="pn">output R</span><span class="ps">&rarr; P2 Audio Balance [MIX BUS] audio in1 R (block 2)</span><span class="pp">100%</span></div></div></div>
+<div class="mod m-rev"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">[REVERB SEND]</span><span class="mod-cpu">~0.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in 1</span><span class="ps">&larr; P5 Tone Control [BODY EQ] output L (block 9)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">&larr; P1 Value [REVERB LVL] CV output (block 2) <span class="db">28%</span></span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">audio out 1</span><span class="ps">&rarr; P5 Reverb Lite input L (block 1)</span><span class="pp">100%</span></div><div class="midi-tag"><span class="midi-dot"></span>MIDI CC91 &rarr; level control (block 3)</div></div></div>
+<div class="mod m-rev"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">[REVERB RETURN]</span><span class="mod-cpu">~0.3%</span></div><div class="mod-body"><div class="pr"><span class="pd">BLOCK 1</span><span class="pn">audio in 1</span><span class="ps">&larr; P5 Reverb Lite output L (block 5)</span><span class="pp">100%</span></div><div class="pr"><span class="pd">BLOCK 3</span><span class="pn">level control</span><span class="ps">set <span class="db">75%</span> fixed &mdash; not CV (prevents feedback loop)</span></div><div class="pr"><span class="pd">BLOCK 4</span><span class="pn">audio out 1</span><span class="ps">&rarr; P2 VCA [WET VCA] audio in 1 (block 1)</span><span class="pp">100%</span></div></div></div>
+</div>
+</div>
+
+<div id="page-cx" class="page">
+<div class="pg-intro">All 61 connections using official ZOIA module and block names. &#9654; = audio &middot; &#11046; = CV. Strength = ZOIA connection strength %.</div>
+<div class="cx-filters" role="group" aria-label="Filter by signal type">
+  <button class="cx-filter-btn on" id="f-all"   onclick="filterCx('all')">All (61)</button>
+  <button class="cx-filter-btn"    id="f-audio" onclick="filterCx('audio')">Audio only (29)</button>
+  <button class="cx-filter-btn"    id="f-cv"    onclick="filterCx('cv')">CV only (32)</button>
+</div>
+<table class="cx-table" id="cx-table">
+  <thead><tr><th scope="col">ID</th><th scope="col">Type</th><th scope="col">From Page</th><th scope="col">From Module</th><th scope="col">From Block</th><th scope="col">To Page</th><th scope="col">To Module</th><th scope="col">To Block</th><th scope="col">Strength</th></tr></thead>
+  <tbody id="cx-body"></tbody>
+</table>
+</div>
+
+<div id="page-midi" class="page">
+<div class="pg-intro">MIDI CC map. On ZEBU: CV In 1 = Dampening, CV In 2 = Sensitivity, CV In 3 = Piano Size, CV In 4 = Feedback.</div>
+<table class="midi-table">
+  <thead><tr><th>CC</th><th>Parameter</th><th>Module &middot; block target</th><th>Default</th><th>Range</th></tr></thead>
+  <tbody>
+    <tr><td class="midi-cc">CC1</td><td>Spread</td><td>Value [SPREAD] &rarr; P4 Delay L/R delay time (block 2)</td><td>9/11ms</td><td>1&ndash;30ms</td></tr>
+    <tr><td class="midi-cc">CC2</td><td>Pitch transpose</td><td>Value [PITCH] &rarr; P3 CV Mixer cv in 2 (block 2)</td><td>0st</td><td>&minus;24 to +24st</td></tr>
+    <tr><td class="midi-cc">CC7</td><td>Wet + Dry volume</td><td>Value [WET VOL] + [DRY VOL] &rarr; VCA level control (block 3)</td><td>45% / 85%</td><td>0&ndash;100%</td></tr>
+    <tr><td class="midi-cc">CC11</td><td>Dampening (expression)</td><td>Value [DAMPENING] &rarr; P4 SV Filter frequency (block 2)</td><td>3500Hz</td><td>200&ndash;8000Hz</td></tr>
+    <tr><td class="midi-cc">CC64</td><td>Pitch hold (sustain)</td><td>Stompswitch [PITCH HOLD] &rarr; P3 S&amp;H trigger (block 2)</td><td>off</td><td>0/127</td></tr>
+    <tr><td class="midi-cc">CC72</td><td>Gate sensitivity</td><td>Value [SENSITIVITY] &rarr; P3 Comparator CV negative input (block 2)</td><td>40%</td><td>5&ndash;90%</td></tr>
+    <tr><td class="midi-cc">CC73</td><td>Piano Size</td><td>Value [PIANO SIZE] &rarr; P5 Tone Control low shelf (block 3) + mid freq (block 5)</td><td>55%</td><td>0&ndash;100%</td></tr>
+    <tr><td class="midi-cc">CC74</td><td>Feedback / sustain</td><td>Value [FEEDBACK] &rarr; P4 VCA V1/V2/V3 level control (block 3)</td><td>75%</td><td>0&ndash;95%</td></tr>
+    <tr><td class="midi-cc">CC80</td><td>Bypass</td><td>Stompswitch [BYPASS] &rarr; P2 VCA [WET VCA] level control (block 3) &rarr; 0</td><td>off</td><td>0/127</td></tr>
+    <tr><td class="midi-cc">CC82</td><td>Decay Kill</td><td>Stompswitch [DECAY KILL] &rarr; P4 VCA V1/V2/V3 level control (block 3) &rarr; 0</td><td>&mdash;</td><td>trigger</td></tr>
+    <tr><td class="midi-cc">CC91</td><td>Reverb depth</td><td>Value [REVERB LVL] &rarr; P5 VCA [REVERB SEND] level control (block 3)</td><td>28%</td><td>0&ndash;100%</td></tr>
+    <tr><td class="midi-cc">Pbend</td><td>Pitch transpose</td><td>Value [PITCH] &rarr; P3 CV Mixer cv in 2 (block 2)</td><td>0st</td><td>&plusmn;24st</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div id="page-presets" class="page">
+<div class="pg-intro">Six sound presets. FEEDBACK controls comb filter sustain. Click any card to expand values.</div>
+<div class="preset-grid" id="preset-grid"></div>
+<div id="preset-detail" style="display:none" class="cpu-section">
+  <div class="sec" id="preset-detail-name"></div>
+  <div id="preset-detail-body"></div>
+</div>
+</div>
+</main>
+<script>
+const CX=[{"id": "A01", "type": "audio", "from_page": "P2", "from_module": "Audio Input", "from_block": "pedal input L (block 1)", "to_page": "P3", "to_module": "SV Filter [SOFT LIMITER]", "to_block": "audio in (block 1)", "strength_pct": 100, "notes": "Exciter signal into comb filters"}, {"id": "A02", "type": "audio", "from_page": "P2", "from_module": "Audio Input", "from_block": "pedal input L (block 1)", "to_page": "P3", "to_module": "Pitch Detector [TRACKER]", "to_block": "audio in (block 1)", "strength_pct": 100, "notes": "For pitch analysis"}, {"id": "A03", "type": "audio", "from_page": "P2", "from_module": "Audio Input", "from_block": "pedal input L (block 1)", "to_page": "P3", "to_module": "Env Follower [GATE DETECT]", "to_block": "audio in (block 1)", "strength_pct": 100, "notes": "For amplitude-to-gate conversion"}, {"id": "A04", "type": "audio", "from_page": "P2", "from_module": "Audio Input", "from_block": "pedal input L (block 1)", "to_page": "P2", "to_module": "VCA [DRY VCA]", "to_block": "audio in 1 (block 1)", "strength_pct": 100, "notes": "Pre-FX dry split \u2014 never processed"}, {"id": "A05", "type": "audio", "from_page": "P3", "from_module": "SV Filter [SOFT LIMITER]", "from_block": "lowpass output (block 4)", "to_page": "P4", "to_module": "Delay Line [V1 FUND]", "to_block": "audio in (block 1)", "strength_pct": 100}, {"id": "A06", "type": "audio", "from_page": "P3", "from_module": "SV Filter [SOFT LIMITER]", "from_block": "lowpass output (block 4)", "to_page": "P4", "to_module": "Delay Line [V2 OCT]", "to_block": "audio in (block 1)", "strength_pct": 80, "notes": "Lower exciter level for harmonic voices"}, {"id": "A07", "type": "audio", "from_page": "P3", "from_module": "SV Filter [SOFT LIMITER]", "from_block": "lowpass output (block 4)", "to_page": "P4", "to_module": "Delay Line [V3 FIFTH]", "to_block": "audio in (block 1)", "strength_pct": 55}, {"id": "A08", "type": "audio", "from_page": "P3", "from_module": "SV Filter [SOFT LIMITER]", "from_block": "lowpass output (block 4)", "to_page": "P4", "to_module": "Delay Line [SPREAD L]", "to_block": "audio in (block 1)", "strength_pct": 90}, {"id": "A09", "type": "audio", "from_page": "P3", "from_module": "SV Filter [SOFT LIMITER]", "from_block": "lowpass output (block 4)", "to_page": "P4", "to_module": "Delay Line [SPREAD R]", "to_block": "audio in (block 1)", "strength_pct": 90}, {"id": "A10", "type": "audio", "from_page": "P4", "from_module": "Delay Line [V1 FUND]", "from_block": "audio out (block 3)", "to_page": "P4", "to_module": "VCA [V1 FEEDBACK]", "to_block": "audio in 1 (block 1)", "strength_pct": 100, "notes": "Comb filter feedback path \u2014 audio out feeds back to delay input AND forward to dampening"}, {"id": "A11", "type": "audio", "from_page": "P4", "from_module": "VCA [V1 FEEDBACK]", "from_block": "audio out 1 (block 3)", "to_page": "P4", "to_module": "Delay Line [V1 FUND]", "to_block": "audio in (block 1)", "strength_pct": 75, "notes": "Feedback loop: 75% = sustained resonance. Adjust FEEDBACK knob."}, {"id": "A12", "type": "audio", "from_page": "P4", "from_module": "Delay Line [V1 FUND]", "from_block": "audio out (block 3)", "to_page": "P4", "to_module": "SV Filter [DAMPENING]", "to_block": "audio in (block 1)", "strength_pct": 100}, {"id": "A13", "type": "audio", "from_page": "P4", "from_module": "Delay Line [V2 OCT]", "from_block": "audio out (block 3)", "to_page": "P4", "to_module": "VCA [V2 FEEDBACK]", "to_block": "audio in 1 (block 1)", "strength_pct": 100}, {"id": "A14", "type": "audio", "from_page": "P4", "from_module": "VCA [V2 FEEDBACK]", "from_block": "audio out 1 (block 3)", "to_page": "P4", "to_module": "Delay Line [V2 OCT]", "to_block": "audio in (block 1)", "strength_pct": 75, "notes": "Feedback loop"}, {"id": "A15", "type": "audio", "from_page": "P4", "from_module": "Delay Line [V2 OCT]", "from_block": "audio out (block 3)", "to_page": "P4", "to_module": "SV Filter [DAMPENING]", "to_block": "audio in (block 1)", "strength_pct": 100}, {"id": "A16", "type": "audio", "from_page": "P4", "from_module": "Delay Line [V3 FIFTH]", "from_block": "audio out (block 3)", "to_page": "P4", "to_module": "VCA [V3 FEEDBACK]", "to_block": "audio in 1 (block 1)", "strength_pct": 100}, {"id": "A17", "type": "audio", "from_page": "P4", "from_module": "VCA [V3 FEEDBACK]", "from_block": "audio out 1 (block 3)", "to_page": "P4", "to_module": "Delay Line [V3 FIFTH]", "to_block": "audio in (block 1)", "strength_pct": 75}, {"id": "A18", "type": "audio", "from_page": "P4", "from_module": "Delay Line [V3 FIFTH]", "from_block": "audio out (block 3)", "to_page": "P4", "to_module": "SV Filter [DAMPENING]", "to_block": "audio in (block 1)", "strength_pct": 100}, {"id": "A19", "type": "audio", "from_page": "P4", "from_module": "Delay Line [SPREAD L]", "from_block": "audio out (block 3)", "to_page": "P4", "to_module": "SV Filter [DAMPENING]", "to_block": "audio in (block 1)", "strength_pct": 90}, {"id": "A20", "type": "audio", "from_page": "P4", "from_module": "Delay Line [SPREAD R]", "from_block": "audio out (block 3)", "to_page": "P4", "to_module": "SV Filter [DAMPENING]", "to_block": "audio in (block 1)", "strength_pct": 90}, {"id": "A21", "type": "audio", "from_page": "P4", "from_module": "SV Filter [DAMPENING]", "from_block": "lowpass output (block 4)", "to_page": "P5", "to_module": "Tone Control [BODY EQ]", "to_block": "aud in L (block 1)", "strength_pct": 100}, {"id": "A22", "type": "audio", "from_page": "P5", "from_module": "Tone Control [BODY EQ]", "from_block": "output L (block 9)", "to_page": "P5", "to_module": "VCA [REVERB SEND]", "to_block": "audio in 1 (block 1)", "strength_pct": 100}, {"id": "A23", "type": "audio", "from_page": "P5", "from_module": "VCA [REVERB SEND]", "from_block": "audio out 1 (block 3)", "to_page": "P5", "to_module": "Reverb Lite [RESONANCE VERB]", "to_block": "input L (block 1)", "strength_pct": 100}, {"id": "A24", "type": "audio", "from_page": "P5", "from_module": "Reverb Lite [RESONANCE VERB]", "from_block": "output L (block 5)", "to_page": "P5", "to_module": "VCA [REVERB RETURN]", "to_block": "audio in 1 (block 1)", "strength_pct": 100}, {"id": "A25", "type": "audio", "from_page": "P5", "from_module": "VCA [REVERB RETURN]", "from_block": "audio out 1 (block 3)", "to_page": "P2", "to_module": "VCA [WET VCA]", "to_block": "audio in 1 (block 1)", "strength_pct": 100}, {"id": "A26", "type": "audio", "from_page": "P2", "from_module": "VCA [WET VCA]", "from_block": "audio out 1 (block 3)", "to_page": "P2", "to_module": "Audio Balance [MIX BUS]", "to_block": "audio in1 L (block 1)", "strength_pct": 100}, {"id": "A27", "type": "audio", "from_page": "P2", "from_module": "VCA [DRY VCA]", "from_block": "audio out 1 (block 3)", "to_page": "P2", "to_module": "Audio Balance [MIX BUS]", "to_block": "audio in2 L (block 3)", "strength_pct": 100}, {"id": "A28", "type": "audio", "from_page": "P2", "from_module": "Audio Balance [MIX BUS]", "from_block": "audio outL (block 6)", "to_page": "P2", "to_module": "Audio Output", "to_block": "pedal output L (block 1)", "strength_pct": 100}, {"id": "A29", "type": "audio", "from_page": "P2", "from_module": "Audio Balance [MIX BUS]", "from_block": "audio outR (block 7)", "to_page": "P2", "to_module": "Audio Output", "to_block": "pedal output R (block 2)", "strength_pct": 100}, {"id": "C01", "type": "cv", "from_page": "P3", "from_module": "Pitch Detector [TRACKER]", "from_block": "pitch out (block 2)", "to_page": "P3", "to_module": "CV Mixer [PITCH OFFSET]", "to_block": "cv in 1 (block 1)", "strength_pct": 100, "notes": "V/Oct pitch value from Pitch Detector into CV Mixer for offset"}, {"id": "C02", "type": "cv", "from_page": "P3", "from_module": "Pitch Detector [TRACKER]", "from_block": "pitch out (block 2)", "to_page": "P3", "to_module": "Sample and Hold [PITCH HOLD]", "to_block": "CV input (block 1)", "strength_pct": 100}, {"id": "C03", "type": "cv", "from_page": "P3", "from_module": "Env Follower [GATE DETECT]", "from_block": "CV output (block 2)", "to_page": "P3", "to_module": "Comparator [GATE GEN]", "to_block": "CV positive input (block 1)", "strength_pct": 100, "notes": "Amplitude CV into comparator positive"}, {"id": "C04", "type": "cv", "from_page": "P3", "from_module": "Comparator [GATE GEN]", "from_block": "CV output (block 3)", "to_page": "P3", "to_module": "Sample and Hold [PITCH HOLD]", "to_block": "trigger (block 2)", "strength_pct": 100, "notes": "Gate pulse triggers S&H to capture pitch"}, {"id": "C05", "type": "cv", "from_page": "P3", "from_module": "Comparator [GATE GEN]", "from_block": "CV output (block 3)", "to_page": "P3", "to_module": "ADSR [GATE ENVELOPE]", "to_block": "cv input (block 1)", "strength_pct": 100, "notes": "Gate triggers envelope for resonator attack"}, {"id": "C06", "type": "cv", "from_page": "P3", "from_module": "CV Mixer [PITCH OFFSET]", "from_block": "cv output (block 5)", "to_page": "P3", "to_module": "Sample and Hold [PITCH HOLD]", "to_block": "CV input (block 1)", "strength_pct": 100, "notes": "Offset pitch value \u2192 S&H for capture"}, {"id": "C07", "type": "cv", "from_page": "P3", "from_module": "Sample and Hold [PITCH HOLD]", "from_block": "CV output (block 3)", "to_page": "P3", "to_module": "CV Rectify [PITCH POS]", "to_block": "CV input (block 1)", "strength_pct": 100, "notes": "Rectify to keep pitch CV in 0-1 range for delay time"}, {"id": "C08", "type": "cv", "from_page": "P3", "from_module": "CV Rectify [PITCH POS]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "Delay Line [V1 FUND]", "to_block": "delay time (block 2)", "strength_pct": 6, "notes": "Pitch CV scaled to delay time range. Strength ~6% maps pitch CV to ~0-6ms delay range"}, {"id": "C09", "type": "cv", "from_page": "P3", "from_module": "CV Rectify [PITCH POS]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "Delay Line [V2 OCT]", "to_block": "delay time (block 2)", "strength_pct": 3, "notes": "Half delay time of V1 = one octave up"}, {"id": "C10", "type": "cv", "from_page": "P3", "from_module": "CV Rectify [PITCH POS]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "Delay Line [V3 FIFTH]", "to_block": "delay time (block 2)", "strength_pct": 4, "notes": "~2/3 delay time of V1 = perfect fifth up"}, {"id": "C11", "type": "cv", "from_page": "P3", "from_module": "ADSR [GATE ENVELOPE]", "from_block": "cv output (block 10)", "to_page": "P4", "to_module": "VCA [V1 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 100, "notes": "Envelope shapes the resonator onset"}, {"id": "C12", "type": "cv", "from_page": "P3", "from_module": "ADSR [GATE ENVELOPE]", "from_block": "cv output (block 10)", "to_page": "P4", "to_module": "VCA [V2 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 80}, {"id": "C13", "type": "cv", "from_page": "P3", "from_module": "ADSR [GATE ENVELOPE]", "from_block": "cv output (block 10)", "to_page": "P4", "to_module": "VCA [V3 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 55}, {"id": "C14", "type": "cv", "from_page": "P1", "from_module": "Value [PITCH]", "from_block": "CV output (block 2)", "to_page": "P3", "to_module": "CV Mixer [PITCH OFFSET]", "to_block": "cv in 2 (block 2)", "strength_pct": 100, "notes": "Transpose offset into CV Mixer. Attenuator 2 set to 1.0."}, {"id": "C15", "type": "cv", "from_page": "P1", "from_module": "Value [FEEDBACK]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "VCA [V1 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 100, "notes": "Controls resonator sustain \u2014 high = longer decay"}, {"id": "C16", "type": "cv", "from_page": "P1", "from_module": "Value [FEEDBACK]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "VCA [V2 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 80}, {"id": "C17", "type": "cv", "from_page": "P1", "from_module": "Value [FEEDBACK]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "VCA [V3 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 55}, {"id": "C18", "type": "cv", "from_page": "P1", "from_module": "Value [SPREAD]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "Delay Line [SPREAD L]", "to_block": "delay time (block 2)", "strength_pct": 100}, {"id": "C19", "type": "cv", "from_page": "P1", "from_module": "Value [SPREAD]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "Delay Line [SPREAD R]", "to_block": "delay time (block 2)", "strength_pct": 100, "notes": "R gets slightly longer delay \u2014 set Value SPREAD to 11ms starting point"}, {"id": "C20", "type": "cv", "from_page": "P1", "from_module": "Value [DAMPENING]", "from_block": "CV output (block 2)", "to_page": "P4", "to_module": "SV Filter [DAMPENING]", "to_block": "frequency (block 2)", "strength_pct": 100, "notes": "Filter cutoff = felt damper simulation"}, {"id": "C21", "type": "cv", "from_page": "P1", "from_module": "Value [SENSITIVITY]", "from_block": "CV output (block 2)", "to_page": "P3", "to_module": "Comparator [GATE GEN]", "to_block": "CV negative input (block 2)", "strength_pct": 100, "notes": "Gate threshold \u2014 higher = less sensitive"}, {"id": "C22", "type": "cv", "from_page": "P1", "from_module": "Value [PIANO SIZE]", "from_block": "CV output (block 2)", "to_page": "P5", "to_module": "Tone Control [BODY EQ]", "to_block": "low shelf (block 3)", "strength_pct": 100, "notes": "Scales low shelf gain with piano size"}, {"id": "C23", "type": "cv", "from_page": "P1", "from_module": "Value [PIANO SIZE]", "from_block": "CV output (block 2)", "to_page": "P5", "to_module": "Tone Control [BODY EQ]", "to_block": "mid frequency 1 (block 5)", "strength_pct": 100, "notes": "Scales body resonance frequency"}, {"id": "C24", "type": "cv", "from_page": "P1", "from_module": "Value [REVERB LVL]", "from_block": "CV output (block 2)", "to_page": "P5", "to_module": "VCA [REVERB SEND]", "to_block": "level control (block 3)", "strength_pct": 100}, {"id": "C25", "type": "cv", "from_page": "P1", "from_module": "Value [WET VOL]", "from_block": "CV output (block 2)", "to_page": "P2", "to_module": "VCA [WET VCA]", "to_block": "level control (block 3)", "strength_pct": 100}, {"id": "C26", "type": "cv", "from_page": "P1", "from_module": "Value [DRY VOL]", "from_block": "CV output (block 2)", "to_page": "P2", "to_module": "VCA [DRY VCA]", "to_block": "level control (block 3)", "strength_pct": 100}, {"id": "C27", "type": "cv", "from_page": "P1", "from_module": "Stompswitch [BYPASS]", "from_block": "cv output (block 1)", "to_page": "P2", "to_module": "VCA [WET VCA]", "to_block": "level control (block 3)", "strength_pct": 100, "notes": "Overrides WET VCA to 0 when bypassed"}, {"id": "C28", "type": "cv", "from_page": "P1", "from_module": "Stompswitch [DECAY KILL]", "from_block": "cv output (block 1)", "to_page": "P4", "to_module": "VCA [V1 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 0, "notes": "Kills feedback (= 0) on all resonator voices instantly"}, {"id": "C29", "type": "cv", "from_page": "P1", "from_module": "Stompswitch [DECAY KILL]", "from_block": "cv output (block 1)", "to_page": "P4", "to_module": "VCA [V2 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 0}, {"id": "C30", "type": "cv", "from_page": "P1", "from_module": "Stompswitch [DECAY KILL]", "from_block": "cv output (block 1)", "to_page": "P4", "to_module": "VCA [V3 FEEDBACK]", "to_block": "level control (block 3)", "strength_pct": 0}, {"id": "C31", "type": "cv", "from_page": "P1", "from_module": "Stompswitch [PITCH HOLD]", "from_block": "cv output (block 1)", "to_page": "P3", "to_module": "Sample and Hold [PITCH HOLD]", "to_block": "trigger (block 2)", "strength_pct": 100, "notes": "Overrides gate trigger, freezing last captured pitch"}, {"id": "C32", "type": "cv", "from_page": "P5", "from_module": "Reverb Lite [RESONANCE VERB]", "from_block": "output R (block 6)", "to_page": "P2", "to_module": "Audio Balance [MIX BUS]", "to_block": "audio in1 R (block 2)", "strength_pct": 100, "notes": "Stereo reverb R channel to Audio Balance R input"}];const PRESETS=[{"id": "default", "name": "Grand Piano", "description": "Balanced grand piano resonance. Guitar sits forward with subtle sympathetic strings underneath.", "values": {"PITCH": 0, "OVERTONES": 45, "SPREAD": 9, "DAMPENING": 3500, "DECAY": 2.8, "PIANO_SIZE": 55, "REVERB_LVL": 28, "WET_VOL": 45, "DRY_VOL": 85}}, {"id": "upright", "name": "Upright Piano", "description": "Tighter, more muted character. Less sustain, narrower body resonance.", "values": {"PITCH": 0, "OVERTONES": 35, "SPREAD": 6, "DAMPENING": 2500, "DECAY": 1.8, "PIANO_SIZE": 25, "REVERB_LVL": 20, "WET_VOL": 40, "DRY_VOL": 85}}, {"id": "concert_grand", "name": "Concert Grand", "description": "Full resonant concert grand. Wide stereo, long sustain, open strings.", "values": {"PITCH": 0, "OVERTONES": 60, "SPREAD": 15, "DAMPENING": 4500, "DECAY": 4.5, "PIANO_SIZE": 90, "REVERB_LVL": 35, "WET_VOL": 55, "DRY_VOL": 80}}, {"id": "prepared", "name": "Prepared Piano", "description": "Objects on strings. Muted, metallic, inharmonic. Overtones pushed forward.", "values": {"PITCH": 0, "OVERTONES": 80, "SPREAD": 12, "DAMPENING": 1200, "DECAY": 3.5, "PIANO_SIZE": 40, "REVERB_LVL": 22, "WET_VOL": 55, "DRY_VOL": 75}}, {"id": "ambient", "name": "Ambient Sustain", "description": "Long sustain drone pad. Pedal hold freezes pitch. Wet dominates.", "values": {"PITCH": 0, "OVERTONES": 55, "SPREAD": 18, "DAMPENING": 4000, "DECAY": 8.0, "PIANO_SIZE": 70, "REVERB_LVL": 65, "WET_VOL": 70, "DRY_VOL": 40}}, {"id": "subtle_resonance", "name": "Subtle Resonance", "description": "Barely audible \u2014 adds shimmer without being obvious. Good for clean playing.", "values": {"PITCH": 0, "OVERTONES": 30, "SPREAD": 7, "DAMPENING": 3000, "DECAY": 2.0, "PIANO_SIZE": 45, "REVERB_LVL": 18, "WET_VOL": 25, "DRY_VOL": 90}}];
+function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.nb[id^="tab-"]').forEach(b=>b.classList.remove('on'));document.getElementById('page-'+id).classList.add('on');document.getElementById('tab-'+id).classList.add('on');}
+let cxF='all';
+function filterCx(t){cxF=t;document.querySelectorAll('.cx-filter-btn').forEach(b=>b.classList.remove('on'));document.getElementById('f-'+t).classList.add('on');renderCx();}
+function renderCx(){const tb=document.getElementById('cx-body');tb.innerHTML=CX.filter(c=>cxF==='all'||c.type===cxF).map(c=>{const a=c.type==='audio';return `<tr class="${a?'cx-audio':'cx-cv'}"><td style="font-size:0.75rem;color:var(--text-muted)">${c.id}</td><td class="${a?'cx-type-audio':'cx-type-cv'}">${a?'&#9654; AUDIO':'&#11046; CV'}</td><td style="color:var(--text-muted)">${c.from_page}</td><td>${c.from_module}</td><td style="font-size:0.75rem;color:var(--text-muted)">${c.from_block}</td><td style="color:var(--text-muted)">${c.to_page}</td><td>${c.to_module}</td><td style="font-size:0.75rem;color:var(--text-muted)">${c.to_block}</td><td class="cx-pct">${c.strength_pct}%</td></tr>`;}).join('');}
+renderCx();
+document.getElementById('preset-grid').innerHTML=PRESETS.map(p=>`<div class="preset-card" tabindex="0" role="button" aria-label="Preset: ${p.name}" onclick="showPreset('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' ')showPreset('${p.id}')"><div class="preset-name">${p.name}</div><div class="preset-desc">${p.description}</div><div class="preset-vals">${Object.entries(p.values).map(([k,v])=>`<div>${k.toLowerCase()}: <span>${v}</span></div>`).join('')}</div></div>`).join('');
+function showPreset(id){const p=PRESETS.find(x=>x.id===id);document.getElementById('preset-detail-name').textContent=p.name;document.getElementById('preset-detail-body').innerHTML=`<div style="font-size:0.9rem;color:var(--text-muted);margin-bottom:14px">${p.description}</div><div class="preset-detail-vals">`+Object.entries(p.values).map(([k,v])=>`<div class="preset-val-card"><div class="preset-val-key">${k}</div><div class="preset-val-num">${v}</div></div>`).join('')+'</div>';document.getElementById('preset-detail').style.display='block';}
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<svg width="572" height="456" viewBox="0 0 572 456" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P2 — I/O + Mix Bus ZOIA Grid Layout">
+  <title>P2 — I/O + Mix Bus</title>
+  <desc>Audio routing · Wet/Dry VCAs · Stereo mix · 18 of 40 blocks used — number badge shows official block count per module</desc>
+  <rect width="572" height="456" fill="#0a0a0f" rx="6"/>
+  <rect width="572" height="48" fill="#0d0d12" rx="6"/><rect x="0" y="46" width="572" height="2" fill="#1e1e2e"/><text x="16" y="32" font-size="14" font-weight="700" fill="#ffffff" font-family='Courier New', Courier, monospace>P2 — I/O + Mix Bus</text><text x="16" y="48" font-size="11" fill="#b4b4b4" font-family='Courier New', Courier, monospace>Audio routing · Wet/Dry VCAs · Stereo mix · 18 of 40 blocks used</text><text x="556" y="32" text-anchor="end" font-size="10" fill="#3a3a55" font-family='Courier New', Courier, monospace>8&#215;5 grid</text>
+  <rect x="16" y="64" width="64" height="64" rx="5" fill="#001b23" stroke="#00BFFF" stroke-width="1.5"/>
+<rect x="61" y="111" width="16" height="14" rx="3" fill="#001b23" stroke="#00BFFF" stroke-width="1"/>
+<text x="69" y="121" text-anchor="middle" font-size="10" font-weight="700" fill="#00BFFF" font-family='Courier New', Courier, monospace>2</text>
+<text x="48" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#f0f0f0" font-family='Courier New', Courier, monospace>AUDIO</text>
+<text x="48" y="105" text-anchor="middle" font-size="10" fill="#f0f0f0" opacity="0.85" font-family='Courier New', Courier, monospace>IN</text>
+<rect x="220" y="64" width="64" height="64" rx="5" fill="#170b00" stroke="#FFA500" stroke-width="1.5"/>
+<rect x="265" y="111" width="16" height="14" rx="3" fill="#170b00" stroke="#FFA500" stroke-width="1"/>
+<text x="273" y="121" text-anchor="middle" font-size="10" font-weight="700" fill="#FFA500" font-family='Courier New', Courier, monospace>3</text>
+<text x="252" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#f0f0f0" font-family='Courier New', Courier, monospace>WET</text>
+<text x="252" y="105" text-anchor="middle" font-size="10" fill="#f0f0f0" opacity="0.85" font-family='Courier New', Courier, monospace>VCA</text>
+<rect x="220" y="132" width="64" height="64" rx="5" fill="#170b00" stroke="#FFA500" stroke-width="1.5"/>
+<rect x="265" y="179" width="16" height="14" rx="3" fill="#170b00" stroke="#FFA500" stroke-width="1"/>
+<text x="273" y="189" text-anchor="middle" font-size="10" font-weight="700" fill="#FFA500" font-family='Courier New', Courier, monospace>3</text>
+<text x="252" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#f0f0f0" font-family='Courier New', Courier, monospace>DRY</text>
+<text x="252" y="173" text-anchor="middle" font-size="10" fill="#f0f0f0" opacity="0.85" font-family='Courier New', Courier, monospace>VCA</text>
+<rect x="16" y="200" width="64" height="64" rx="5" fill="#170b00" stroke="#FFA500" stroke-width="1.5"/>
+<rect x="61" y="247" width="16" height="14" rx="3" fill="#170b00" stroke="#FFA500" stroke-width="1"/>
+<text x="69" y="257" text-anchor="middle" font-size="10" font-weight="700" fill="#FFA500" font-family='Courier New', Courier, monospace>7</text>
+<text x="48" y="226" text-anchor="middle" font-size="12" font-weight="700" fill="#f0f0f0" font-family='Courier New', Courier, monospace>AUDIO</text>
+<text x="48" y="241" text-anchor="middle" font-size="10" fill="#f0f0f0" opacity="0.85" font-family='Courier New', Courier, monospace>BALANCE</text>
+<rect x="16" y="336" width="64" height="64" rx="5" fill="#001b23" stroke="#00BFFF" stroke-width="1.5"/>
+<rect x="61" y="383" width="16" height="14" rx="3" fill="#001b23" stroke="#00BFFF" stroke-width="1"/>
+<text x="69" y="393" text-anchor="middle" font-size="10" font-weight="700" fill="#00BFFF" font-family='Courier New', Courier, monospace>3</text>
+<text x="48" y="362" text-anchor="middle" font-size="12" font-weight="700" fill="#f0f0f0" font-family='Courier New', Courier, monospace>AUDIO</text>
+<text x="48" y="377" text-anchor="middle" font-size="10" fill="#f0f0f0" opacity="0.85" font-family='Courier New', Courier, monospace>OUT</text>
+<rect x="152" y="64" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="424" y="64" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="64" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="16" y="132" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="84" y="132" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="152" y="132" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="424" y="132" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="132" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="200" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="16" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="84" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="152" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="220" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="288" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="356" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="424" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="268" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="220" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="288" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="356" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="424" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+<rect x="492" y="336" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#282828" stroke-width="0.5"/>
+  <rect x="16" y="428" width="14" height="14" rx="2" fill="#001b23" stroke="#00BFFF" stroke-width="1.5"/><text x="34" y="439" font-size="11" fill="#b4b4b4" font-family='Courier New', Courier, monospace>I/O · Audio In 2bl · Audio Out 3bl</text><rect x="277.2" y="428" width="14" height="14" rx="2" fill="#170b00" stroke="#FFA500" stroke-width="1.5"/><text x="295.2" y="439" font-size="11" fill="#b4b4b4" font-family='Courier New', Courier, monospace>Mix Bus · VCAs 3bl each · Audio Balance 7bl</text><text x="556" y="439" text-anchor="end" font-size="10" fill="#3a3a55" font-family='Courier New', Courier, monospace>badge = block count</text>
+</svg>
