@@ -1,0 +1,58 @@
+{
+  "presets": [
+    {
+      "id": "default",
+      "name": "Grand Piano",
+      "description": "Balanced grand piano resonance. Guitar sits forward with subtle sympathetic strings underneath.",
+      "values": {
+        "PITCH": 0, "OVERTONES": 45, "SPREAD": 9, "DAMPENING": 3500,
+        "DECAY": 2.8, "PIANO_SIZE": 55, "REVERB_LVL": 28, "WET_VOL": 45, "DRY_VOL": 85
+      }
+    },
+    {
+      "id": "upright",
+      "name": "Upright Piano",
+      "description": "Tighter, more muted character. Less sustain, narrower body resonance.",
+      "values": {
+        "PITCH": 0, "OVERTONES": 35, "SPREAD": 6, "DAMPENING": 2500,
+        "DECAY": 1.8, "PIANO_SIZE": 25, "REVERB_LVL": 20, "WET_VOL": 40, "DRY_VOL": 85
+      }
+    },
+    {
+      "id": "concert_grand",
+      "name": "Concert Grand",
+      "description": "Full resonant concert grand. Wide stereo, long sustain, open strings.",
+      "values": {
+        "PITCH": 0, "OVERTONES": 60, "SPREAD": 15, "DAMPENING": 4500,
+        "DECAY": 4.5, "PIANO_SIZE": 90, "REVERB_LVL": 35, "WET_VOL": 55, "DRY_VOL": 80
+      }
+    },
+    {
+      "id": "prepared",
+      "name": "Prepared Piano",
+      "description": "Objects on strings. Muted, metallic, inharmonic. Overtones pushed forward.",
+      "values": {
+        "PITCH": 0, "OVERTONES": 80, "SPREAD": 12, "DAMPENING": 1200,
+        "DECAY": 3.5, "PIANO_SIZE": 40, "REVERB_LVL": 22, "WET_VOL": 55, "DRY_VOL": 75
+      }
+    },
+    {
+      "id": "ambient",
+      "name": "Ambient Sustain",
+      "description": "Long sustain drone pad. Pedal hold freezes pitch. Wet dominates.",
+      "values": {
+        "PITCH": 0, "OVERTONES": 55, "SPREAD": 18, "DAMPENING": 4000,
+        "DECAY": 8.0, "PIANO_SIZE": 70, "REVERB_LVL": 65, "WET_VOL": 70, "DRY_VOL": 40
+      }
+    },
+    {
+      "id": "subtle_resonance",
+      "name": "Subtle Resonance",
+      "description": "Barely audible — adds shimmer without being obvious. Good for clean playing.",
+      "values": {
+        "PITCH": 0, "OVERTONES": 30, "SPREAD": 7, "DAMPENING": 3000,
+        "DECAY": 2.0, "PIANO_SIZE": 45, "REVERB_LVL": 18, "WET_VOL": 25, "DRY_VOL": 90
+      }
+    }
+  ]
+}
