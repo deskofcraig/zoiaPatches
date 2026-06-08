@@ -1,0 +1,50 @@
+{
+  "_meta": { "patch": "Sympathetic String Resonator", "version": "1.0" },
+  "parameter_ranges": {
+    "K_DETUNE":  {"min":-1.0, "max":1.0,  "default":0.00, "midi_cc":27},
+    "K_FEEDBACK":{"min":0.0,  "max":0.95, "default":0.65, "midi_cc":72},
+    "K_REVERB":  {"min":0.0,  "max":1.0,  "default":0.50, "midi_cc":91},
+    "K_PIANO":   {"min":0.0,  "max":1.0,  "default":0.50, "midi_cc":74},
+    "K_DAMPEN":  {"min":0.0,  "max":1.0,  "default":0.35, "midi_cc":71},
+    "K_DRYWET":  {"min":0.0,  "max":1.0,  "default":0.45, "midi_cc":7},
+    "K_SENS":    {"min":0.0,  "max":1.0,  "default":0.70, "midi_cc":26}
+  },
+  "presets": [
+    {
+      "id": "grand-hall",
+      "name": "Grand Hall",
+      "description": "Full concert grand simulation. Rich, lush resonance with long reverb. The flagship sound — evocative of a 9-foot Steinway in a recital hall.",
+      "tags": ["warm", "lush", "long-decay", "full"],
+      "values": {"K_DETUNE":0.15, "K_FEEDBACK":0.75, "K_REVERB":0.65, "K_PIANO":0.55, "K_DAMPEN":0.45, "K_DRYWET":0.45, "K_SENS":0.70}
+    },
+    {
+      "id": "chamber-piano",
+      "name": "Chamber Piano",
+      "description": "Intimate, close-miked feel. Less reverb, tighter strings — the sound of a piano in a carpeted practice room three feet away.",
+      "tags": ["intimate", "close", "medium-decay"],
+      "values": {"K_DETUNE":0.10, "K_FEEDBACK":0.60, "K_REVERB":0.40, "K_PIANO":0.50, "K_DAMPEN":0.35, "K_DRYWET":0.35, "K_SENS":0.65}
+    },
+    {
+      "id": "upright-piano",
+      "name": "Upright Piano",
+      "description": "Dark, slightly honky character. Short decay, lower brightness — an old upright in a rehearsal space with soft hammers.",
+      "tags": ["dark", "short-decay", "vintage", "upright"],
+      "values": {"K_DETUNE":0.05, "K_FEEDBACK":0.50, "K_REVERB":0.30, "K_PIANO":0.25, "K_DAMPEN":0.30, "K_DRYWET":0.30, "K_SENS":0.60}
+    },
+    {
+      "id": "string-halo",
+      "name": "String Halo",
+      "description": "Very subtle atmospheric shimmer. The resonance is barely there — a ghost behind your playing. Beautiful for ballads and fingerpicking.",
+      "tags": ["subtle", "atmospheric", "ambient", "ballad"],
+      "values": {"K_DETUNE":0.20, "K_FEEDBACK":0.80, "K_REVERB":0.80, "K_PIANO":0.60, "K_DAMPEN":0.50, "K_DRYWET":0.22, "K_SENS":0.50}
+    },
+    {
+      "id": "infinite-shimmer",
+      "name": "Infinite Shimmer",
+      "description": "Play a note, engage SW_SUSTAIN (left footswitch), then lift your hands. A resonant pad blooms and sustains indefinitely. Engage SW_KILL to silence and rebuild.",
+      "tags": ["ambient", "pads", "sustain", "drone", "performance"],
+      "values": {"K_DETUNE":0.25, "K_FEEDBACK":0.85, "K_REVERB":0.90, "K_PIANO":0.70, "K_DAMPEN":0.60, "K_DRYWET":0.60, "K_SENS":0.40},
+      "performance_note": "Engage SW_SUSTAIN (left stomp) immediately after the note is struck for best effect."
+    }
+  ]
+}
