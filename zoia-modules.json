@@ -4,6 +4,7 @@
     "firmware": "v5.32",
     "updated": "June 2026",
     "grid": "8 cols x 5 rows = 40 blocks per page",
+    "pages": "64 pages maximum per patch, numbered 0-63",
     "max_cpu_pct": 100,
     "notes": [
       "All modules can be renamed and recoloured in Module Options",
