@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Replace title with patch name -->
+<title>ZOIA {{PATCH_NAME}} — Patch Explorer</title>
+
+<style>
+/* ================================================================
+   ZOIA Patch Explorer — All-in-one self-contained template
+   Design system is inlined here for portability.
+   To use the external stylesheet instead, remove this <style> block
+   and add: <link rel="stylesheet" href="../design-system/zoia-design-system.css">
+   ================================================================ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --c-red:#FF0000;--c-orange:#FFA500;--c-mango:#FFB000;--c-yellow:#FFFF00;
+  --c-lime:#AFFF00;--c-green:#00FF00;--c-surf:#00FF99;--c-aqua:#00FFFF;
+  --c-sky:#00BFFF;--c-blue:#0000FF;--c-purple:#7F00FF;--c-magenta:#FF00FF;
+  --c-pink:#FF69B4;--c-peach:#FFDAB9;--c-white:#FFFFFF;
+  --bg-red:#230000;--bg-orange:#170b00;--bg-mango:#180f00;--bg-yellow:#232300;
+  --bg-lime:#181e00;--bg-green:#002300;--bg-surf-bg:#002316;--bg-aqua:#002323;
+  --bg-sky:#001b23;--bg-blue:#000023;--bg-purple:#0e0023;--bg-magenta:#230023;
+  --bg-pink:#230014;--bg-peach:#231e17;--bg-white:#1c1c1c;
+  --bg-page:#0a0a0f;--bg-surf1:#111118;--bg-surf2:#18181f;
+  --bdr1:#252535;--bdr2:#353550;
+  --text-primary:#f0f0f0;--text-secondary:#cccccc;--text-muted:#b4b4b4;
+  --txt-red-name:#ffcccc;--txt-red-zoia:#ff8080;
+  --txt-mag-name:#ffccff;--txt-mag-zoia:#ff88ff;
+  --txt-red-nav:#ff8080;--txt-mag-nav:#ff88ff;
+  --font-mono:'Courier New',Courier,monospace;
+}
+body{font-family:var(--font-mono);font-size:16px;line-height:1.6;background:var(--bg-page);color:var(--text-secondary);min-height:100vh}
+.skip-link{position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:10px 18px;z-index:9999;border-radius:0 0 6px 0;font-weight:700;font-size:1rem}
+.skip-link:focus{left:0}
+header{background:var(--bg-surf1);border-bottom:2px solid var(--bdr2);padding:16px 22px}
+.h-patch{font-size:1.125rem;font-weight:700;color:#fff;letter-spacing:.04em}
+.h-sub{font-size:0.8125rem;color:var(--text-muted);margin-top:4px}
+.h-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;font-size:0.75rem;border:1px solid;line-height:1.4}
+.badge-green{background:var(--bg-green);border-color:var(--c-green);color:var(--text-primary)}
+.badge-yellow{background:var(--bg-yellow);border-color:var(--c-yellow);color:var(--text-primary)}
+.badge-sky{background:var(--bg-sky);border-color:var(--c-sky);color:var(--text-primary)}
+.badge-white{background:var(--bg-white);border-color:var(--c-white);color:var(--text-primary)}
+.cpu-bar-wrap{width:130px;height:14px;background:#1a1a28;border-radius:7px;overflow:hidden;border:1px solid var(--bdr1)}
+.cpu-bar{height:100%;border-radius:7px}
+.cpu-num{font-size:0.875rem;color:var(--c-green);font-weight:700;margin-left:6px}
+.colour-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr1)}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:0.75rem}
+.cl-swatch{width:14px;height:14px;border-radius:3px;border:1px solid;flex-shrink:0}
+.cl-label{color:var(--text-muted)}
+nav.tabs{background:var(--bg-surf1);border-bottom:1px solid var(--bdr1);display:flex;flex-wrap:wrap;padding:0 14px}
+.nb{background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:0.6875rem;letter-spacing:.07em;padding:10px 12px;cursor:pointer;border-bottom:3px solid transparent;text-transform:uppercase;transition:color .15s,border-color .15s;white-space:nowrap}
+.nb:hover{color:#fff}.nb:focus{outline:2px solid var(--c-sky);outline-offset:2px}.nb.on{color:#fff;border-bottom-color:#fff}
+.nb-p1.on{border-bottom-color:var(--c-white);color:var(--text-primary)}
+.nb-p2.on{border-bottom-color:var(--c-sky);color:var(--c-sky)}
+.nb-p3.on{border-bottom-color:var(--c-green);color:var(--c-green)}
+.nb-p4.on{border-bottom-color:var(--c-red);color:var(--txt-red-nav)}
+.nb-p5.on{border-bottom-color:var(--c-aqua);color:var(--c-aqua)}
+.nb-p6.on{border-bottom-color:var(--c-magenta);color:var(--txt-mag-nav)}
+.nb-cx.on{border-bottom-color:var(--c-yellow);color:var(--c-yellow)}
+.nb-pre.on{border-bottom-color:var(--c-surf);color:var(--c-surf)}
+.nb-midi.on{border-bottom-color:var(--c-surf);color:var(--c-surf)}
+.page{display:none;padding:22px}.page.on{display:block}
+.pg-intro{font-size:0.875rem;color:var(--text-muted);padding:10px 14px;background:var(--bg-surf2);border-radius:4px;border-left:3px solid var(--bdr2);margin-bottom:20px;line-height:1.75}
+.sec{font-size:0.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--bdr1)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px}
+.mod{border-radius:6px;border:1px solid;overflow:hidden}
+.mod-hd{padding:8px 12px 6px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.mod-zoia{font-size:0.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.mod-name{font-size:0.875rem;font-weight:700;flex:1}
+.mod-cpu{font-size:0.6875rem;color:var(--c-green);margin-left:auto}
+.mod-body{padding:10px 12px;font-size:0.8125rem;line-height:1.8;color:var(--text-muted)}
+.pr{display:flex;align-items:baseline;gap:5px;line-height:1.7;flex-wrap:wrap}
+.pd{font-size:0.6875rem;color:var(--text-muted);min-width:56px;text-transform:uppercase;flex-shrink:0}
+.pn{font-weight:700;color:var(--text-primary);font-size:0.8125rem;flex-shrink:0}
+.ps{color:var(--text-muted);font-size:0.75rem;flex:1}
+.pp{font-size:0.75rem;color:var(--c-sky);margin-left:auto;white-space:nowrap;font-weight:700}
+.pp.cv{color:var(--c-yellow)}
+.db{display:inline-block;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:1px 6px;font-size:0.75rem;color:var(--text-primary)}
+.midi-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(0,255,153,.1);border:1px solid rgba(0,255,153,.35);border-radius:3px;padding:3px 8px;font-size:0.75rem;color:var(--c-surf);margin-top:5px}
+.midi-dot{width:6px;height:6px;background:var(--c-surf);border-radius:50%;flex-shrink:0}
+.warn-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(255,0,0,.1);border:1px solid rgba(255,0,0,.3);border-radius:3px;padding:3px 8px;font-size:0.75rem;color:#ffcccc;margin-top:5px}
+.info-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(0,191,255,.1);border:1px solid rgba(0,191,255,.3);border-radius:3px;padding:3px 8px;font-size:0.75rem;color:var(--c-sky);margin-top:5px}
+.m-io{background:var(--bg-sky);border-color:var(--c-sky)}.m-io .mod-zoia{color:var(--c-sky)}.m-io .mod-name{color:var(--text-primary)}
+.m-pitch{background:var(--bg-green);border-color:var(--c-green)}.m-pitch .mod-zoia{color:var(--c-green)}.m-pitch .mod-name{color:var(--text-primary)}
+.m-res{background:var(--bg-red);border-color:var(--c-red)}.m-res .mod-zoia{color:var(--txt-red-zoia)}.m-res .mod-name{color:var(--txt-red-name)}
+.m-body{background:var(--bg-aqua);border-color:var(--c-aqua)}.m-body .mod-zoia{color:var(--c-aqua)}.m-body .mod-name{color:var(--text-primary)}
+.m-rev{background:var(--bg-magenta);border-color:var(--c-magenta)}.m-rev .mod-zoia{color:var(--txt-mag-zoia)}.m-rev .mod-name{color:var(--txt-mag-name)}
+.m-mix{background:var(--bg-orange);border-color:var(--c-orange)}.m-mix .mod-zoia{color:var(--c-orange)}.m-mix .mod-name{color:var(--text-primary)}
+.m-ctrl{background:var(--bg-white);border-color:var(--c-white)}.m-ctrl .mod-zoia{color:var(--text-muted)}.m-ctrl .mod-name{color:var(--text-primary)}
+.m-val{background:var(--bg-yellow);border-color:var(--c-yellow);border-style:dashed}.m-val .mod-zoia{color:var(--c-mango)}.m-val .mod-name{color:var(--c-yellow)}
+.cx-filters{margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap}
+.cx-filter-btn{background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);border-radius:4px;padding:5px 14px;font-family:inherit;font-size:0.75rem;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;transition:color .15s,border-color .15s}
+.cx-filter-btn:hover{color:#fff;border-color:var(--bdr2)}.cx-filter-btn:focus{outline:2px solid var(--c-sky)}.cx-filter-btn.on{color:#fff;border-color:var(--c-sky)}
+.cx-table{width:100%;border-collapse:collapse;font-size:0.8125rem;margin-bottom:20px}
+.cx-table th{text-align:left;padding:7px 9px;background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);font-size:0.75rem;letter-spacing:.05em;text-transform:uppercase}
+.cx-table td{padding:6px 9px;border:1px solid var(--bdr1);color:var(--text-secondary);vertical-align:top}
+.cx-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.cx-audio td:first-child{border-left:3px solid var(--c-sky)}.cx-cv td:first-child{border-left:3px solid var(--c-yellow)}
+.cx-type-audio{color:var(--c-sky);font-weight:700}.cx-type-cv{color:var(--c-yellow);font-weight:700}.cx-pct{font-weight:700;color:var(--c-green)}
+.midi-table{width:100%;border-collapse:collapse;font-size:0.8125rem;margin-bottom:20px}
+.midi-table th{text-align:left;padding:7px 9px;background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);font-size:0.75rem;text-transform:uppercase}
+.midi-table td{padding:6px 9px;border:1px solid var(--bdr1);color:var(--text-secondary)}
+.midi-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}.midi-cc{font-weight:700;color:var(--c-surf)}
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:20px}
+.preset-card{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:14px;cursor:pointer;transition:border-color .15s}
+.preset-card:hover,.preset-card:focus{border-color:var(--c-aqua);outline:2px solid var(--c-aqua);outline-offset:2px}
+.preset-name{font-size:1rem;font-weight:700;color:#fff;margin-bottom:5px}
+.preset-desc{font-size:0.8125rem;color:var(--text-muted);margin-bottom:10px;line-height:1.6}
+.preset-vals{display:grid;grid-template-columns:1fr 1fr;gap:3px;font-size:0.75rem;color:var(--text-muted)}
+.preset-vals span{color:var(--c-yellow);font-weight:700}
+.preset-detail-vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.preset-val-card{background:var(--bg-surf1);border:1px solid var(--bdr1);border-radius:4px;padding:10px}
+.preset-val-key{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
+.preset-val-num{font-size:1.375rem;font-weight:700;color:var(--c-yellow);margin-top:2px}
+.cpu-section{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:18px;margin-bottom:20px}
+.cpu-row{display:flex;align-items:center;gap:12px;margin-bottom:7px}
+.cpu-label{width:260px;font-size:0.8125rem;color:var(--text-muted);flex-shrink:0}
+.cpu-track{flex:1;height:9px;background:var(--bdr1);border-radius:5px;overflow:hidden}
+.cpu-fill{height:100%;border-radius:5px}
+.cpu-val{width:44px;text-align:right;font-size:0.8125rem;font-weight:700;flex-shrink:0}
+.cpu-total{margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr2);display:flex;justify-content:space-between;font-size:1rem;font-weight:700}
+.cpu-note{font-size:0.8125rem;color:var(--text-muted);margin-top:10px;line-height:1.75}
+.desc-block{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:18px 22px;margin-bottom:20px;font-size:0.9375rem;line-height:1.85;color:var(--text-secondary);max-width:860px}
+.desc-block h3{color:#fff;font-size:1.0625rem;margin-bottom:10px;margin-top:6px}
+.desc-block p{margin-bottom:12px}.desc-block ul{margin-left:1.25em;color:var(--text-muted)}.desc-block li{margin-bottom:5px}
+.sep{height:1px;background:var(--bdr1);margin:18px 0}
+.tip{background:rgba(255,176,0,.09);border:1px solid rgba(255,176,0,.3);border-radius:4px;padding:10px 14px;font-size:0.875rem;color:var(--c-mango);line-height:1.75;margin-top:12px}
+.tip b{color:var(--c-yellow)}
+.note{background:rgba(0,191,255,.09);border:1px solid rgba(0,191,255,.3);border-radius:4px;padding:10px 14px;font-size:0.875rem;color:var(--c-sky);line-height:1.75;margin-top:12px}
+.cb-audio::before{content:'\25B6\00A0';color:var(--c-sky)}
+.cb-cv::before{content:'\29C6\00A0';color:var(--c-yellow)}
+@media(max-width:600px){.mgrid{grid-template-columns:1fr}.cpu-label{width:150px;font-size:0.75rem}header{padding:12px 14px}}
+@media(prefers-contrast:high){:root{--bdr1:#888;--bdr2:#aaa;--bg-surf1:#000;--bg-surf2:#0a0a0a}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- ════════════════════ HEADER ════════════════════ -->
+<header>
+  <!-- Replace with patch name and subtitle -->
+  <div class="h-patch" id="patch-name-heading">{{PATCH_NAME}}</div>
+  <div class="h-sub">{{PATCH_SUBTITLE}}</div>
+  <div class="h-meta">
+    <!-- CPU badge — update cpu-bar width and cpu-num to match actual CPU% -->
+    <div class="badge badge-green">CPU</div>
+    <div class="cpu-bar-wrap"><div class="cpu-bar" id="cpu-bar" style="width:{{CPU_PERCENT}}%;background:var(--c-green)"></div></div>
+    <span class="cpu-num" id="cpu-num">~{{CPU_PERCENT}}%</span>
+    <div class="badge badge-yellow">FW {{FIRMWARE_MIN}}+</div>
+    <div class="badge badge-sky">ZOIA</div>
+    <!-- Add badge-white for ZEBU if compatible -->
+    <!-- <div class="badge badge-white">ZEBU</div> -->
+  </div>
+  <!-- Colour legend — remove entries for colour categories not used in this patch -->
+  <div class="colour-legend">
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-sky);border-color:var(--c-sky)"></div><span class="cl-label">I/O</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-green);border-color:var(--c-green)"></div><span class="cl-label">Pitch</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-red);border-color:var(--c-red)"></div><span class="cl-label">{{RED_LABEL}}</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-yellow);border-color:var(--c-yellow);border-style:dashed"></div><span class="cl-label">Values</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-aqua);border-color:var(--c-aqua)"></div><span class="cl-label">{{AQUA_LABEL}}</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-magenta);border-color:var(--c-magenta)"></div><span class="cl-label">Reverb</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-orange);border-color:var(--c-orange)"></div><span class="cl-label">Mix Bus</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-white);border-color:var(--c-white)"></div><span class="cl-label">Controls</span></div>
+  </div>
+</header>
+
+<!-- ════════════════════ TAB NAV ════════════════════ -->
+<!-- Add/remove tabs to match your page count. Keep CONNECTIONS, PRESETS, MIDI. -->
+<nav class="tabs" role="tablist" aria-label="Patch sections">
+  <button class="nb nb-p1 on" role="tab" aria-selected="true"  aria-controls="page-p1"  onclick="show('p1',this)">P1 · Controls</button>
+  <button class="nb nb-p2"    role="tab" aria-selected="false" aria-controls="page-p2"  onclick="show('p2',this)">P2 · I/O + Mix</button>
+  <button class="nb nb-p3"    role="tab" aria-selected="false" aria-controls="page-p3"  onclick="show('p3',this)">P3 · {{P3_NAME}}</button>
+  <button class="nb nb-p4"    role="tab" aria-selected="false" aria-controls="page-p4"  onclick="show('p4',this)">P4 · {{P4_NAME}}</button>
+  <!-- <button class="nb nb-p5" role="tab" aria-selected="false" aria-controls="page-p5" onclick="show('p5',this)">P5 · {{P5_NAME}}</button> -->
+  <!-- <button class="nb nb-p6" role="tab" aria-selected="false" aria-controls="page-p6" onclick="show('p6',this)">P6 · {{P6_NAME}}</button> -->
+  <button class="nb nb-cx"    role="tab" aria-selected="false" aria-controls="page-cx"  onclick="show('cx',this)">Connections</button>
+  <button class="nb nb-pre"   role="tab" aria-selected="false" aria-controls="page-pre" onclick="show('pre',this)">Presets</button>
+  <button class="nb nb-midi"  role="tab" aria-selected="false" aria-controls="page-midi"onclick="show('midi',this)">MIDI</button>
+</nav>
+
+<main id="main">
+
+<!-- ════════════════════ P1 · UI CONTROLS ════════════════════ -->
+<section class="page on" id="page-p1" role="tabpanel" aria-labelledby="tab-p1">
+  <p class="pg-intro">
+    All user controls live here: <strong>{{KNOB_COUNT}} knobs</strong> (Value modules) and <strong>{{STOMP_COUNT}} stomps</strong>.
+    Everything on this page is free-running CV — nearly zero DSP cost.
+  </p>
+
+  <div class="sec">Knobs</div>
+  <div class="mgrid">
+
+    <!-- ── Knob card template — repeat for each knob ── -->
+    <div class="mod m-ctrl">
+      <div class="mod-hd">
+        <span class="mod-zoia">Value</span>
+        <span class="mod-name">{{KNOB_NAME}}</span>
+        <span class="mod-cpu">~0%</span>
+      </div>
+      <div class="mod-body">
+        <div class="pr">
+          <span class="pd">Default</span>
+          <span class="pn">{{DEFAULT}}</span>
+          <span class="ps">{{UNIT}}</span>
+          <span class="pp cv">{{MIN}}–{{MAX}} {{UNIT}}</span>
+        </div>
+        <div class="pr">
+          <span class="pd">Routes to</span>
+          <span class="ps">{{ROUTES_TO_DESCRIPTION}}</span>
+        </div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC {{MIDI_CC}}</div>
+      </div>
+    </div>
+    <!-- ── End knob card ── -->
+
+  </div>
+
+  <div class="sec">Stomps</div>
+  <div class="mgrid">
+
+    <!-- ── Stomp card template — repeat for each stomp ── -->
+    <div class="mod m-ctrl">
+      <div class="mod-hd">
+        <span class="mod-zoia">Stompswitch</span>
+        <span class="mod-name">{{STOMP_NAME}}</span>
+        <span class="mod-cpu">~0.1%</span>
+      </div>
+      <div class="mod-body">
+        <div class="pr">
+          <span class="pd">Mode</span>
+          <span class="pn">{{MODE}}</span><!-- toggle or momentary -->
+        </div>
+        <div class="pr">
+          <span class="pd">Action</span>
+          <span class="ps">{{STOMP_DESCRIPTION}}</span>
+        </div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC {{MIDI_CC}}</div>
+      </div>
+    </div>
+    <!-- ── End stomp card ── -->
+
+  </div>
+</section>
+
+
+<!-- ════════════════════ P2 · I/O + MIX BUS ════════════════════ -->
+<section class="page" id="page-p2" role="tabpanel">
+  <p class="pg-intro">
+    Audio routing backbone. Handles input splitting, wet/dry blend, and stereo output.
+  </p>
+  <div class="mgrid">
+
+    <div class="mod m-io">
+      <div class="mod-hd">
+        <span class="mod-zoia">Audio Input</span>
+        <span class="mod-name">{{INPUT_LABEL}}</span>
+        <span class="mod-cpu">0.3%</span>
+      </div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In</span><span class="pn">Left jack</span><span class="ps">Mono guitar signal</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="pn">audio_in</span><span class="ps">→ processing chain + dry split</span><span class="pp">audio</span></div>
+      </div>
+    </div>
+
+    <!-- WET VCA -->
+    <div class="mod m-mix">
+      <div class="mod-hd">
+        <span class="mod-zoia">VCA</span>
+        <span class="mod-name">WET VCA</span>
+        <span class="mod-cpu">0.3%</span>
+      </div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">level</span><span class="pn">{{WET_DEFAULT}}%</span><span class="ps">default gain</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">ctrl</span><span class="ps">K_WET_VOL → level control</span></div>
+      </div>
+    </div>
+
+    <!-- DRY VCA -->
+    <div class="mod m-mix">
+      <div class="mod-hd">
+        <span class="mod-zoia">VCA</span>
+        <span class="mod-name">DRY VCA</span>
+        <span class="mod-cpu">0.3%</span>
+      </div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">level</span><span class="pn">{{DRY_DEFAULT}}%</span><span class="ps">default gain</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">ctrl</span><span class="ps">K_DRY_VOL → level control</span></div>
+      </div>
+    </div>
+
+    <!-- MIXER -->
+    <div class="mod m-mix">
+      <div class="mod-hd">
+        <span class="mod-zoia">Mixer</span>
+        <span class="mod-name">STEREO MIX</span>
+        <span class="mod-cpu">0.3%</span>
+      </div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">in_A</span><span class="ps">Wet VCA → in_A</span></div>
+        <div class="pr"><span class="pd">in_B</span><span class="ps">Dry VCA → in_B</span></div>
+      </div>
+    </div>
+
+    <div class="mod m-io">
+      <div class="mod-hd">
+        <span class="mod-zoia">Audio Output</span>
+        <span class="mod-name">STEREO OUT</span>
+        <span class="mod-cpu">1.0%</span>
+      </div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In L</span><span class="pn">Left jack out</span></div>
+        <div class="pr"><span class="pd">In R</span><span class="pn">Right jack out</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════ P3 · {{P3_NAME}} ════════════════════ -->
+<!-- Duplicate / modify this section for each additional page -->
+<section class="page" id="page-p3" role="tabpanel">
+  <p class="pg-intro">{{P3_DESCRIPTION}}</p>
+  <div class="mgrid">
+
+    <!-- ── Module card template ──
+         Change m-pitch / m-res / m-body / m-rev / m-mix / m-val class
+         to match the module's colour group -->
+    <div class="mod m-pitch">
+      <div class="mod-hd">
+        <span class="mod-zoia">{{ZOIA_MODULE_NAME}}</span>
+        <span class="mod-name">{{MODULE_LABEL}}</span>
+        <span class="mod-cpu">{{DSP}}%</span>
+      </div>
+      <div class="mod-body">
+        <!-- Repeat .pr rows for each port -->
+        <div class="pr">
+          <span class="pd">{{PORT_TYPE}}</span><!-- IN / OUT / CV / CTRL -->
+          <span class="pn">{{PORT_NAME}}</span>
+          <span class="ps">{{PORT_DESCRIPTION}}</span>
+          <span class="pp">audio</span><!-- or class="pp cv" -->
+        </div>
+        <!-- Add warning tags for gotchas -->
+        <!-- <div class="warn-tag">⚠ {{WARNING_TEXT}}</div> -->
+        <!-- Add MIDI tags for MIDI-controlled blocks -->
+        <!-- <div class="midi-tag"><div class="midi-dot"></div> CC {{N}}</div> -->
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════ P4 · {{P4_NAME}} ════════════════════ -->
+<section class="page" id="page-p4" role="tabpanel">
+  <p class="pg-intro">{{P4_DESCRIPTION}}</p>
+  <div class="mgrid">
+    <!-- Add module cards here -->
+  </div>
+</section>
+
+
+<!-- ════════════════════ CONNECTIONS ════════════════════ -->
+<section class="page" id="page-cx" role="tabpanel">
+  <p class="pg-intro">
+    Complete connection list. <span class="cb-audio">Audio</span> connections carry full-rate signal.
+    <span class="cb-cv">CV</span> connections carry control voltage (0–1).
+    Strength is the attenuator value (1.0 = 100%).
+  </p>
+
+  <div class="cx-filters">
+    <button class="cx-filter-btn on" onclick="filterCx('all',this)">All</button>
+    <button class="cx-filter-btn"    onclick="filterCx('audio',this)">Audio</button>
+    <button class="cx-filter-btn"    onclick="filterCx('cv',this)">CV / Gate</button>
+  </div>
+
+  <table class="cx-table" id="cx-table" aria-label="Connections">
+    <thead>
+      <tr>
+        <th>Type</th><th>From</th><th>Port</th><th>To</th><th>Port</th><th>Strength</th><th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="cx-body">
+      <!-- Audio connection row template:
+      <tr class="cx-audio">
+        <td><span class="cx-type-audio">audio</span></td>
+        <td>{{FROM}}</td>
+        <td>audio_out</td>
+        <td>{{TO}}</td>
+        <td>audio_in</td>
+        <td class="cx-pct">100%</td>
+        <td>{{NOTES}}</td>
+      </tr>
+      -->
+      <!-- CV connection row template:
+      <tr class="cx-cv">
+        <td><span class="cx-type-cv">cv</span></td>
+        <td>{{FROM}}</td>
+        <td>cv_out</td>
+        <td>{{TO}}</td>
+        <td>{{PARAM}}_cv</td>
+        <td class="cx-pct">—</td>
+        <td>{{NOTES}}</td>
+      </tr>
+      -->
+
+      <!-- ── Add all connection rows here ── -->
+      <tr class="cx-audio">
+        <td><span class="cx-type-audio">audio</span></td>
+        <td>Audio Input</td><td>audio_out</td>
+        <td>{{FIRST_PROC}}</td><td>audio_in</td>
+        <td class="cx-pct">100%</td>
+        <td>Guitar signal into processing chain</td>
+      </tr>
+
+    </tbody>
+  </table>
+</section>
+
+
+<!-- ════════════════════ PRESETS ════════════════════ -->
+<section class="page" id="page-pre" role="tabpanel">
+  <p class="pg-intro">Click a preset to see its full parameter values.</p>
+
+  <div class="preset-grid" id="preset-grid">
+    <!-- ── Preset card template — repeat for each preset ── -->
+    <div class="preset-card" tabindex="0" onclick="showPreset('{{PRESET_ID}}')" onkeydown="if(event.key==='Enter')showPreset('{{PRESET_ID}}')">
+      <div class="preset-name">{{PRESET_NAME}}</div>
+      <div class="preset-desc">{{PRESET_DESC}}</div>
+      <div class="preset-vals">
+        <div>{{KNOB_1}}: <span>{{VALUE_1}}</span></div>
+        <div>{{KNOB_2}}: <span>{{VALUE_2}}</span></div>
+        <div>{{KNOB_3}}: <span>{{VALUE_3}}</span></div>
+        <div>{{KNOB_4}}: <span>{{VALUE_4}}</span></div>
+      </div>
+    </div>
+    <!-- ── End preset card ── -->
+  </div>
+
+  <!-- Detail view (shown on click) -->
+  <div id="preset-detail" style="display:none">
+    <div class="sec" id="preset-detail-name">Selected Preset</div>
+    <div class="preset-detail-vals" id="preset-detail-vals"></div>
+  </div>
+</section>
+
+
+<!-- ════════════════════ MIDI MAP ════════════════════ -->
+<section class="page" id="page-midi" role="tabpanel">
+  <p class="pg-intro">All MIDI CC assignments for this patch. Connect via ZOIA 3.5mm TRS MIDI in.</p>
+
+  <table class="midi-table" aria-label="MIDI CC Map">
+    <thead>
+      <tr><th>CC</th><th>Parameter</th><th>Range</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <!-- ── MIDI row template — repeat for each parameter ── -->
+      <tr>
+        <td><span class="midi-cc">{{CC_NUMBER}}</span></td>
+        <td>{{PARAMETER_NAME}}</td>
+        <td>{{RANGE}}</td>
+        <td>{{DESCRIPTION}}</td>
+      </tr>
+      <!-- ── End MIDI row ── -->
+    </tbody>
+  </table>
+
+  <div class="note">ZOIA MIDI input is via 3.5mm TRS (Type A). Use a TRS→DIN adapter if your MIDI controller has 5-pin DIN output.</div>
+</section>
+
+</main>
+
+<script>
+/* ════════════════════════════════════════════
+   PATCH DATA
+   Replace this object with your actual patch data.
+   This drives preset detail rendering and could drive
+   dynamic connection table rendering if you extend the JS.
+   ════════════════════════════════════════════ */
+const PATCH_DATA = {
+  name:    "{{PATCH_NAME}}",
+  version: "{{VERSION}}",
+  cpu:     {{CPU_PERCENT}},
+
+  /* Knob parameter definitions */
+  knobs: [
+    /* { id, label, default, unit, min, max, midi_cc } */
+    { id: "KNOB_1", label: "{{KNOB_1_LABEL}}", default: 0, unit: "{{UNIT}}", min: 0, max: 100, midi_cc: 7 },
+  ],
+
+  /* Preset data — mirrors sound-presets.json */
+  presets: {
+    "{{PRESET_ID}}": {
+      name: "{{PRESET_NAME}}",
+      desc: "{{PRESET_DESC}}",
+      values: { KNOB_1: 0 }
+    },
+  }
+};
+
+/* ════════════════════════════════════════════
+   TAB NAVIGATION
+   ════════════════════════════════════════════ */
+function show(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b => { b.classList.remove('on'); b.setAttribute('aria-selected','false'); });
+  document.getElementById('page-' + id).classList.add('on');
+  btn.classList.add('on');
+  btn.setAttribute('aria-selected','true');
+}
+
+/* ════════════════════════════════════════════
+   CONNECTION FILTER
+   ════════════════════════════════════════════ */
+function filterCx(type, btn) {
+  document.querySelectorAll('.cx-filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('#cx-body tr').forEach(row => {
+    if (type === 'all') { row.style.display = ''; return; }
+    row.style.display = row.classList.contains('cx-' + type) ? '' : 'none';
+  });
+}
+
+/* ════════════════════════════════════════════
+   PRESET DETAIL
+   ════════════════════════════════════════════ */
+function showPreset(id) {
+  const preset = PATCH_DATA.presets[id];
+  if (!preset) return;
+  document.getElementById('preset-detail-name').textContent = preset.name;
+  const container = document.getElementById('preset-detail-vals');
+  container.innerHTML = '';
+  PATCH_DATA.knobs.forEach(knob => {
+    const val = preset.values[knob.id];
+    if (val === undefined) return;
+    const card = document.createElement('div');
+    card.className = 'preset-val-card';
+    card.innerHTML = `<div class="preset-val-key">${knob.label}</div><div class="preset-val-num">${val} <small style="font-size:0.75rem;color:var(--text-muted)">${knob.unit}</small></div>`;
+    container.appendChild(card);
+  });
+  document.getElementById('preset-detail').style.display = 'block';
+  document.getElementById('preset-detail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ════════════════════════════════════════════
+   CPU BAR COLOUR
+   Auto-colours the header CPU bar based on load level.
+   ════════════════════════════════════════════ */
+(function() {
+  const cpu  = PATCH_DATA.cpu;
+  const bar  = document.getElementById('cpu-bar');
+  const num  = document.getElementById('cpu-num');
+  if (!bar) return;
+  bar.style.width = cpu + '%';
+  bar.style.background = cpu < 60 ? 'var(--c-green)' : cpu < 80 ? 'var(--c-mango)' : 'var(--c-red)';
+  if (num) num.textContent = '~' + cpu + '%';
+  if (num) num.style.color = cpu < 60 ? 'var(--c-green)' : cpu < 80 ? 'var(--c-mango)' : 'var(--c-red)';
+})();
+</script>
+</body>
+</html>

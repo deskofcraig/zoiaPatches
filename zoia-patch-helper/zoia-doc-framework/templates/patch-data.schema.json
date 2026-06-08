@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "zoia-patch-data",
+  "title": "ZOIA Patch Data",
+  "description": "Canonical schema for Empress ZOIA / ZEBU patch documentation data.",
+
+  "type": "object",
+  "required": ["patch", "modules_used", "knobs", "stomps"],
+  "properties": {
+
+    "patch": {
+      "type": "object",
+      "description": "Top-level patch metadata.",
+      "required": ["name", "version", "firmware_minimum", "cpu_estimate_percent", "cpu_ceiling_percent", "pages", "compatible_units"],
+      "properties": {
+        "name":                    { "type": "string", "description": "Human-readable patch name." },
+        "version":                 { "type": "string", "description": "Patch version string, e.g. '3.0'." },
+        "firmware_minimum":        { "type": "string", "description": "Minimum ZOIA firmware required, e.g. '2.0'." },
+        "firmware_recommended":    { "type": "string", "description": "Recommended firmware version for all features." },
+        "firmware_notes":          { "type": "string", "description": "Human-readable firmware compatibility notes." },
+        "cpu_estimate_percent":    { "type": "number", "minimum": 0, "maximum": 95, "description": "Estimated total DSP CPU usage as a percentage." },
+        "cpu_ceiling_percent":     { "type": "number", "const": 95, "description": "ZOIA hard CPU ceiling. Always 95." },
+        "pages":                   { "type": "integer", "minimum": 1, "maximum": 6, "description": "Number of grid pages used." },
+        "compatible_units":        {
+          "type": "array",
+          "items": { "type": "string", "enum": ["ZOIA", "ZEBU"] },
+          "description": "Hardware units this patch is compatible with."
+        },
+        "critical_corrections_from_prev": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of important corrections or changes from the previous version."
+        }
+      }
+    },
+
+    "modules_used": {
+      "type": "object",
+      "description": "Map of official ZOIA module names to their configuration in this patch.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["blocks", "dsp", "firmware"],
+        "properties": {
+          "blocks":   { "type": "integer", "minimum": 1, "description": "Number of grid blocks this module instance occupies." },
+          "dsp":      { "type": "string", "description": "DSP CPU cost as a string percentage, e.g. '2.3%'." },
+          "firmware": { "type": "string", "description": "Minimum firmware version for this module, e.g. '2.0+'." },
+          "note":     { "type": "string", "description": "Optional key implementation detail or block layout description." }
+        }
+      }
+    },
+
+    "knobs": {
+      "type": "object",
+      "description": "Map of knob identifiers to their parameter definitions.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["page", "grid_module", "default", "unit", "min", "max", "description"],
+        "properties": {
+          "page":        { "type": "integer", "minimum": 1, "maximum": 6, "description": "Page number the control lives on." },
+          "grid_module": { "type": "string", "description": "ZOIA module type used for this control (typically 'Value')." },
+          "default":     { "type": "number", "description": "Default value in the unit specified." },
+          "unit":        {
+            "type": "string",
+            "enum": ["percent", "Hz", "ms", "semitones", "seconds", "beats", "ratio", "dB", "none"],
+            "description": "Unit of the parameter value."
+          },
+          "min":         { "type": "number", "description": "Minimum value." },
+          "max":         { "type": "number", "description": "Maximum value." },
+          "midi_cc":     { "type": "integer", "minimum": 0, "maximum": 127, "description": "MIDI CC number. Avoid 0 and 32 (bank select)." },
+          "description": { "type": "string", "description": "What the knob does and where it routes in the patch." }
+        }
+      }
+    },
+
+    "stomps": {
+      "type": "object",
+      "description": "Map of stomp switch identifiers to their definitions.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["page", "mode", "description"],
+        "properties": {
+          "page":        { "type": "integer", "minimum": 1, "maximum": 6 },
+          "mode":        { "type": "string", "enum": ["toggle", "momentary"], "description": "toggle = latching on/off, momentary = active while held." },
+          "midi_cc":     { "type": "integer", "minimum": 0, "maximum": 127 },
+          "zebu_cv_in":  { "type": "integer", "minimum": 1, "maximum": 4, "description": "ZEBU CV input number this stomp maps to." },
+          "description": { "type": "string", "description": "What the stomp does and where it routes in the patch." }
+        }
+      }
+    },
+
+    "connections": {
+      "type": "array",
+      "description": "Complete list of patch connections.",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "type"],
+        "properties": {
+          "from":     { "type": "string", "description": "Source module identifier (matches modules_used key or knob/stomp ID)." },
+          "from_port":{ "type": "string", "description": "Source port/block name (optional, for multi-output modules)." },
+          "to":       { "type": "string", "description": "Destination module identifier." },
+          "to_port":  { "type": "string", "description": "Destination port/block name." },
+          "type":     { "type": "string", "enum": ["audio", "cv", "gate"], "description": "Signal type." },
+          "strength": { "type": "number", "minimum": 0, "maximum": 1, "description": "Connection strength 0.0–1.0 (attenuator). Omit or null = 1.0." },
+          "label":    { "type": "string", "description": "Human-readable description of this connection." }
+        }
+      }
+    },
+
+    "presets": {
+      "type": "array",
+      "description": "Named sound presets.",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "values"],
+        "properties": {
+          "id":          { "type": "string", "description": "Unique preset identifier (snake_case)." },
+          "name":        { "type": "string", "description": "Human-readable preset name." },
+          "description": { "type": "string", "description": "What this preset sounds like." },
+          "values": {
+            "type": "object",
+            "description": "Map of knob IDs to their values for this preset.",
+            "additionalProperties": { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "midi_map": {
+      "type": "object",
+      "description": "Optional explicit MIDI CC map. Derived from knobs/stomps if omitted.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "cc":          { "type": "integer", "minimum": 0, "maximum": 127 },
+          "name":        { "type": "string" },
+          "range":       { "type": "string", "description": "e.g. '0–100 percent'" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+
+    "comb_filter_tuning": {
+      "type": "object",
+      "description": "Optional: comb filter / delay-based resonator tuning notes. Include when using Delay Line as a resonator substitute.",
+      "properties": {
+        "note":                  { "type": "string" },
+        "feedback_target":       { "type": "number" },
+        "voices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id":               { "type": "string" },
+              "label":            { "type": "string" },
+              "base_delay_ms":    { "type": "number" },
+              "cv_modulation":    { "type": "string" },
+              "harmonic_offset":  { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "gate_generation": {
+      "type": "object",
+      "description": "Optional: gate generation method when Pitch Detector is used (it has no native gate output).",
+      "properties": {
+        "method":                { "type": "string" },
+        "env_follower_fall_time":{ "type": "string" },
+        "comparator_threshold":  { "type": "number" },
+        "note":                  { "type": "string" }
+      }
+    }
+
+  }
+}

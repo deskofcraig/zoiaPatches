@@ -1,0 +1,59 @@
+{
+  "_instructions": "Replace {{PLACEHOLDERS}} with patch-specific values. Remove this _instructions key before use. Include 4–6 presets covering the meaningful range of the patch's character. The 'id' field must be snake_case and unique.",
+  "presets": [
+    {
+      "id": "default",
+      "name": "{{DEFAULT_PRESET_NAME}}",
+      "description": "{{DEFAULT_DESCRIPTION}} — balanced starting point.",
+      "values": {
+        "{{KNOB_1_ID}}": 0,
+        "{{KNOB_2_ID}}": 50
+      }
+    },
+    {
+      "id": "subtle",
+      "name": "Subtle",
+      "description": "Barely audible — adds {{CHARACTER}} without being obvious. Good for clean playing.",
+      "values": {
+        "{{KNOB_1_ID}}": 0,
+        "{{KNOB_2_ID}}": 25
+      }
+    },
+    {
+      "id": "lush",
+      "name": "Lush",
+      "description": "Full, open {{CHARACTER}}. Wide stereo, generous {{KEY_PARAM}}.",
+      "values": {
+        "{{KNOB_1_ID}}": 0,
+        "{{KNOB_2_ID}}": 75
+      }
+    },
+    {
+      "id": "dark",
+      "name": "Dark",
+      "description": "Muted, warm character. Rolled-off highs, shorter {{KEY_PARAM}}.",
+      "values": {
+        "{{KNOB_1_ID}}": 0,
+        "{{KNOB_2_ID}}": 30
+      }
+    },
+    {
+      "id": "ambient",
+      "name": "Ambient Sustain",
+      "description": "Long sustain drone. Wet dominates. Best with slow playing or sustained notes.",
+      "values": {
+        "{{KNOB_1_ID}}": 0,
+        "{{KNOB_2_ID}}": 90
+      }
+    },
+    {
+      "id": "custom_1",
+      "name": "{{CUSTOM_PRESET_NAME}}",
+      "description": "{{CUSTOM_DESCRIPTION}}",
+      "values": {
+        "{{KNOB_1_ID}}": 0,
+        "{{KNOB_2_ID}}": 60
+      }
+    }
+  ]
+}

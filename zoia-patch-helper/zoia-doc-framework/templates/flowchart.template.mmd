@@ -1,0 +1,92 @@
+%%{init:{'theme':'base','themeVariables':{'primaryColor':'#0a0a0a','primaryTextColor':'#e0e0e0','primaryBorderColor':'#333','lineColor':'#666','secondaryColor':'#111','tertiaryColor':'#1a1a1a','edgeLabelBackground':'#111','clusterBkg':'#111','clusterBorder':'#333'}}}%%
+flowchart LR
+
+%% ══════════════════════════════════════════════════════════════
+%% ZOIA Patch Signal Flow — Mermaid Flowchart Template
+%%
+%% INSTRUCTIONS:
+%% 1. Replace {{PATCH_NAME}} and all {{PLACEHOLDERS}} throughout
+%% 2. Add/remove subgraphs to match your page count (P1–P6)
+%% 3. Node ID convention: K_<KNOB_ID>, S_<STOMP_ID>, module abbreviations
+%% 4. Audio connections: -->  with solid label
+%% 5. CV connections:   -.-> with dashed label
+%% 6. Group modules into subgraphs by page
+%% 7. Apply classDef styles at the bottom — match colour coding in docs
+%% ══════════════════════════════════════════════════════════════
+
+subgraph P1["P1 · UI CONTROLS"]
+  direction TB
+  %% ── Knobs (Value modules) ──
+  %% K_<ID>["Knob <DISPLAY_NAME>\n<default> <unit>\nCC<n>"]
+  K_KNOB1["Knob KNOB_NAME\n<default> <unit>\nCC<n>"]
+  K_KNOB2["Knob KNOB_NAME\n<default> <unit>\nCC<n>"]
+  %% ── Stomps ──
+  %% S_<ID>["Stomp <DISPLAY_NAME>\n<mode> CC<n>"]
+  S_BYPASS["Stomp BYPASS\ntoggle CC80"]
+end
+
+subgraph P2["P2 · I/O + MIX BUS"]
+  direction TB
+  AIN["Audio Input\n{{INPUT_LABEL}}\n<dsp>%"]
+  WVCA["VCA WET VCA\n<default>% gain"]
+  DVCA["VCA DRY VCA\n<default>% gain"]
+  SMIX["Mixer STEREO MIX"]
+  AOUT["Audio Output\nSTEREO OUT\n<dsp>%"]
+end
+
+subgraph P3["P3 · {{P3_NAME}}"]
+  direction TB
+  %% Add modules for page 3
+  PROC["{{Module}} {{LABEL}}\n{{detail}}\n<dsp>%"]
+end
+
+%% subgraph P4["P4 · {{P4_NAME}}"]
+%%   direction TB
+%%   ...
+%% end
+
+%% subgraph P5["P5 · {{P5_NAME}}"]
+%%   direction TB
+%%   ...
+%% end
+
+%% subgraph P6["P6 · {{P6_NAME}}"]
+%%   direction TB
+%%   ...
+%% end
+
+%% ── AUDIO CONNECTIONS ──
+%% Format: SOURCE -->|"audio <strength>% → <destination port>"| DEST
+AIN -->|"audio 100% → dry split"| DVCA
+AIN -->|"audio 100% → {{PROC}} audio_in"| PROC
+PROC -->|"audio 100%"| WVCA
+WVCA -->|"audio 100% → in_A"| SMIX
+DVCA -->|"audio 100% → in_B"| SMIX
+SMIX -->|"audio stereo 100%"| AOUT
+
+%% ── CV CONNECTIONS ──
+%% Format: SOURCE -.->|"cv <value> → <destination block>"| DEST
+K_KNOB1 -.->|"cv <default> → <param>_cv"| PROC
+K_KNOB2 -.->|"cv <default> → <param>_cv"| PROC
+S_BYPASS -.->|"cv toggle → gain override 0"| WVCA
+
+%% ── STYLES ──
+%% Keep these classDef blocks — they match the HTML design system
+classDef io      fill:#001b23,stroke:#00BFFF,color:#d4e4ff
+classDef pitch   fill:#002300,stroke:#00FF00,color:#b8f5cb
+classDef res     fill:#230000,stroke:#FF0000,color:#ffd4d4
+classDef body    fill:#003a3a,stroke:#00cccc,color:#b0f0f0
+classDef rev     fill:#3a003a,stroke:#dd44dd,color:#f5b8f5
+classDef mix     fill:#170b00,stroke:#FFA500,color:#d4d4ff
+classDef ctrl    fill:#1c1c1c,stroke:#FFFFFF,color:#f0f0f0
+classDef val     fill:#232300,stroke:#FFFF00,color:#fff0a0
+
+%% Apply classes to module nodes:
+class AIN,AOUT io
+class WVCA,DVCA,SMIX mix
+class K_KNOB1,K_KNOB2,S_BYPASS ctrl
+%% class <pitch_modules> pitch
+%% class <resonator_modules> res
+%% class <body_modules> body
+%% class <reverb_modules> rev
+%% class <value_modules> val
