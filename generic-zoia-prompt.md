@@ -6,6 +6,12 @@ The more detail you provide, the better and faster the result.
 
 ---
 
+This form will help give guidance and help building ZOIA patches with the help with AI tools. 
+
+The following files are used to help in the patch design:
+- `zoia-module-index.json` (human readable version: [ZOIA Module Index](/zoia-module-index.md)
+- `zoia-rules.json` (human readable version: [ZOIA Rules](/zoia-rules.md)
+
 ## 1. Patch Goal
 
 **What should this patch do?**
@@ -231,10 +237,4 @@ Index before building. Key facts that catch AI errors:
 - **Onset Detector is 12.3% CPU** — use Env Follower + Comparator (2.54%) for gate detection
 - **Reverb Lite is "Reverb Lite"** — not "Simple Reverb"
 
-See `patch/module-index.csv` for the complete verified module list with
-block counts and DSP figures from firmware 5.
-
 ---
-
-*Template version 2.0 · Updated to reflect v3 corrections from official Empress Module Index*
-*Reference patch: ZOIA Sympathetic Strings Resonator v3*
