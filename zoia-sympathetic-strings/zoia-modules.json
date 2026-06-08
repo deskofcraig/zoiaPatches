@@ -1,4 +1,4 @@
-data = {
+{
   "_meta": {
     "device": "Empress ZOIA / ZOIA Euroburo (ZEBU)",
     "firmware": "v5.32",
@@ -12,7 +12,7 @@ data = {
   },
   
   "modules": [
-    {"name":"Audio Input","cat":"interface","desc":"Connect external audio (guitar, synth, etc.) into the grid.","cpu":"0.3%","blk_min":1,"blk_max":2,"blk":[{"num":1,"title":"pedal input L","desc":"Audio from left pedal input jack","to":"outputs, audio effects, env follower, pitch detector, VCAs"},{"num":2,"title":"pedal input R","opt":True,"desc":"Audio from right pedal input jack","to":"outputs, audio effects, env follower, pitch detector, VCAs"}],"opts":[{"name":"channels","desc":"Select input channels","set":"L | R | L+R"},{"name":"input pad","desc":"Input pad level (Euroburo)","set":"0dB | -6dB | -12dB"}]},
+    {"name":"Audio Input","cat":"interface","desc":"Connect external audio (guitar, synth, etc.) into the grid.","cpu":"0.3%","blk_min":1,"blk_max":2,"blk":[{"num":1,"title":"pedal input L","desc":"Audio from left pedal input jack","to":"outputs, audio effects, env follower, pitch detector, VCAs"},{"num":2,"title":"pedal input R","opt":true,"desc":"Audio from right pedal input jack","to":"outputs, audio effects, env follower, pitch detector, VCAs"}],"opts":[{"name":"channels","desc":"Select input channels","set":"L | R | L+R"},{"name":"input pad","desc":"Input pad level (Euroburo)","set":"0dB | -6dB | -12dB"}]},
 
     {"name":"Audio Output","cat":"interface","desc":"Connect audio from ZOIA to the outside world. Optional output gain block.","cpu":"1.0%","blk_min":2,"blk_max":3,"blk":[{"num":1,"title":"pedal output L","desc":"Audio to left pedal output jack","to":"audio effect outputs, VCAs, oscillators"},{"num":2,"title":"pedal output R","desc":"Audio to right pedal output jack","to":"audio effect outputs, VCAs, oscillators"},{"num":3,"title":"gain","opt":True,"knob":"+20dB to -100dB","desc":"Output gain control","to":"LFOs, sequencers, MIDI, CV, ADSRs, VCAs, stompswitches"}],"opts":[{"name":"gain control","desc":"Adds gain block","set":"on | off"},{"name":"channels","desc":"Output channels","set":"L | R | L+R"}]},
 
@@ -158,9 +158,453 @@ data = {
 
     {"name":"Pitch Detector","cat":"analysis","desc":"Detects pitch of audio as V/Oct CV note output. 2 blocks only — NO gate output. Adjust tracking via connection strength.","cpu":"2.3%","blk_min":2,"blk_max":2,"blk":[{"num":1,"title":"audio in","desc":"Audio input for pitch analysis","to":"inputs, audio effect outputs, VCAs, oscillators"},{"num":2,"title":"pitch out","desc":"Pitch as CV note value (click to toggle Hz/note)","to":"oscillators, VCAs, LFOs, audio effects, MIDI I/O, CV I/O, sequencers"}]},
 
-    {"name":"Tone Control EQ","cat":"effect","desc":"3 or 4 band tone control: low shelf, 1-2 mid bands, high shelf.","cpu":"2.2%","blk_min":6,"blk_max":10,"blk":[{"num":1,"title":"aud in L","desc":"Left audio input","to":"inputs, audio effect outputs, VCAs, oscillators"},{"num":2,"title":"aud in R","opt":True,"desc":"Right audio input","to":"inputs, audio effect outputs, VCAs, oscillators"},{"num":3,"title":"low shelf","knob":"level in dB","desc":"Gain of all frequencies below X Hz","to":"MIDI I/O, LFOs, sequencers, CV I/O, expression pedals, stompswitches"},{"num":4,"title":"mid gain 1","knob":"level in dB","desc":"Gain of mid band 1","to":"MIDI I/O, LFOs, sequencers, CV I/O, expression pedals, stompswitches"},{"num":5,"title":"mid frequency 1","knob":"frequency in Hz","desc":"Frequency of mid band 1","to":"MIDI I/O, LFOs, sequencers, CV I/O, expression pedals, stompswitches"},{"num":6,"title":"mid gain 2","opt":True,"knob":"level in dB","desc":"Gain of mid band 2","to":"MIDI I/O, LFOs, sequencers, CV I/O, expression pedals, stompswitches"},{"num":7,"title":"mid frequency 2","opt":True,"knob":"frequency in Hz","desc":"Frequency of mid band 2","to":"MIDI I/O, LFOs, sequencers, CV I/O, expression pedals, stompswitches"},{"num":8,"title":"high shelf","knob":"level in dB","desc":"Gain of all frequencies above X Hz","to":"MIDI I/O, LFOs, sequencers, CV I/O, expression pedals, stompswitches"},{"num":9,"title":"output L","desc":"Left audio output","to":"audio I/O, VCAs, audio effects, FM inputs"},{"num":10,"title":"output R","opt":True,"desc":"Right audio output","to":"audio I/O, VCAs, audio effects, FM inputs"}],"opts":[{"name":"channels","desc":"1 or 2 channel EQ","set":"1 | 2"},{"name":"num mid bands","desc":"Toggles mid band 2","set":"1 | 2"}]},
-
-    {"name":"Delay w Mod","cat":"effect","desc":"Full-featured delay with dry signal, feedback, and modulation. Tap or CV tempo. Optional stereo.","cpu":"7%-15%","blk_min":7,"blk_max":9,"blk":[{"num":1,"title":"audio in1","desc":"Audio input","to":"inputs, audio effect outputs, VCAs, oscillators"},{"num":2,"title":"audio in2","opt":True,"desc":"Second audio input (stereo)","to":"inputs, audio effect outputs, VCAs, oscillators"},{"num":3,"title":"delay time","knob":"time in s/bpm/Hz (click to cycle)","desc":"Delay time; acts as tap tempo in when tap mode selected","to":"MIDI I/O, LFOs, sequencers, CV I/O, expression pedals, stompswitches"},{"num":4,"title":"feedback","knob":"level in dB","desc":"Feedback in dB; 0dB=self-oscillation","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":5,"title":"mod rate","knob":"rate in Hz","desc":"Modulation rate","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":6,"title":"mod depth","knob":"level in CV","desc":"Modulation depth","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":7,"title":"mix","knob":"level in dB","desc":"Wet/dry ratio; -inf dB=dry only; -0.00dB=wet only","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":8,"title":"audio out1","desc":"Audio output","to":"audio I/O, VCAs, audio effects, FM inputs"},{"num":9,"title":"audio out2","opt":True,"desc":"Secondary audio output (stereo)","to":"audio I/O, VCAs, audio effects, FM inputs"}],"opts":[{"name":"channels","desc":"Audio path","set":"mono | mono to stereo | stereo"},{"name":"control","desc":"Tempo input mode","set":"tap | cv"},{"name":"type","desc":"Delay character","set":"clean | tape | old tape | bbd"},{"name":"tap ratio","desc":"Repeat ratio per tap cycle","set":"1:1 | 2:3 | 1:2 | 1:3 | 3:8 | 1:4 | 3:16 | 1:8 | 1:16 | 1:32"}]},
-
-    {"name":"Ping Pong Delay","cat":"effect","desc":"Like Delay w Mod but repeats ping-pong L-R across stereo outputs.","cpu":"10.4%-16.4%","blk_min":8,"blk_max":9,"blk":[{"num":1,"title":"audio in1","desc":"Audio input","to":"inputs, audio effect outputs, VCAs, oscillators"},{"num":2,"title":"audio in2","opt":True,"desc":"Second audio input (stereo)","to":"inputs, audio effect outputs, VCAs, oscillators"},{"num":3,"title":"delay time","knob":"time in s/bpm/Hz (click to cycle)","desc":"Delay time; acts as tap tempo in tap mode","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":4,"title":"feedback","knob":"level in dB","desc":"Feedback in dB; 0dB=self-oscillation","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":5,"title":"mod rate","knob":"rate in Hz","desc":"Modulation rate","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":6,"title":"mod depth","knob":"level in CV","desc":"Modulation depth","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":7,"title":"mix","knob":"level in dB","desc":"Wet/dry ratio","to":"MIDI I/O, LFOs, sequencers, CV I/O, stompswitches"},{"num":8,"title":"audio out1","desc":"Left audio output","to":"audio I/O, VCAs, audio effects, FM inputs"},{"num":9,"title":"audio out2","desc":"Right audio output","to":"audio I/O, VCAs, audio effects, FM inputs"}],"opts":[{"name":"channels","desc":"Audio path","set":"mono to stereo | stereo"},{"name":"control","desc":"Tempo input mode","set":"tap | cv"},{"name":"type","desc":"Delay character","set":"clean | tape | old tape | bbd"},{"name":"tap ratio","desc":"Repeat ratio per tap cycle","set":"1:1 | 2:3
-
+    {
+      "name": "Tone Control EQ",
+      "cpu": "2.2%",
+      "blk_min": 6,
+      "blk_max": 10,
+      "desc": "3 or 4 band EQ: low shelf, 1-2 mid bands, high shelf.",
+      "blk": [
+        {"num": 1, "title": "aud in L", "desc": "Left audio input"},
+        {"num": 2, "title": "aud in R", "opt": true, "desc": "Right audio input"},
+        {"num": 3, "title": "low shelf", "knob": "level in dB", "desc": "Gain of all frequencies below X Hz"},
+        {"num": 4, "title": "mid gain 1", "knob": "level in dB", "desc": "Gain of mid band 1"},
+        {"num": 5, "title": "mid frequency 1", "knob": "frequency in Hz", "desc": "Center frequency of mid band 1"},
+        {"num": 6, "title": "mid gain 2", "opt": true, "knob": "level in dB", "desc": "Gain of mid band 2"},
+        {"num": 7, "title": "mid frequency 2", "opt": true, "knob": "frequency in Hz", "desc": "Center frequency of mid band 2"},
+        {"num": 8, "title": "high shelf", "knob": "level in dB", "desc": "Gain of all frequencies above X Hz"},
+        {"num": 9, "title": "output L", "desc": "Left audio output"},
+        {"num": 10, "title": "output R", "opt": true, "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "1 or 2 channel EQ", "set": "1 | 2"},
+        {"name": "num mid bands", "desc": "Toggles mid band 2", "set": "1 | 2"}
+      ]
+    },
+    {
+      "name": "Delay w Mod",
+      "cpu": "7%-15%",
+      "blk_min": 7,
+      "blk_max": 9,
+      "desc": "Delay with dry signal, feedback, and modulation. Tap or CV tempo. Optional stereo.",
+      "blk": [
+        {"num": 1, "title": "audio in1", "desc": "Audio input"},
+        {"num": 2, "title": "audio in2", "opt": true, "desc": "Second audio input (stereo)"},
+        {"num": 3, "title": "delay time", "knob": "time in s/bpm/Hz (click to cycle)", "desc": "Delay time; acts as tap tempo in when tap mode selected"},
+        {"num": 4, "title": "feedback", "knob": "level in dB", "desc": "Feedback amount; 0dB = self-oscillation"},
+        {"num": 5, "title": "mod rate", "knob": "rate in Hz", "desc": "Modulation rate"},
+        {"num": 6, "title": "mod depth", "knob": "level in CV", "desc": "Modulation depth"},
+        {"num": 7, "title": "mix", "knob": "level in dB", "desc": "Wet/dry ratio; -inf dB = dry only; -0.00 dB = wet only"},
+        {"num": 8, "title": "audio out1", "desc": "Audio output"},
+        {"num": 9, "title": "audio out2", "opt": true, "desc": "Secondary audio output (stereo)"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "control", "desc": "Tempo input mode", "set": "tap | cv"},
+        {"name": "type", "desc": "Delay character", "set": "clean | tape | old tape | bbd"},
+        {"name": "tap ratio", "desc": "Repeat ratio per tap cycle", "set": "1:1 | 2:3 | 1:2 | 1:3 | 3:8 | 1:4 | 3:16 | 1:8 | 1:16 | 1:32"}
+      ]
+    },
+    {
+      "name": "Ping Pong Delay",
+      "cpu": "10.4%-16.4%",
+      "blk_min": 8,
+      "blk_max": 9,
+      "desc": "Like Delay w Mod but repeats alternate L-R across stereo outputs.",
+      "blk": [
+        {"num": 1, "title": "audio in1", "desc": "Audio input"},
+        {"num": 2, "title": "audio in2", "opt": true, "desc": "Second audio input (stereo)"},
+        {"num": 3, "title": "delay time", "knob": "time in s/bpm/Hz (click to cycle)", "desc": "Delay time; acts as tap tempo in tap mode"},
+        {"num": 4, "title": "feedback", "knob": "level in dB", "desc": "Feedback amount; 0dB = self-oscillation"},
+        {"num": 5, "title": "mod rate", "knob": "rate in Hz", "desc": "Modulation rate"},
+        {"num": 6, "title": "mod depth", "knob": "level in CV", "desc": "Modulation depth"},
+        {"num": 7, "title": "mix", "knob": "level in dB", "desc": "Wet/dry ratio"},
+        {"num": 8, "title": "audio out1", "desc": "Left audio output"},
+        {"num": 9, "title": "audio out2", "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono to stereo | stereo"},
+        {"name": "control", "desc": "Tempo input mode", "set": "tap | cv"},
+        {"name": "type", "desc": "Delay character", "set": "clean | tape | old tape | bbd"},
+        {"name": "tap ratio", "desc": "Repeat ratio per tap cycle", "set": "1:1 | 2:3 | 1:2 | 1:3 | 3:8 | 1:4 | 3:16 | 1:8 | 1:16 | 1:32"}
+      ]
+    },
+    {
+      "name": "OD & Distortion",
+      "cpu": "14.2%",
+      "blk_min": 4,
+      "blk_max": 4,
+      "desc": "Classic overdrive and distortion tones.",
+      "blk": [
+        {"num": 1, "title": "audio in", "desc": "Audio input"},
+        {"num": 2, "title": "input gain", "knob": "gain in dB", "desc": "Input gain; higher = more distortion"},
+        {"num": 3, "title": "output gain", "knob": "gain in dB", "desc": "Master volume; compensate for volume increase from input gain"},
+        {"num": 4, "title": "audio out", "desc": "Distorted audio output"}
+      ],
+      "opts": [
+        {"name": "model", "desc": "Distortion flavour", "set": "plexi | germ | classic | pushed"}
+      ]
+    },
+    {
+      "name": "Fuzz",
+      "cpu": "14.1%",
+      "blk_min": 4,
+      "blk_max": 4,
+      "desc": "Gnarly fuzz tones.",
+      "blk": [
+        {"num": 1, "title": "audio in", "desc": "Audio input"},
+        {"num": 2, "title": "input gain", "knob": "gain in dB", "desc": "Input gain; higher = more fuzz"},
+        {"num": 3, "title": "output gain", "knob": "gain in dB", "desc": "Master volume; compensate for volume increase from input gain"},
+        {"num": 4, "title": "audio out", "desc": "Fuzz audio output"}
+      ],
+      "opts": [
+        {"name": "model", "desc": "Fuzz flavour", "set": "efuzzy | burly | scoopy | ugly"}
+      ]
+    },
+    {
+      "name": "Compressor",
+      "cpu": "2.4%",
+      "blk_min": 3,
+      "blk_max": 9,
+      "desc": "Dynamic gain control. 2-channel mode triggers both channels in parallel. Optional sidechain.",
+      "blk": [
+        {"num": 1, "title": "audio in", "desc": "Audio input"},
+        {"num": 2, "title": "audio inR", "opt": true, "desc": "Right channel input (stereo)"},
+        {"num": 3, "title": "threshold", "knob": "level in dB", "desc": "Input level at which compressor engages"},
+        {"num": 4, "title": "attack", "opt": true, "knob": "time in ms", "desc": "Compressor reaction time; default 5.0ms if block absent"},
+        {"num": 5, "title": "release", "opt": true, "knob": "time in s", "desc": "Return to initial level after signal drops below threshold; default 1.05s if block absent"},
+        {"num": 6, "title": "ratio", "opt": true, "knob": "ratio in X:1", "desc": "Gain reduction aggressiveness; default 10.5:1 if block absent"},
+        {"num": 7, "title": "sidechain in", "opt": true, "desc": "External audio source for dynamic information"},
+        {"num": 8, "title": "audio out", "desc": "Compressed audio output"},
+        {"num": 9, "title": "audio outR", "opt": true, "desc": "Compressed right channel output"}
+      ],
+      "opts": [
+        {"name": "attack ctrl", "desc": "Toggles attack block; default 5.0ms if off", "set": "on | off"},
+        {"name": "release ctrl", "desc": "Toggles release block; default 1.05s if off", "set": "on | off"},
+        {"name": "ratio ctrl", "desc": "Toggles ratio block; default 10.5:1 if off", "set": "on | off"},
+        {"name": "channels", "desc": "1 or 2 channel; 2-channel triggers attack/release in parallel", "set": "1 | 2"},
+        {"name": "sidechain", "desc": "Compressor trigger source", "set": "input | sidechain"}
+      ]
+    },
+    {
+      "name": "Gate",
+      "cpu": "2.8%",
+      "blk_min": 4,
+      "blk_max": 8,
+      "desc": "Audio gate. Filter noise, cut reverb decay, create gated fuzz. Optional sidechain.",
+      "blk": [
+        {"num": 1, "title": "audio inL", "desc": "Left audio input"},
+        {"num": 2, "title": "audio inR", "opt": true, "desc": "Right audio input (stereo)"},
+        {"num": 3, "title": "threshold", "knob": "level in dB", "desc": "Level at which gate opens and closes"},
+        {"num": 4, "title": "attack", "opt": true, "knob": "time in seconds", "desc": "Time for gate to fully open; default 50.5ms if block absent"},
+        {"num": 5, "title": "release", "opt": true, "knob": "time in seconds", "desc": "Time to close after audio drops below threshold; default 1.03s if block absent"},
+        {"num": 6, "title": "sidechain in", "opt": true, "desc": "External audio source for gate dynamics"},
+        {"num": 7, "title": "audio outL", "desc": "Left audio output"},
+        {"num": 8, "title": "audio outR", "opt": true, "desc": "Right audio output (stereo)"}
+      ],
+      "opts": [
+        {"name": "attack ctrl", "desc": "Toggles attack block; default 50.5ms if off", "set": "on | off"},
+        {"name": "release ctrl", "desc": "Toggles release block; default 1.03s if off", "set": "on | off"},
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "sidechain", "desc": "Gate trigger source", "set": "input | sidechain"}
+      ]
+    },
+    {
+      "name": "Plate Reverb",
+      "cpu": "16.7%",
+      "blk_min": 7,
+      "blk_max": 8,
+      "desc": "Warm vintage plate reverb. Stereo in/out.",
+      "blk": [
+        {"num": 1, "title": "input L", "desc": "Left audio input"},
+        {"num": 2, "title": "input R", "desc": "Right audio input"},
+        {"num": 3, "title": "decay time", "knob": "time in s", "desc": "Reverb tail length"},
+        {"num": 4, "title": "low eq", "knob": "level in dB", "desc": "Cut/boost low frequencies of wet signal"},
+        {"num": 5, "title": "high eq", "knob": "level in dB", "desc": "Cut/boost high frequencies of wet signal"},
+        {"num": 6, "title": "mix", "knob": "0-100", "desc": "0 = fully dry; 100 = fully wet"},
+        {"num": 7, "title": "output L", "desc": "Left audio output"},
+        {"num": 8, "title": "output R", "desc": "Right audio output"}
+      ]
+    },
+    {
+      "name": "Hall Reverb",
+      "cpu": "17%",
+      "blk_min": 7,
+      "blk_max": 8,
+      "desc": "Hall reverb. Stereo in/out.",
+      "blk": [
+        {"num": 1, "title": "input L", "desc": "Left audio input"},
+        {"num": 2, "title": "input R", "desc": "Right audio input"},
+        {"num": 3, "title": "decay time", "knob": "time in s", "desc": "Reverb tail length"},
+        {"num": 4, "title": "low eq", "knob": "level in dB", "desc": "Cut/boost low frequencies of wet signal"},
+        {"num": 5, "title": "high eq (lpf freq)", "knob": "frequency in Hz", "desc": "LPF cutoff for high frequency rolloff of wet signal"},
+        {"num": 6, "title": "mix", "knob": "0-100", "desc": "0 = fully dry; 100 = fully wet"},
+        {"num": 7, "title": "output L", "desc": "Left audio output"},
+        {"num": 8, "title": "output R", "desc": "Right audio output"}
+      ]
+    },
+    {
+      "name": "Room Reverb",
+      "cpu": "17%",
+      "blk_min": 7,
+      "blk_max": 8,
+      "desc": "Room reverb. Stereo in/out.",
+      "blk": [
+        {"num": 1, "title": "input L", "desc": "Left audio input"},
+        {"num": 2, "title": "input R", "desc": "Right audio input"},
+        {"num": 3, "title": "decay time", "knob": "time in s", "desc": "Reverb tail length"},
+        {"num": 4, "title": "low eq", "knob": "level in dB", "desc": "Cut/boost low frequencies of wet signal"},
+        {"num": 5, "title": "high eq (lpf freq)", "knob": "frequency in Hz", "desc": "LPF cutoff for high frequency rolloff of wet signal"},
+        {"num": 6, "title": "mix", "knob": "0-100", "desc": "0 = fully dry; 100 = fully wet"},
+        {"num": 7, "title": "output L", "desc": "Left audio output"},
+        {"num": 8, "title": "output R", "desc": "Right audio output"}
+      ]
+    },
+    {
+      "name": "Ghostverb",
+      "cpu": "18%-31%",
+      "blk_min": 6,
+      "blk_max": 8,
+      "desc": "Ghostly reverb with modulated resonance. Mono or stereo.",
+      "blk": [
+        {"num": 1, "title": "audio in1", "desc": "Audio input"},
+        {"num": 2, "title": "audio in2", "opt": true, "desc": "Second audio input (stereo)"},
+        {"num": 3, "title": "decay/feedback", "knob": "value in CV", "desc": "Overall reverb tail length"},
+        {"num": 4, "title": "rate", "knob": "rate in Hz", "desc": "Rate of ghostly modulation"},
+        {"num": 5, "title": "resonance", "knob": "value in CV", "desc": "Resonance of ghostly modulation"},
+        {"num": 6, "title": "mix", "knob": "value in CV", "desc": "0 = fully dry; 100 = fully wet"},
+        {"num": 7, "title": "audio out1", "desc": "Audio output"},
+        {"num": 8, "title": "audio out2", "opt": true, "desc": "Second audio output (stereo)"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"}
+      ]
+    },
+    {
+      "name": "Reverb Lite",
+      "cpu": "6%-7%",
+      "blk_min": 4,
+      "blk_max": 6,
+      "desc": "CPU-friendly reverb. Best choice when CPU headroom is limited.",
+      "blk": [
+        {"num": 1, "title": "input L", "desc": "Left audio input"},
+        {"num": 2, "title": "input R", "opt": true, "desc": "Right audio input (stereo)"},
+        {"num": 3, "title": "decay time", "knob": "time in s", "desc": "Reverb tail length"},
+        {"num": 4, "title": "mix", "knob": "value in CV", "desc": "0 = fully dry; 100 = fully wet"},
+        {"num": 5, "title": "output L", "desc": "Left audio output"},
+        {"num": 6, "title": "output R", "opt": true, "desc": "Right audio output (stereo)"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"}
+      ]
+    },
+    {
+      "name": "Phaser",
+      "cpu": "5%-10%",
+      "blk_min": 6,
+      "blk_max": 8,
+      "desc": "Phase shift swept across 2-12 stages. Rate, tap tempo, or CV direct. Optional stereo.",
+      "blk": [
+        {"num": 1, "title": "input left", "desc": "Left audio input"},
+        {"num": 2, "title": "input right", "opt": true, "desc": "Right audio input"},
+        {"num": 3, "title": "control in", "knob": "rate in Hz/bpm/ms (click to cycle)", "desc": "Rate, tap tempo, or direct CV depending on control mode"},
+        {"num": 4, "title": "resonance", "knob": "level in dB", "desc": "Phased signal fed back to input; full CW = self-oscillation"},
+        {"num": 5, "title": "width", "knob": "level in CV", "desc": "Width of phased effect"},
+        {"num": 6, "title": "mix", "knob": "percentage in CV", "desc": "Dry/wet ratio"},
+        {"num": 7, "title": "output left", "desc": "Left audio output"},
+        {"num": 8, "title": "output right", "opt": true, "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "control", "desc": "Rate control method", "set": "rate | tap tempo | cv direct"},
+        {"name": "number of stages", "desc": "Phasing stages; fewer = subtle/classic; more = lush", "set": "2 | 4 | 6 | 8 | 10 | 12"}
+      ]
+    },
+    {
+      "name": "Chorus",
+      "cpu": "6%-10%",
+      "blk_min": 6,
+      "blk_max": 8,
+      "desc": "Classic chorus with tone tilt EQ on wet signal. Optional stereo.",
+      "blk": [
+        {"num": 1, "title": "input left", "desc": "Left audio input"},
+        {"num": 2, "title": "input right", "opt": true, "desc": "Right audio input"},
+        {"num": 3, "title": "control in", "knob": "rate in Hz/bpm/ms (click to cycle)", "desc": "Rate, tap tempo, or direct CV depending on control mode"},
+        {"num": 4, "title": "width", "knob": "level in CV", "desc": "Modulation width"},
+        {"num": 5, "title": "tone tilt eq", "knob": "eq tilt in dB", "desc": "Wet signal tone; negative = warm/less highs; positive = bright/less bass"},
+        {"num": 6, "title": "mix", "knob": "percentage in CV", "desc": "Dry/wet ratio"},
+        {"num": 7, "title": "output left", "desc": "Left audio output"},
+        {"num": 8, "title": "output right", "opt": true, "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "control", "desc": "Rate control method", "set": "rate | tap tempo | cv direct"},
+        {"name": "type", "desc": "Chorus type", "set": "work in progress"}
+      ]
+    },
+    {
+      "name": "Vibrato",
+      "cpu": "3.2%-5%",
+      "blk_min": 4,
+      "blk_max": 6,
+      "desc": "Wet-only pitch vibrato. Optional stereo.",
+      "blk": [
+        {"num": 1, "title": "input left", "desc": "Left audio input"},
+        {"num": 2, "title": "input right", "opt": true, "desc": "Right audio input"},
+        {"num": 3, "title": "control in", "knob": "rate in Hz/bpm/ms (click to cycle)", "desc": "Rate, tap tempo, or direct CV depending on control mode"},
+        {"num": 4, "title": "width", "knob": "level in CV", "desc": "Vibrato width"},
+        {"num": 5, "title": "output left", "desc": "Left audio output"},
+        {"num": 6, "title": "output right", "opt": true, "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "control", "desc": "Rate control method", "set": "rate | tap tempo | cv direct"},
+        {"name": "waveform", "desc": "Vibrato pitch waveform", "set": "sine | triangle | swung sine | swung"}
+      ]
+    },
+    {
+      "name": "Flanger",
+      "cpu": "4.7%-10%",
+      "blk_min": 7,
+      "blk_max": 9,
+      "desc": "Versatile flanger with regeneration and tone tilt EQ. Optional stereo.",
+      "blk": [
+        {"num": 1, "title": "input left", "desc": "Left audio input"},
+        {"num": 2, "title": "input right", "opt": true, "desc": "Right audio input"},
+        {"num": 3, "title": "control in", "knob": "rate in Hz/bpm/ms (click to cycle)", "desc": "Rate, tap tempo, or direct CV depending on control mode"},
+        {"num": 4, "title": "regeneration", "knob": "level in dB", "desc": "Modulated signal fed back to input; full CW = self-oscillation"},
+        {"num": 5, "title": "width", "knob": "level in CV", "desc": "Flanger effect width"},
+        {"num": 6, "title": "tone tilt eq", "knob": "level in dB", "desc": "Wet signal tone; negative = warm/less highs; positive = bright/less bass"},
+        {"num": 7, "title": "mix", "knob": "percentage in CV", "desc": "Dry/wet ratio"},
+        {"num": 8, "title": "output left", "desc": "Left audio output"},
+        {"num": 9, "title": "output right", "opt": true, "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "control", "desc": "Rate control method", "set": "rate | tap tempo | cv direct"},
+        {"name": "type", "desc": "Flanger flavour", "set": "1960s | 1970s | thru-0"}
+      ]
+    },
+    {
+      "name": "Tremolo",
+      "cpu": "1%-2%",
+      "blk_min": 4,
+      "blk_max": 6,
+      "desc": "Amplitude tremolo. Optional stereo.",
+      "blk": [
+        {"num": 1, "title": "audio inL", "desc": "Left audio input"},
+        {"num": 2, "title": "audio inR", "opt": true, "desc": "Right audio input"},
+        {"num": 3, "title": "control in", "knob": "rate in Hz/bpm/ms (click to cycle)", "desc": "Rate, tap tempo, or direct CV depending on control mode"},
+        {"num": 4, "title": "depth", "knob": "level in CV", "desc": "Tremolo depth; 0 = subtle; max = complete silence on dips"},
+        {"num": 5, "title": "audio outL", "desc": "Left audio output"},
+        {"num": 6, "title": "audio outR", "opt": true, "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "control", "desc": "Rate control method", "set": "rate | tap tempo | cv direct"},
+        {"name": "waveform", "desc": "Tremolo waveform", "set": "fender'ish | vox'ish | triangle | sine | square"}
+      ]
+    },
+    {
+      "name": "Env Filter",
+      "cpu": "2.7%-4%",
+      "blk_min": 6,
+      "blk_max": 8,
+      "desc": "Envelope filter / auto-wah. Optional stereo.",
+      "blk": [
+        {"num": 1, "title": "audio in1", "desc": "Audio input"},
+        {"num": 2, "title": "audio in2", "opt": true, "desc": "Second audio input (stereo)"},
+        {"num": 3, "title": "sensitivity", "knob": "level in CV", "desc": "Sensitivity to incoming audio level"},
+        {"num": 4, "title": "min freq", "knob": "frequency in Hz", "desc": "Downward cutoff frequency of filter"},
+        {"num": 5, "title": "max freq", "knob": "frequency in Hz", "desc": "Upward cutoff frequency of filter"},
+        {"num": 6, "title": "filter Q", "knob": "level in CV", "desc": "Width of filter notch"},
+        {"num": 7, "title": "audio out1", "desc": "Audio output"},
+        {"num": 8, "title": "audio out2", "opt": true, "desc": "Second audio output (stereo)"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "filter type", "desc": "Filter type", "set": "high pass | low pass | band pass"},
+        {"name": "direction", "desc": "Filter sweep direction", "set": "up | down"}
+      ]
+    },
+    {
+      "name": "Ring Modulator",
+      "cpu": "3%-7.6%",
+      "blk_min": 4,
+      "blk_max": 5,
+      "desc": "Ring modulation with internal carrier wave or external audio sidechain.",
+      "blk": [
+        {"num": 1, "title": "audio in", "desc": "Audio input"},
+        {"num": 2, "title": "frequency or ext in", "knob": "frequency in Hz (ext audio in: no modifier)", "desc": "Internal carrier freq (CV -1 to 0 = 0.03-27.5Hz; 0 to 1 = 27.5-23999Hz) OR external audio carrier when ext audio in = on"},
+        {"num": 3, "title": "duty cycle", "opt": true, "knob": "value in %", "desc": "Pulse width of ring modulation"},
+        {"num": 4, "title": "mix", "knob": "percentage in CV", "desc": "Dry/wet ratio"},
+        {"num": 5, "title": "audio out", "desc": "Ring modulated audio output"}
+      ],
+      "opts": [
+        {"name": "waveform", "desc": "Internal carrier waveform", "set": "sine | square | triangle | sawtooth"},
+        {"name": "ext audio in", "desc": "Toggle block 2 between internal carrier freq and external audio sidechain", "set": "on | off"},
+        {"name": "duty cycle", "desc": "Toggles duty cycle block", "set": "on | off"},
+        {"name": "upsampling", "desc": "2X sample rate; better quality, higher CPU", "set": "none | 2X"}
+      ]
+    },
+    {
+      "name": "Cabinet Sim",
+      "cpu": "7%",
+      "blk_min": 3,
+      "blk_max": 4,
+      "desc": "Guitar cabinet simulator.",
+      "blk": [
+        {"num": 1, "title": "audio in1", "desc": "Audio input"},
+        {"num": 2, "title": "audio in2", "opt": true, "desc": "Second audio input (stereo)"},
+        {"num": 3, "title": "audio out1", "desc": "Audio output"},
+        {"num": 4, "title": "audio out2", "opt": true, "desc": "Second audio output (stereo)"}
+      ],
+      "opts": [
+        {"name": "channels", "desc": "Audio path", "set": "mono | mono to stereo | stereo"},
+        {"name": "type", "desc": "Cabinet type", "set": "4x12 full | 2x12 dark | 2x12 modern | 1x12 | 1x8 lofi | 1x12 vintage | 4x12 hifi"}
+      ]
+    },
+    {
+      "name": "Univibe",
+      "cpu": "14%-16%",
+      "blk_min": 6,
+      "blk_max": 8,
+      "desc": "Combines vibrato and phase shifting for lush swooshing sounds. Stereo in/out.",
+      "blk": [
+        {"num": 1, "title": "audio inL", "desc": "Left audio input"},
+        {"num": 2, "title": "audio inR", "desc": "Right audio input"},
+        {"num": 3, "title": "rate / tap tempo / CV control", "knob": "rate or direct control", "desc": "Rate, tap tempo, or direct CV depending on control mode"},
+        {"num": 4, "title": "depth", "knob": "depth", "desc": "Depth of vibrato effect"},
+        {"num": 5, "title": "resonance", "knob": "resonance", "desc": "Resonance intensity"},
+        {"num": 6, "title": "mix", "knob": "mix", "desc": "0 = fully dry; 100 = fully wet"},
+        {"num": 7, "title": "audio outL", "desc": "Left audio output"},
+        {"num": 8, "title": "audio outR", "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "control", "desc": "Rate control method", "set": "rate | tap tempo | cv direct"}
+      ]
+    },
+    {
+      "name": "Reverse Delay",
+      "cpu": "7%-9%",
+      "blk_min": 6,
+      "blk_max": 9,
+      "desc": "Delay with reversed, pitch-shifted repeats. Stereo in/out.",
+      "blk": [
+        {"num": 1, "title": "audio in", "desc": "Left audio input"},
+        {"num": 2, "title": "audio inR", "desc": "Right audio input"},
+        {"num": 3, "title": "delay time", "knob": "delay time (click to toggle s/BPM/Hz)", "desc": "Delay time"},
+        {"num": 4, "title": "tap tempo in", "desc": "Tap in delay time; combined with tap ratio sets actual time"},
+        {"num": 5, "title": "tap ratio", "knob": "tap ratio", "desc": "Ratio of repeats per tap cycle"},
+        {"num": 6, "title": "feedback", "knob": "feedback", "desc": "Feedback amount in dB; 0dB = self-oscillation"},
+        {"num": 7, "title": "pitch", "knob": "pitch", "desc": "Pitch of delay repeats"},
+        {"num": 8, "title": "mix", "knob": "mix", "desc": "0 = fully dry; 100 = fully wet"},
+        {"num": 9, "title": "audio outL", "desc": "Left audio output"},
+        {"num": 10, "title": "audio outR", "desc": "Right audio output"}
+      ],
+      "opts": [
+        {"name": "control", "desc": "Tempo control mode", "set": "tap tempo | rate"}
+      ]
+    }
+  ]
+}
