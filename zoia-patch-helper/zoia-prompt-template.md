@@ -1,4 +1,4 @@
-# Generic ZOIA / ZEBU Patch Creation Prompt Template
+# ZOIA / ZEBU Patch Creation Prompt Template
 
 Use this document when asking an AI to design a new ZOIA or ZEBU patch.
 Fill in every section marked `[FILL IN]` before submitting.
