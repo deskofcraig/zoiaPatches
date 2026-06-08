@@ -1,24 +1,30 @@
- {
-   "colors": [
-    {"name":"red","hex":"#FF0000"},{"name":"orange","hex":"#FFA500"},
-    {"name":"mango","hex":"#FFB000"},{"name":"yellow","hex":"#FFFF00"},
-    {"name":"lime","hex":"#AFFF00"},{"name":"green","hex":"#00FF00"},
-    {"name":"surf","hex":"#00FF99"},{"name":"aqua","hex":"#00FFFF"},
-    {"name":"sky","hex":"#00BFFF"},{"name":"blue","hex":"#0000FF"},
-    {"name":"purple","hex":"#7F00FF"},{"name":"magenta","hex":"#FF00FF"},
-    {"name":"pink","hex":"#FF69B4"},{"name":"peach","hex":"#FFDAB9"},
-    {"name":"white","hex":"#FFFFFF"}
-  ]
- },
-
-{ 
-  "characters": [ 
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", 
-    "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
-    "U", "V", "W", "X", "Y", "Z", 
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", 
-    "l", "m", "n", "o", "p", "q", "r", "s", "t", 
-    "u", "v", "w", "x", "y", "z", 
-    ".", "_", "-", 
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ]
+{
+    "available-colors":[
+     {"name":"red","hex":"#FF0000"},
+     {"name":"orange","hex":"#FFA500"},
+     {"name":"mango","hex":"#FFB000"},
+     {"name":"yellow","hex":"#FFFF00"},
+     {"name":"lime","hex":"#AFFF00"},
+     {"name":"green","hex":"#00FF00"},
+     {"name":"surf","hex":"#00FF99"},
+     {"name":"aqua","hex":"#00FFFF"},
+     {"name":"sky","hex":"#00BFFF"},
+     {"name":"blue","hex":"#0000FF"},
+     {"name":"purple","hex":"#7F00FF"},
+     {"name":"magenta","hex":"#FF00FF"},
+     {"name":"pink","hex":"#FF69B4"},
+     {"name":"peach","hex":"#FFDAB9"},
+     {"name":"white","hex":"#FFFFFF"}
+    ],
+  
+    "characters-allowed":[
+     "A","B","C","D","E","F","G","H","I","J","K",
+     "L","M","N","O","P","Q","R","S","T",
+     "U","V","W","X","Y","Z",
+     "a","b","c","d","e","f","g","h","i","j","k",
+     "l","m","n","o","p","q","r","s","t",
+     "u","v","w","x","y","z",
+     ".","_","-",
+     "0","1","2","3","4","5","6","7","8","9"
+    ]
 }
