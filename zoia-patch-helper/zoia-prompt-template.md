@@ -1,10 +1,16 @@
-# Generic ZOIA / ZEBU Patch Creation Prompt Template
+# ZOIA / ZEBU Patch Creation Prompt Template
 
 Use this document when asking an AI to design a new ZOIA or ZEBU patch.
 Fill in every section marked `[FILL IN]` before submitting.
 The more detail you provide, the better and faster the result.
 
 ---
+
+This form will help give guidance and help building ZOIA patches with the help with AI tools. 
+
+The following files are used to help in the patch design:
+- `zoia-module-index.json` (human readable version: [ZOIA Module Index](/zoia-module-index.md)
+- `zoia-rules.json` (human readable version: [ZOIA Rules](/zoia-rules.md)
 
 ## 1. Patch Goal
 
@@ -18,37 +24,40 @@ The more detail you provide, the better and faster the result.
 [FILL IN — e.g. "No pitch modulation, no obvious chorus wobble, no distortion"]
 
 **What input does it take?**
-- [ ] Guitar (mono)
+- [ ] Guitar
 - [ ] Bass
 - [ ] Synth / keyboard
+- [ ] Drum machine
+- [ ] Samples
 - [ ] Microphone
 - [ ] MIDI only (no audio input)
 - [ ] No input — self-generating
 - [ ] Other: [FILL IN]
 
-**What output is needed?**
-- [ ] Mono in → Mono out
-- [ ] Mono in → Stereo out *(most common for effects)*
-- [ ] Stereo in → Stereo out
+**What audio inputs are needed?**
+- [ ] Mono in
+- [ ] Mono in & mono fx return
+- [ ] Stereo in
+- [ ] Parallel mono
+- [ ] No audio input required
+- [ ] Other: [FILL IN]
+
+**What outputs are needed?**
+- [ ] Mono out
+- [ ] Mono fx send & mono out
+- [ ] Stereo out *(most common for effects)*
 - [ ] Dry/Wet split (e.g. dry to amp, wet to PA)
-- [ ] Parallel mono → parallel mono
+- [ ] Parallel mono
+- [ ] No audio output required
 - [ ] Other: [FILL IN]
 
 ---
 
 ## 2. Hardware Target
 
-- [ ] ZOIA (3 stomp switches · 2 aux buttons · 1 control port)
+- [ ] ZOIA (3 stomp switches · 1 control port)
 - [ ] ZEBU / Euroburo (no stomps · 2 aux buttons · 4 CV in · 4 CV out)
 - [ ] Both (design to work on either)
-
-**ZEBU CV mapping** (if applicable):
-Which parameters should the 4 CV inputs control?
-[FILL IN or leave blank — AI will suggest]
-
-**Expression pedal?**
-- [ ] Yes — maps to: [FILL IN e.g. filter cutoff / reverb depth]
-- [ ] No
 
 ---
 
@@ -58,11 +67,49 @@ Which parameters should the 4 CV inputs control?
 
 CPU fluctuates when signal passes through ZOIA. Design conservatively:
 - Aim for ~75% at most to leave room for CPU spikes during loud playing
-- If unsure, say 80% and the AI will work within that
+- If unsure, say 85% and the AI will work within that
 
 ---
 
 ## 4. Controls
+For both ZOIA & ZEBU
+
+### 4.1. What value controls would you like to have?
+
+List controls you would like to have available
+- [ ] [FILL IN] List controls
+- [ ] AI can help decide
+
+**ZOIA limits:** max 9 knobs + 3 stomps per page (each knob = a 2-block Value module).
+Controls that overflow one page go on additional pages.
+
+### For ZOIA
+### 4.2.1 What would you like the stompswitches to control? (if required)
+
+List controls you would like stompswitches to control.
+
+- [ ] Left footswitch: [FILL IN]
+- [ ] Center footswitch: [FILL IN]
+- [ ] Right footswitch: [FILL IN]
+
+### 4.2.2. Expression pedal?**
+- [ ] Yes — maps to: [FILL IN e.g. filter cutoff / reverb depth]
+- [ ] Maybe - give me an option for it
+- [ ] No
+
+### For ZEBU
+
+### 4.3.1. ZEBU CV mapping** (if applicable):
+Which parameters should the 4 CV inputs control?
+[FILL IN or leave blank — AI will suggest]
+
+Which parameters should the 4 CV outputs send?
+[FILL IN or leave blank — AI will suggest]
+
+### 4.3.2 What would you like Auxiliary buttons to control?
+- [ ] I don't need to use them
+- [ ] [FILL IN] List controls
+- [ ] AI can help decide
 
 List all real-time-adjustable parameters. Add rows as needed.
 
@@ -70,25 +117,22 @@ List all real-time-adjustable parameters. Add rows as needed.
 |---|---|---|---|---|
 | [FILL IN] | knob / stomp / CV | | | |
 
-**ZOIA limits:** max 9 knobs + 3 stomps per page (each knob = a 2-block Value module).
-Controls that overflow one page go on additional pages.
-
 ---
 
 ## 5. Page Structure
 
 - [ ] Let AI decide
-- [ ] My preference: [FILL IN — e.g. "P1 UI, P2 I/O, P3 effects"]
+- [ ] My preference: [FILL IN — e.g. "P0 UI, P1 I/O, P2 effects"]
 
-**Recommended structure (AI default):**
-- P1 — UI controls (all knobs + stomps)
-- P2 — I/O + Mix bus
-- P3 — Analysis / pitch tracking (if needed)
-- P4 — Core audio processing
-- P5 — Shaping / EQ / body
-- P6+ — Reverb / time-based effects
+** Example structure (AI default):**
+- P0 — UI controls (all knobs + stomps)
+- P1 — I/O + Mix bus
+- P2 — Analysis / pitch tracking (if needed)
+- P3 — Core audio processing
+- P4 — Shaping / EQ / body
+- P5+ — Reverb / time-based effects
 
-Keep P1 as the UI page so performers never need to navigate during a set.
+Keep P0 as the UI page, and P1 as the I/O (& Mix bus if required) so performers never need to navigate during a set.
 
 ---
 
@@ -193,10 +237,4 @@ Index before building. Key facts that catch AI errors:
 - **Onset Detector is 12.3% CPU** — use Env Follower + Comparator (2.54%) for gate detection
 - **Reverb Lite is "Reverb Lite"** — not "Simple Reverb"
 
-See `patch/module-index.csv` for the complete verified module list with
-block counts and DSP figures from firmware 5.
-
 ---
-
-*Template version 2.0 · Updated to reflect v3 corrections from official Empress Module Index*
-*Reference patch: ZOIA Sympathetic Strings Resonator v3*

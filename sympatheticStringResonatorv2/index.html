@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sympathetic String Resonator — ZOIA Patch Explorer</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c-red:#FF0000;--c-orange:#FFA500;--c-mango:#FFB000;--c-yellow:#FFFF00;
+  --c-lime:#AFFF00;--c-green:#00FF00;--c-surf:#00FF99;--c-aqua:#00FFFF;
+  --c-sky:#00BFFF;--c-blue:#0000FF;--c-purple:#7F00FF;--c-magenta:#FF00FF;
+  --c-pink:#FF69B4;--c-peach:#FFDAB9;--c-white:#FFFFFF;
+  --bg-red:#230000;--bg-orange:#170b00;--bg-mango:#180f00;--bg-yellow:#232300;
+  --bg-lime:#181e00;--bg-green:#002300;--bg-surf-bg:#002316;--bg-aqua:#002323;
+  --bg-sky:#001b23;--bg-blue:#000023;--bg-purple:#0e0023;--bg-magenta:#230023;
+  --bg-pink:#230014;--bg-peach:#231e17;--bg-white:#1c1c1c;
+  --bg-page:#0a0a0f;--bg-surf1:#111118;--bg-surf2:#18181f;
+  --bdr1:#252535;--bdr2:#353550;
+  --text-primary:#f0f0f0;--text-secondary:#cccccc;--text-muted:#b4b4b4;
+  --txt-red-name:#ffcccc;--txt-red-zoia:#ff8080;
+  --txt-mag-name:#ffccff;--txt-mag-zoia:#ff88ff;
+  --txt-red-nav:#ff8080;--txt-mag-nav:#ff88ff;
+  --font-mono:'Courier New',Courier,monospace;
+}
+body{font-family:var(--font-mono);font-size:15px;line-height:1.6;background:var(--bg-page);color:var(--text-secondary);min-height:100vh}
+.skip-link{position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:10px 18px;z-index:9999;border-radius:0 0 6px 0;font-weight:700}
+.skip-link:focus{left:0}
+header{background:var(--bg-surf1);border-bottom:2px solid var(--bdr2);padding:16px 22px}
+.h-patch{font-size:1.125rem;font-weight:700;color:#fff;letter-spacing:.04em}
+.h-sub{font-size:0.8rem;color:var(--text-muted);margin-top:4px}
+.h-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;font-size:0.75rem;border:1px solid;line-height:1.4}
+.badge-green{background:var(--bg-green);border-color:var(--c-green);color:var(--text-primary)}
+.badge-yellow{background:var(--bg-yellow);border-color:var(--c-yellow);color:var(--text-primary)}
+.badge-sky{background:var(--bg-sky);border-color:var(--c-sky);color:var(--text-primary)}
+.badge-white{background:var(--bg-white);border-color:var(--c-white);color:var(--text-primary)}
+.cpu-bar-wrap{width:120px;height:13px;background:#1a1a28;border-radius:7px;overflow:hidden;border:1px solid var(--bdr1)}
+.cpu-bar{height:100%;border-radius:7px}
+.cpu-num{font-size:0.85rem;color:var(--c-green);font-weight:700;margin-left:4px}
+.colour-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr1)}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:0.72rem}
+.cl-swatch{width:13px;height:13px;border-radius:3px;border:1px solid;flex-shrink:0}
+.cl-label{color:var(--text-muted)}
+nav.tabs{background:var(--bg-surf1);border-bottom:1px solid var(--bdr1);display:flex;flex-wrap:wrap;padding:0 14px}
+.nb{background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:0.67rem;letter-spacing:.07em;padding:10px 11px;cursor:pointer;border-bottom:3px solid transparent;text-transform:uppercase;transition:color .15s,border-color .15s;white-space:nowrap}
+.nb:hover{color:#fff}.nb:focus{outline:2px solid var(--c-sky);outline-offset:2px}.nb.on{color:#fff}
+.nb-ov.on,.nb-p0.on{border-bottom-color:var(--c-white);color:var(--text-primary)}
+.nb-p1.on{border-bottom-color:var(--c-sky);color:var(--c-sky)}
+.nb-p2.on{border-bottom-color:var(--c-green);color:var(--c-green)}
+.nb-p3.on{border-bottom-color:var(--c-red);color:var(--txt-red-nav)}
+.nb-p4.on{border-bottom-color:var(--c-magenta);color:var(--txt-mag-nav)}
+.nb-cx.on{border-bottom-color:var(--c-yellow);color:var(--c-yellow)}
+.nb-pre.on,.nb-midi.on{border-bottom-color:var(--c-surf);color:var(--c-surf)}
+.page{display:none;padding:20px}.page.on{display:block}
+.pg-intro{font-size:0.85rem;color:var(--text-muted);padding:10px 14px;background:var(--bg-surf2);border-radius:4px;border-left:3px solid var(--bdr2);margin-bottom:18px;line-height:1.75}
+.sec{font-size:0.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--bdr1)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:11px;margin-bottom:18px}
+.mod{border-radius:6px;border:1px solid;overflow:hidden}
+.mod-hd{padding:7px 11px 5px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.mod-zoia{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.mod-name{font-size:0.85rem;font-weight:700;flex:1}
+.mod-cpu{font-size:0.65rem;color:var(--c-green);margin-left:auto}
+.mod-body{padding:9px 11px;font-size:0.78rem;line-height:1.75;color:var(--text-muted)}
+.pr{display:flex;align-items:baseline;gap:5px;line-height:1.65;flex-wrap:wrap}
+.pd{font-size:0.65rem;color:var(--text-muted);min-width:50px;text-transform:uppercase;flex-shrink:0}
+.pn{font-weight:700;color:var(--text-primary);font-size:0.78rem;flex-shrink:0}
+.ps{color:var(--text-muted);font-size:0.72rem;flex:1}
+.pp{font-size:0.72rem;color:var(--c-sky);margin-left:auto;white-space:nowrap;font-weight:700}
+.pp.cv{color:var(--c-yellow)}
+.midi-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(0,255,153,.1);border:1px solid rgba(0,255,153,.35);border-radius:3px;padding:2px 7px;font-size:0.72rem;color:var(--c-surf);margin-top:4px}
+.midi-dot{width:6px;height:6px;background:var(--c-surf);border-radius:50%;flex-shrink:0}
+.warn-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(255,0,0,.1);border:1px solid rgba(255,0,0,.3);border-radius:3px;padding:2px 7px;font-size:0.72rem;color:#ffcccc;margin-top:4px}
+.info-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(0,191,255,.1);border:1px solid rgba(0,191,255,.3);border-radius:3px;padding:2px 7px;font-size:0.72rem;color:var(--c-sky);margin-top:4px}
+.m-io{background:var(--bg-sky);border-color:var(--c-sky)}.m-io .mod-zoia{color:var(--c-sky)}.m-io .mod-name{color:var(--text-primary)}
+.m-pitch{background:var(--bg-green);border-color:var(--c-green)}.m-pitch .mod-zoia{color:var(--c-green)}.m-pitch .mod-name{color:var(--text-primary)}
+.m-res{background:var(--bg-red);border-color:var(--c-red)}.m-res .mod-zoia{color:var(--txt-red-zoia)}.m-res .mod-name{color:var(--txt-red-name)}
+.m-body{background:var(--bg-aqua);border-color:var(--c-aqua)}.m-body .mod-zoia{color:var(--c-aqua)}.m-body .mod-name{color:var(--text-primary)}
+.m-rev{background:var(--bg-magenta);border-color:var(--c-magenta)}.m-rev .mod-zoia{color:var(--txt-mag-zoia)}.m-rev .mod-name{color:var(--txt-mag-name)}
+.m-mix{background:var(--bg-orange);border-color:var(--c-orange)}.m-mix .mod-zoia{color:var(--c-orange)}.m-mix .mod-name{color:var(--text-primary)}
+.m-ctrl{background:var(--bg-white);border-color:var(--c-white)}.m-ctrl .mod-zoia{color:var(--text-muted)}.m-ctrl .mod-name{color:var(--text-primary)}
+.m-val{background:var(--bg-yellow);border-color:var(--c-yellow);border-style:dashed}.m-val .mod-zoia{color:var(--c-mango)}.m-val .mod-name{color:var(--c-yellow)}
+.cx-filters{margin-bottom:11px;display:flex;gap:7px;flex-wrap:wrap}
+.cx-filter-btn{background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);border-radius:4px;padding:4px 13px;font-family:inherit;font-size:0.72rem;cursor:pointer;text-transform:uppercase;letter-spacing:.06em}
+.cx-filter-btn:hover{color:#fff;border-color:var(--bdr2)}.cx-filter-btn.on{color:#fff;border-color:var(--c-sky)}
+.cx-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:18px}
+.cx-table th{text-align:left;padding:6px 8px;background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);font-size:0.7rem;text-transform:uppercase}
+.cx-table td{padding:5px 8px;border:1px solid var(--bdr1);color:var(--text-secondary);vertical-align:top}
+.cx-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.cx-audio td:first-child{border-left:3px solid var(--c-sky)}.cx-cv td:first-child{border-left:3px solid var(--c-yellow)}
+.cx-type-audio{color:var(--c-sky);font-weight:700}.cx-type-cv{color:var(--c-yellow);font-weight:700}.cx-pct{font-weight:700;color:var(--c-green)}
+.midi-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:18px}
+.midi-table th{text-align:left;padding:6px 8px;background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);font-size:0.7rem;text-transform:uppercase}
+.midi-table td{padding:5px 8px;border:1px solid var(--bdr1);color:var(--text-secondary)}
+.midi-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}.midi-cc{font-weight:700;color:var(--c-surf)}
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:11px;margin-bottom:18px}
+.preset-card{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:13px;cursor:pointer;transition:border-color .15s}
+.preset-card:hover,.preset-card:focus{border-color:var(--c-aqua);outline:2px solid var(--c-aqua);outline-offset:2px}
+.preset-name{font-size:0.95rem;font-weight:700;color:#fff;margin-bottom:4px}
+.preset-desc{font-size:0.78rem;color:var(--text-muted);margin-bottom:9px;line-height:1.55}
+.preset-vals{display:grid;grid-template-columns:1fr 1fr;gap:3px;font-size:0.72rem;color:var(--text-muted)}
+.preset-vals span{color:var(--c-yellow);font-weight:700}
+.preset-detail-vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-top:14px}
+.preset-val-card{background:var(--bg-surf1);border:1px solid var(--bdr1);border-radius:4px;padding:9px}
+.preset-val-key{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
+.preset-val-num{font-size:1.3rem;font-weight:700;color:var(--c-yellow);margin-top:2px}
+.cpu-section{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:16px;margin-bottom:18px}
+.cpu-row{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+.cpu-label{width:210px;font-size:0.78rem;color:var(--text-muted);flex-shrink:0}
+.cpu-track{flex:1;height:8px;background:var(--bdr1);border-radius:4px;overflow:hidden}
+.cpu-fill{height:100%;border-radius:4px}
+.cpu-val{width:42px;text-align:right;font-size:0.78rem;font-weight:700;flex-shrink:0}
+.cpu-total{margin-top:11px;padding-top:11px;border-top:1px solid var(--bdr2);display:flex;justify-content:space-between;font-size:0.95rem;font-weight:700}
+.desc-block{background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:16px 20px;margin-bottom:18px;font-size:0.88rem;line-height:1.8;color:var(--text-secondary);max-width:860px}
+.desc-block h3{color:#fff;font-size:1rem;margin-bottom:8px;margin-top:14px}.desc-block h3:first-child{margin-top:0}
+.desc-block p{margin-bottom:10px}.desc-block ul{margin-left:1.2em;color:var(--text-muted)}.desc-block li{margin-bottom:4px}
+.sep{height:1px;background:var(--bdr1);margin:16px 0}
+.tip{background:rgba(255,176,0,.09);border:1px solid rgba(255,176,0,.3);border-radius:4px;padding:9px 13px;font-size:0.82rem;color:var(--c-mango);line-height:1.7;margin-top:10px}
+.note{background:rgba(0,191,255,.09);border:1px solid rgba(0,191,255,.3);border-radius:4px;padding:9px 13px;font-size:0.82rem;color:var(--c-sky);line-height:1.7;margin-top:10px}
+.cb-audio::before{content:'\25B6\00A0';color:var(--c-sky)}.cb-cv::before{content:'\29C6\00A0';color:var(--c-yellow)}
+.build-tbl{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:16px}
+.build-tbl th{text-align:left;padding:6px 8px;background:var(--bg-surf2);border:1px solid var(--bdr1);color:var(--text-muted);font-size:0.7rem;text-transform:uppercase}
+.build-tbl td{padding:5px 8px;border:1px solid var(--bdr1);color:var(--text-secondary);vertical-align:top}
+.build-tbl tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.build-tbl td:first-child{font-weight:700;color:var(--txt-red-name);white-space:nowrap}
+.build-tbl td:nth-child(2){color:var(--text-muted);font-size:0.72rem}
+.build-tbl td:nth-child(3){color:var(--c-yellow);font-weight:700}
+/* ZOIA grid */
+.zg-section{margin-bottom:20px}
+.zg-header{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.zg-badge{font-size:0.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 9px;border-radius:4px;border:1px solid;font-family:var(--font-mono)}
+.zg-title{font-size:0.95rem;font-weight:700;color:#fff}
+.zg-desc{font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;line-height:1.55}
+.zoia-grid{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(5,1fr);gap:3px;background:var(--bg-surf2);border:1px solid var(--bdr1);border-radius:6px;padding:10px;aspect-ratio:8/5;max-height:290px;overflow:hidden}
+.zg-e{background:#181818;border:.5px solid #272727;border-radius:3px;min-width:0;min-height:0}
+.zg-m{border-radius:4px;border:1.5px solid;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2px 4px;overflow:hidden;min-width:0;min-height:0;text-align:center}
+.zn{font-family:var(--font-mono);font-size:clamp(.4rem,1.15vw,.67rem);font-weight:700;line-height:1.15;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.zs{font-family:var(--font-mono);font-size:clamp(.35rem,.95vw,.55rem);line-height:1.1;opacity:.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;margin-top:1px}
+.zg-io{background:var(--bg-sky);border-color:var(--c-sky);color:var(--c-sky)}
+.zg-an{background:var(--bg-green);border-color:var(--c-green);color:var(--c-green)}
+.zg-rs{background:var(--bg-red);border-color:var(--c-red);color:var(--txt-red-name)}
+.zg-tn{background:var(--bg-aqua);border-color:var(--c-aqua);color:var(--c-aqua)}
+.zg-rv{background:var(--bg-magenta);border-color:var(--c-magenta);color:var(--txt-mag-name)}
+.zg-mx{background:var(--bg-orange);border-color:var(--c-orange);color:var(--c-orange)}
+.zg-ct{background:var(--bg-white);border-color:var(--c-white);color:var(--text-primary)}
+.zg-vl{background:var(--bg-yellow);border-color:var(--c-yellow);color:var(--c-yellow);border-style:dashed}
+@media(max-width:600px){.mgrid{grid-template-columns:1fr}.cpu-label{width:130px}.zoia-grid{max-height:190px}header{padding:12px 14px}}
+@media(prefers-contrast:high){:root{--bdr1:#888;--bdr2:#aaa;--bg-surf1:#000;--bg-surf2:#0a0a0a}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<!-- HEADER -->
+<header>
+  <div class="h-patch">Sympathetic String Resonator</div>
+  <div class="h-sub">Pitch-tracking piano string resonance · Grand piano acoustics for guitar, bass &amp; synth · v1.0</div>
+  <div class="h-meta">
+    <div class="badge badge-green">CPU</div>
+    <div class="cpu-bar-wrap"><div class="cpu-bar" id="cpu-bar"></div></div>
+    <span class="cpu-num" id="cpu-num">~46%</span>
+    <div class="badge badge-yellow">FW 5.0+</div>
+    <div class="badge badge-sky">ZOIA</div>
+    <div class="badge badge-white">ZEBU</div>
+  </div>
+  <div class="colour-legend">
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-sky);border-color:var(--c-sky)"></div><span class="cl-label">I/O</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-green);border-color:var(--c-green)"></div><span class="cl-label">Analysis</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-red);border-color:var(--c-red)"></div><span class="cl-label">Resonators</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-aqua);border-color:var(--c-aqua)"></div><span class="cl-label">Tone/Filter</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-magenta);border-color:var(--c-magenta)"></div><span class="cl-label">Reverb</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-orange);border-color:var(--c-orange)"></div><span class="cl-label">Mix Bus</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-white);border-color:var(--c-white)"></div><span class="cl-label">Controls</span></div>
+    <div class="cl-item"><div class="cl-swatch" style="background:var(--bg-yellow);border-color:var(--c-yellow);border-style:dashed"></div><span class="cl-label">Constants</span></div>
+  </div>
+</header>
+
+<!-- TAB NAV -->
+<nav class="tabs" role="tablist" aria-label="Patch sections">
+  <button class="nb nb-ov on" role="tab" aria-selected="true"  onclick="show('ov',this)">Overview</button>
+  <button class="nb nb-p0"    role="tab" aria-selected="false" onclick="show('p0',this)">P0 · Controls</button>
+  <button class="nb nb-p1"    role="tab" aria-selected="false" onclick="show('p1',this)">P1 · I/O + Mix</button>
+  <button class="nb nb-p2"    role="tab" aria-selected="false" onclick="show('p2',this)">P2 · Analysis</button>
+  <button class="nb nb-p3"    role="tab" aria-selected="false" onclick="show('p3',this)">P3 · Resonators</button>
+  <button class="nb nb-p4"    role="tab" aria-selected="false" onclick="show('p4',this)">P4 · Tone &amp; Reverb</button>
+  <button class="nb nb-cx"    role="tab" aria-selected="false" onclick="show('cx',this)">Connections</button>
+  <button class="nb nb-pre"   role="tab" aria-selected="false" onclick="show('pre',this)">Presets</button>
+  <button class="nb nb-midi"  role="tab" aria-selected="false" onclick="show('midi',this)">MIDI Map</button>
+</nav>
+
+<main id="main">
+
+<!-- ══════════ OVERVIEW ══════════ -->
+<section class="page on" id="page-ov" role="tabpanel">
+  <div class="desc-block">
+    <h3>What it does</h3>
+    <p>When a grand piano stands in the room while you play, its un-damped strings vibrate sympathetically with every note in the air. This patch recreates that effect on ZOIA. Four delay-line resonators track your pitch in real time and ring at the fundamental, octave above, perfect fifth, and octave below — the same intervals that piano strings respond to. A Haas stereo spread creates natural width without any modulation artifact. Plate reverb adds the acoustic body of the instrument and room.</p>
+    <p>The result is entirely clean and organic: no chorus, no distortion, no vibrato. Just the sensation of a piano resonating alongside you.</p>
+    <h3>Signal flow (simplified)</h3>
+    <p><strong>Guitar → Audio Input</strong> — splits to dry path and wet path simultaneously.</p>
+    <p><strong>Wet path:</strong> Gate VCA (env-follower-driven, controlled by K_SENS) → 4 parallel Delay Line resonators (each feeds its audio back through a Feedback VCA, sustain set by K_FEEDBACK) → 4-ch Audio Mixer → SV Filter (tone colour, K_PIANO) → Haas Stereo Spread (width) → Plate Reverb (space, K_REVERB) → Wet VCAs → output.</p>
+    <p><strong>Pitch tracking:</strong> Pitch Detector → CV Filter (smooth) → CV Invert (higher pitch = shorter delay = higher resonant freq) → all 4 Delay Line time inputs. Voices are pre-set at harmonic intervals via knob positions; pitch CV moves all four together.</p>
+    <h3>Footswitches (ZOIA)</h3>
+    <ul>
+      <li><strong>Left — Infinite Sustain (latching):</strong> Closes the Gate VCA (no new excitation) and sets feedback to 0.95. Current resonance loops indefinitely until disengaged.</li>
+      <li><strong>Center — Resonance Kill (momentary):</strong> Drops feedback to 0. Instantly silences all resonators.</li>
+      <li><strong>Right — Bypass (latching):</strong> ZOIA audio bypass via Device Control module.</li>
+    </ul>
+    <h3>First-time setup — required knob values</h3>
+    <p>After placing modules and connections, set these values on the hardware before playing:</p>
+  </div>
+
+  <table class="build-tbl">
+    <thead><tr><th>Module</th><th>Option / Block</th><th>Set to</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>DELAY_1</td><td>delay_time knob</td><td>5.0 ms</td><td>Fundamental ref (~A3, 200 Hz)</td></tr>
+      <tr><td>DELAY_1</td><td>max time option</td><td>100 ms</td><td>Covers full guitar bass range</td></tr>
+      <tr><td>DELAY_1</td><td>CV input option</td><td>Exponential</td><td>Matches V/Oct pitch tracking</td></tr>
+      <tr><td>DELAY_1</td><td>interpolation option</td><td>Off</td><td>No pitch-shift glitch on note change</td></tr>
+      <tr><td>DELAY_2</td><td>delay_time knob</td><td>2.5 ms</td><td>Octave above (~A4, 400 Hz)</td></tr>
+      <tr><td>DELAY_2</td><td>max time / CV / interp</td><td>same as DLY1</td><td>—</td></tr>
+      <tr><td>DELAY_3</td><td>delay_time knob</td><td>3.35 ms</td><td>Perfect fifth above (~E4, 298 Hz)</td></tr>
+      <tr><td>DELAY_3</td><td>max time / CV / interp</td><td>same as DLY1</td><td>—</td></tr>
+      <tr><td>DELAY_4</td><td>delay_time knob</td><td>10.0 ms</td><td>Octave below (~A2, 100 Hz)</td></tr>
+      <tr><td>DELAY_4</td><td>max time / CV / interp</td><td>same as DLY1</td><td>—</td></tr>
+      <tr><td>PITCH_FILT</td><td>time constant knob</td><td>30 ms</td><td>Smooth pitch without lag</td></tr>
+      <tr><td>ENV_FOLLOW</td><td>rise time knob</td><td>5 ms</td><td>Responsive gate attack</td></tr>
+      <tr><td>ENV_FOLLOW</td><td>fall time knob</td><td>150 ms</td><td>Natural gate tail</td></tr>
+      <tr><td>ENV_FOLLOW</td><td>output scale option</td><td>log</td><td>Better tracking for guitar dynamics</td></tr>
+      <tr><td>V_MAXFB</td><td>value knob</td><td>0.95</td><td>Near-oscillation for infinite sustain</td></tr>
+      <tr><td>PLATE_REVERB</td><td>decay time knob</td><td>2.5 s</td><td>Piano body default</td></tr>
+      <tr><td>PLATE_REVERB</td><td>low EQ knob</td><td>+2 dB</td><td>Piano body warmth</td></tr>
+      <tr><td>PLATE_REVERB</td><td>high EQ knob</td><td>−4 dB</td><td>Tame brightness, keep organic</td></tr>
+      <tr><td>RESONATOR_MIX</td><td>all gain knobs</td><td>0 dB</td><td>Equal blend of all 4 voices</td></tr>
+      <tr><td>FB_SELECT</td><td>num inputs option</td><td>2</td><td>Toggle K_FEEDBACK vs V_MAXFB</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip"><strong>Pitch tracking:</strong> Connection strength from PITCH_INV to each delay time input controls tracking depth. Start at 100% and reduce if the resonators over-respond to pitch changes. Some trial-and-error is expected — the exponential CV mode approximates V/Oct but the exact curve needs ear-calibration per guitar.</div>
+  <div class="note">No Pitch Shifter or Resonator module is used. Delay-line resonance is the authentic mechanism by which real piano strings vibrate — the effect is physically correct and uses ¼ the CPU of a Pitch Shifter approach.</div>
+
+  <div class="sec" style="margin-top:20px">CPU Breakdown</div>
+  <div class="cpu-section">
+    <div class="cpu-row"><div class="cpu-label">4× Delay Line (Resonators)</div><div class="cpu-track"><div class="cpu-fill" style="width:8%;background:var(--c-red)"></div></div><div class="cpu-val" style="color:var(--c-red)">8.0%</div></div>
+    <div class="cpu-row"><div class="cpu-label">Audio Mixer 4-channel</div><div class="cpu-track"><div class="cpu-fill" style="width:8%;background:var(--c-orange)"></div></div><div class="cpu-val" style="color:var(--c-orange)">8.0%</div></div>
+    <div class="cpu-row"><div class="cpu-label">Plate Reverb</div><div class="cpu-track"><div class="cpu-fill" style="width:16.7%;background:var(--c-magenta)"></div></div><div class="cpu-val" style="color:var(--c-magenta)">16.7%</div></div>
+    <div class="cpu-row"><div class="cpu-label">Pitch Detector</div><div class="cpu-track"><div class="cpu-fill" style="width:2.3%;background:var(--c-green)"></div></div><div class="cpu-val" style="color:var(--c-green)">2.3%</div></div>
+    <div class="cpu-row"><div class="cpu-label">Env Follower</div><div class="cpu-track"><div class="cpu-fill" style="width:2.5%;background:var(--c-green)"></div></div><div class="cpu-val" style="color:var(--c-green)">2.5%</div></div>
+    <div class="cpu-row"><div class="cpu-label">Stereo Spread (Haas)</div><div class="cpu-track"><div class="cpu-fill" style="width:1.5%;background:var(--c-aqua)"></div></div><div class="cpu-val" style="color:var(--c-aqua)">1.5%</div></div>
+    <div class="cpu-row"><div class="cpu-label">SV Filter</div><div class="cpu-track"><div class="cpu-fill" style="width:1%;background:var(--c-aqua)"></div></div><div class="cpu-val" style="color:var(--c-aqua)">1.0%</div></div>
+    <div class="cpu-row"><div class="cpu-label">All I/O, VCAs, CV logic</div><div class="cpu-track"><div class="cpu-fill" style="width:6%;background:var(--c-sky)"></div></div><div class="cpu-val" style="color:var(--c-sky)">6.0%</div></div>
+    <div class="cpu-total"><span>Total (estimated)</span><span style="color:var(--c-green)">~46%</span></div>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px">54% headroom remaining. Safe to add EQ, a second reverb tail, or a Granular delay layer.</p>
+  </div>
+</section>
+
+<!-- ══════════ P0 · CONTROLS ══════════ -->
+<section class="page" id="page-p0" role="tabpanel">
+  <p class="pg-intro"><strong>7 knobs</strong> (Value modules) and <strong>3 stompswitches</strong>. Near-zero DSP cost. Performers never need to navigate away from this page during a performance.</p>
+
+  <div class="zg-section">
+    <div class="zg-header">
+      <div class="zg-badge" style="background:var(--bg-white);border-color:var(--c-white);color:var(--text-primary)">PAGE 0</div>
+      <div class="zg-title">UI Controls — 19 / 40 blocks used</div>
+    </div>
+    <div class="zg-desc">Rows 0–1: Value modules (2 blocks each). Row 2: stompswitches, bypass, expression pedal input.</div>
+    <div class="zoia-grid">
+      <div class="zg-m zg-ct"><span class="zn">DETUNE</span><span class="zs">val·1</span></div><div class="zg-m zg-ct"><span class="zn">FDBK</span><span class="zs">val·1</span></div><div class="zg-m zg-ct"><span class="zn">REVERB</span><span class="zs">val·1</span></div><div class="zg-m zg-ct"><span class="zn">PIANO</span><span class="zs">val·1</span></div><div class="zg-m zg-ct"><span class="zn">DAMP</span><span class="zs">val·1</span></div><div class="zg-m zg-ct"><span class="zn">DRY/WET</span><span class="zs">val·1</span></div><div class="zg-m zg-ct"><span class="zn">SENS</span><span class="zs">val·1</span></div><div class="zg-e"></div>
+      <div class="zg-m zg-ct"><span class="zn">DETUNE</span><span class="zs">val·2</span></div><div class="zg-m zg-ct"><span class="zn">FDBK</span><span class="zs">val·2</span></div><div class="zg-m zg-ct"><span class="zn">REVERB</span><span class="zs">val·2</span></div><div class="zg-m zg-ct"><span class="zn">PIANO</span><span class="zs">val·2</span></div><div class="zg-m zg-ct"><span class="zn">DAMP</span><span class="zs">val·2</span></div><div class="zg-m zg-ct"><span class="zn">DRY/WET</span><span class="zs">val·2</span></div><div class="zg-m zg-ct"><span class="zn">SENS</span><span class="zs">val·2</span></div><div class="zg-e"></div>
+      <div class="zg-m zg-ct"><span class="zn">SW_SUS</span><span class="zs">stomp·L</span></div><div class="zg-m zg-ct"><span class="zn">SW_KILL</span><span class="zs">stomp·C</span></div><div class="zg-m zg-ct"><span class="zn">BYPASS</span><span class="zs">dev ctrl</span></div><div class="zg-m zg-ct"><span class="zn">EXP</span><span class="zs">cport in</span></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+    </div>
+  </div>
+
+  <div class="sec">Knobs — Value Modules</div>
+  <div class="mgrid">
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">K_DETUNE</span><span class="mod-cpu">~0.15%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Range</span><span class="pn">−1 to +1</span><span class="ps">output: −1 to 1</span><span class="pp cv">default: 0</span></div>
+        <div class="pr"><span class="pd">Routes to</span><span class="ps">DELAY_1 time (+small str ≈ 8%) and DTUNE_INV → DELAY_3 time (opposite direction). Creates a subtle detuned spread for piano string thickness.</span></div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 27</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">K_FEEDBACK</span><span class="mod-cpu">~0.15%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Range</span><span class="pn">0 – 0.95</span><span class="ps">output: 0 to 1</span><span class="pp cv">default: 0.65</span></div>
+        <div class="pr"><span class="pd">Routes to</span><span class="ps">FB_SELECT input 1. Controls resonator sustain length. All 4 feedback VCAs share this value via FB_KILL_MULT.</span></div>
+        <div class="warn-tag">⚠ Do not set above 0.95 — self-oscillation risk</div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 72</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">K_REVERB</span><span class="mod-cpu">~0.15%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Range</span><span class="pn">0 – 1</span><span class="ps">output: 0 to 1</span><span class="pp cv">default: 0.5</span></div>
+        <div class="pr"><span class="pd">Routes to</span><span class="ps">Plate Reverb mix AND decay time simultaneously. 0 = dry resonators only. 1 = full wet, longest tail.</span></div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 91</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">K_PIANO</span><span class="mod-cpu">~0.15%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Range</span><span class="pn">0 – 1</span><span class="ps">output: 0 to 1</span><span class="pp cv">default: 0.5</span></div>
+        <div class="pr"><span class="pd">Routes to</span><span class="ps">SV Filter frequency. 0 = dark/muted (~400 Hz). 0.5 = concert grand (~2 kHz). 1 = bright/harpsichord-like (~5 kHz).</span></div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 74</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">K_DAMPEN</span><span class="mod-cpu">~0.15%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Range</span><span class="pn">0 – 1</span><span class="ps">output: 0 to 1</span><span class="pp cv">default: 0.35</span></div>
+        <div class="pr"><span class="pd">Routes to</span><span class="ps">SV Filter resonance. Low = smooth, open strings. High = ringing, singing quality (sustain-pedal-down character).</span></div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 71</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">K_DRYWET</span><span class="mod-cpu">~0.15%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Range</span><span class="pn">0 – 1</span><span class="ps">output: 0 to 1</span><span class="pp cv">default: 0.45</span></div>
+        <div class="pr"><span class="pd">Routes to</span><span class="ps">WET_VCA_L + WET_VCA_R level (direct). INV_DRYWET → DRY_VCA level (inverted). Expression pedal can override block 1.</span></div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 7 · Expr CC 11</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">K_SENS</span><span class="mod-cpu">~0.15%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Range</span><span class="pn">0 – 1</span><span class="ps">output: 0 to 1</span><span class="pp cv">default: 0.70</span></div>
+        <div class="pr"><span class="pd">Routes to</span><span class="ps">SENS_MULT input 2. Scales the Env Follower output that opens the Gate VCA. Low = only hard picks open the gate. High = resonates on any touch.</span></div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 26</div>
+    </div></div>
+  </div>
+
+  <div class="sec">Stompswitches &amp; Controls</div>
+  <div class="mgrid">
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Stompswitch</span><span class="mod-name">SW_SUSTAIN</span><span class="mod-cpu">0.1%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Switch</span><span class="pn">Left</span><span class="ps">latching · normally zero</span></div>
+        <div class="pr"><span class="pd">Action</span><span class="ps">CV=1: gates off new input (SUSTAIN_INV→0→GATE_LVL_MULT=0) and switches feedback to V_MAXFB (0.95). Resonance loops indefinitely.</span></div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 64 (sustain pedal)</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Stompswitch</span><span class="mod-name">SW_KILL</span><span class="mod-cpu">0.1%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Switch</span><span class="pn">Center</span><span class="ps">momentary · normally zero</span></div>
+        <div class="pr"><span class="pd">Action</span><span class="ps">CV=1: KILL_INV → 0 → FB_KILL_MULT → 0. All four feedback VCAs drop to zero — instant silence.</span></div>
+        <div class="midi-tag"><div class="midi-dot"></div> CC 65</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Device Control</span><span class="mod-name">BYPASS</span><span class="mod-cpu">0.1%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">control: audio bypass</span></div>
+        <div class="pr"><span class="pd">In</span><span class="ps">Right Stompswitch (latching) cv_output → Device Control value block. CV ≥ 0.5 engages bypass.</span></div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Cport Exp CV In</span><span class="mod-name">EXP_PEDAL</span><span class="mod-cpu">0.1%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">output range: 0 to 1</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ K_DRYWET value block (input). Expression pedal overrides the knob. Toe-down = full wet. Heel-down = dry guitar only.</span></div>
+        <div class="info-tag">Optional — patch works without expression pedal</div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ══════════ P1 · I/O + MIX ══════════ -->
+<section class="page" id="page-p1" role="tabpanel">
+  <p class="pg-intro">Audio backbone — input, dry/wet blending, stereo output. ZOIA sums multiple connections to the same input block, so dry and wet paths meet at the output without an explicit mixer module. <strong>15 / 40 blocks used.</strong></p>
+  <div class="zg-section">
+    <div class="zg-header">
+      <div class="zg-badge" style="background:var(--bg-sky);border-color:var(--c-sky);color:var(--c-sky)">PAGE 1</div>
+      <div class="zg-title">I/O + Mix Bus — 15 / 40 blocks used</div>
+    </div>
+    <div class="zoia-grid">
+      <div class="zg-m zg-io"><span class="zn">IN·L</span><span class="zs">aud in</span></div><div class="zg-m zg-io"><span class="zn">IN·R</span><span class="zs">aud in</span></div><div class="zg-m zg-mx"><span class="zn">DRY INV</span><span class="zs">cv inv·1</span></div><div class="zg-m zg-mx"><span class="zn">DRY INV</span><span class="zs">cv inv·2</span></div><div class="zg-m zg-mx"><span class="zn">DRY VCA</span><span class="zs">in·1</span></div><div class="zg-m zg-mx"><span class="zn">DRY VCA</span><span class="zs">lvl·3</span></div><div class="zg-m zg-mx"><span class="zn">DRY VCA</span><span class="zs">out·4</span></div><div class="zg-e"></div>
+      <div class="zg-m zg-mx"><span class="zn">WET·L</span><span class="zs">in·1</span></div><div class="zg-m zg-mx"><span class="zn">WET·L</span><span class="zs">lvl·3</span></div><div class="zg-m zg-mx"><span class="zn">WET·L</span><span class="zs">out·4</span></div><div class="zg-m zg-mx"><span class="zn">WET·R</span><span class="zs">in·1</span></div><div class="zg-m zg-mx"><span class="zn">WET·R</span><span class="zs">lvl·3</span></div><div class="zg-m zg-mx"><span class="zn">WET·R</span><span class="zs">out·4</span></div><div class="zg-m zg-io"><span class="zn">OUT·L</span><span class="zs">aud out</span></div><div class="zg-m zg-io"><span class="zn">OUT·R</span><span class="zs">aud out</span></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+    </div>
+  </div>
+  <div class="mgrid">
+    <div class="mod m-io"><div class="mod-hd"><span class="mod-zoia">Audio Input</span><span class="mod-name">AUDIO_IN</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: L+R</span></div>
+        <div class="pr"><span class="pd">Out L</span><span class="ps">→ GATE_VCA in, PITCH_DET in, DRY_VCA in, ENV_FOLLOW in</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Out R</span><span class="ps">(spare — patch works mono)</span><span class="pp">audio</span></div>
+    </div></div>
+
+    <div class="mod m-io"><div class="mod-hd"><span class="mod-zoia">Audio Output</span><span class="mod-name">AUDIO_OUT</span><span class="mod-cpu">1.0%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: L+R</span></div>
+        <div class="pr"><span class="pd">In L</span><span class="ps">DRY_VCA out + WET_VCA_L out (summed by ZOIA)</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">In R</span><span class="ps">DRY_VCA out + WET_VCA_R out (summed by ZOIA)</span><span class="pp">audio</span></div>
+    </div></div>
+
+    <div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">CV Invert</span><span class="mod-name">INV_DRYWET</span><span class="mod-cpu">0.02%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In</span><span class="pn">K_DRYWET cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ DRY_VCA level. K_DRYWET=1 → inv=0 → dry silent. Natural complementary blend.</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">DRY_VCA</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: 1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">AUDIO_IN pedal_input_L</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Level</span><span class="pn">INV_DRYWET cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ AUDIO_OUT L (100%) and R (100%) — both connections sum with wet</span><span class="pp">audio</span></div>
+    </div></div>
+
+    <div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">WET_VCA_L</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: 1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">PLATE_REVERB output_L</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Level</span><span class="pn">K_DRYWET cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ AUDIO_OUT pedal_output_L (summed with dry)</span><span class="pp">audio</span></div>
+    </div></div>
+
+    <div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">WET_VCA_R</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: 1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">PLATE_REVERB output_R</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Level</span><span class="pn">K_DRYWET cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ AUDIO_OUT pedal_output_R (summed with dry)</span><span class="pp">audio</span></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ══════════ P2 · ANALYSIS ══════════ -->
+<section class="page" id="page-p2" role="tabpanel">
+  <p class="pg-intro">Pitch tracking, dynamics gating, and all CV logic for feedback control and infinite sustain. <strong>35 / 40 blocks used.</strong></p>
+  <div class="zg-section">
+    <div class="zg-header">
+      <div class="zg-badge" style="background:var(--bg-green);border-color:var(--c-green);color:var(--c-green)">PAGE 2</div>
+      <div class="zg-title">Analysis + CV Logic — 35 / 40 blocks used</div>
+    </div>
+    <div class="zoia-grid">
+      <div class="zg-m zg-an"><span class="zn">PITCH</span><span class="zs">det·1</span></div><div class="zg-m zg-an"><span class="zn">PITCH</span><span class="zs">det·2</span></div><div class="zg-m zg-an"><span class="zn">PFILT</span><span class="zs">flt·1</span></div><div class="zg-m zg-an"><span class="zn">PFILT</span><span class="zs">flt·2</span></div><div class="zg-m zg-an"><span class="zn">PFILT</span><span class="zs">flt·3</span></div><div class="zg-m zg-an"><span class="zn">PINV</span><span class="zs">inv·1</span></div><div class="zg-m zg-an"><span class="zn">PINV</span><span class="zs">inv·2</span></div><div class="zg-m zg-an"><span class="zn">DTINV</span><span class="zs">inv·1</span></div>
+      <div class="zg-m zg-an"><span class="zn">DTINV</span><span class="zs">inv·2</span></div><div class="zg-m zg-an"><span class="zn">ENVF</span><span class="zs">in·1</span></div><div class="zg-m zg-an"><span class="zn">ENVF</span><span class="zs">rise·2</span></div><div class="zg-m zg-an"><span class="zn">ENVF</span><span class="zs">fall·3</span></div><div class="zg-m zg-an"><span class="zn">ENVF</span><span class="zs">out·4</span></div><div class="zg-m zg-an"><span class="zn">SMULT</span><span class="zs">in1·1</span></div><div class="zg-m zg-an"><span class="zn">SMULT</span><span class="zs">in2·2</span></div><div class="zg-m zg-an"><span class="zn">SMULT</span><span class="zs">out·3</span></div>
+      <div class="zg-m zg-an"><span class="zn">GATE</span><span class="zs">in·1</span></div><div class="zg-m zg-an"><span class="zn">GATE</span><span class="zs">lvl·3</span></div><div class="zg-m zg-an"><span class="zn">GATE</span><span class="zs">out·4</span></div><div class="zg-m zg-ct"><span class="zn">SINV</span><span class="zs">inv·1</span></div><div class="zg-m zg-ct"><span class="zn">SINV</span><span class="zs">inv·2</span></div><div class="zg-m zg-ct"><span class="zn">GLVL</span><span class="zs">in1·1</span></div><div class="zg-m zg-ct"><span class="zn">GLVL</span><span class="zs">in2·2</span></div><div class="zg-m zg-ct"><span class="zn">GLVL</span><span class="zs">out·3</span></div>
+      <div class="zg-m zg-vl"><span class="zn">VMXFB</span><span class="zs">val·1</span></div><div class="zg-m zg-vl"><span class="zn">VMXFB</span><span class="zs">val·2</span></div><div class="zg-m zg-ct"><span class="zn">FBSEL</span><span class="zs">in1·1</span></div><div class="zg-m zg-ct"><span class="zn">FBSEL</span><span class="zs">in2·2</span></div><div class="zg-m zg-ct"><span class="zn">FBSEL</span><span class="zs">sel·3</span></div><div class="zg-m zg-ct"><span class="zn">FBSEL</span><span class="zs">out·4</span></div><div class="zg-m zg-ct"><span class="zn">KINV</span><span class="zs">inv·1</span></div><div class="zg-m zg-ct"><span class="zn">KINV</span><span class="zs">inv·2</span></div>
+      <div class="zg-m zg-ct"><span class="zn">FBKIL</span><span class="zs">in1·1</span></div><div class="zg-m zg-ct"><span class="zn">FBKIL</span><span class="zs">in2·2</span></div><div class="zg-m zg-ct"><span class="zn">FBKIL</span><span class="zs">out·3</span></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+    </div>
+  </div>
+
+  <div class="sec">Pitch Tracking Chain</div>
+  <div class="mgrid">
+    <div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">Pitch Detector</span><span class="mod-name">PITCH_DET</span><span class="mod-cpu">2.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In</span><span class="pn">AUDIO_IN pedal_input_L</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">Pitch as V/Oct CV (A0=0, each octave=0.1) → PITCH_FILT</span><span class="pp cv">cv</span></div>
+        <div class="info-tag">2 blocks only. No gate output. Tracking sensitivity via connection strength.</div>
+    </div></div>
+
+    <div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">CV Filter</span><span class="mod-name">PITCH_FILT</span><span class="mod-cpu">0.1%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">control: linked</span></div>
+        <div class="pr"><span class="pd">Knob</span><span class="pn">time constant: 30 ms</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">PITCH_DET pitch_out</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">Smoothed pitch → PITCH_INV. Prevents abrupt delay-time jumps between notes.</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">CV Invert</span><span class="mod-name">PITCH_INV</span><span class="mod-cpu">0.02%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In</span><span class="pn">PITCH_FILT cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ All 4 Delay Line delay_time inputs (100%). Higher pitch = lower CV = shorter delay = higher resonant frequency.</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">CV Invert</span><span class="mod-name">DTUNE_INV</span><span class="mod-cpu">0.02%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In</span><span class="pn">K_DETUNE cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ DELAY_3 delay_time (~8% strength). Moves Voice 3 opposite to Voice 1, spreading them for piano-string thickness.</span><span class="pp cv">cv</span></div>
+    </div></div>
+  </div>
+
+  <div class="sec">Dynamics Gate</div>
+  <div class="mgrid">
+    <div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">Env Follower</span><span class="mod-name">ENV_FOLLOW</span><span class="mod-cpu">2.5%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Options</span><span class="pn">rise/fall: on · output scale: log</span></div>
+        <div class="pr"><span class="pd">Knobs</span><span class="pn">rise: 5 ms · fall: 150 ms</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">AUDIO_IN pedal_input_L</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">Amplitude CV → SENS_MULT input 1</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">Multiplier</span><span class="mod-name">SENS_MULT</span><span class="mod-cpu">0.2%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In 1</span><span class="pn">ENV_FOLLOW cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">In 2</span><span class="pn">K_SENS cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">Sensitivity-scaled amplitude → GATE_LVL_MULT input 1</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-pitch"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">GATE_VCA</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: 1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">AUDIO_IN pedal_input_L</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Level</span><span class="pn">GATE_LVL_MULT cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ all 4 Delay Line audio_in. This is the resonator excitation signal.</span><span class="pp">audio</span></div>
+    </div></div>
+  </div>
+
+  <div class="sec">Sustain + Kill Logic</div>
+  <div class="mgrid">
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">CV Invert</span><span class="mod-name">SUSTAIN_INV</span><span class="mod-cpu">0.02%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In</span><span class="pn">SW_SUSTAIN cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ GATE_LVL_MULT input 2. SW=1 → inv=0 → gate closed. No new signal during infinite sustain hold.</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Multiplier</span><span class="mod-name">GATE_LVL_MULT</span><span class="mod-cpu">0.2%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In 1</span><span class="pn">SENS_MULT cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">In 2</span><span class="pn">SUSTAIN_INV cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ GATE_VCA level_control. Normal: SENS×1=open. Sustain: SENS×0=closed.</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-val"><div class="mod-hd"><span class="mod-zoia">Value</span><span class="mod-name">V_MAXFB</span><span class="mod-cpu">0.15%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Knob</span><span class="pn">0.95</span><span class="ps">constant — never change</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ FB_SELECT In Switch input 2. Provides near-oscillation feedback for infinite sustain mode.</span><span class="pp cv">cv</span></div>
+        <div class="warn-tag">⚠ Set exactly 0.95 — higher risks oscillation</div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">In Switch</span><span class="mod-name">FB_SELECT</span><span class="mod-cpu">0.2%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">num inputs: 2</span></div>
+        <div class="pr"><span class="pd">In 1</span><span class="pn">K_FEEDBACK cv_output</span><span class="ps">(normal play)</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">In 2</span><span class="pn">V_MAXFB cv_output</span><span class="ps">(infinite sustain)</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Select</span><span class="pn">SW_SUSTAIN cv_output</span><span class="ps">0=K_FEEDBACK · 1=V_MAXFB</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ FB_KILL_MULT input 1</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">CV Invert</span><span class="mod-name">KILL_INV</span><span class="mod-cpu">0.02%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In</span><span class="pn">SW_KILL cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ FB_KILL_MULT input 2. Kill=1 → inv=0 → multiplies all feedback to zero instantly.</span><span class="pp cv">cv</span></div>
+    </div></div>
+
+    <div class="mod m-ctrl"><div class="mod-hd"><span class="mod-zoia">Multiplier</span><span class="mod-name">FB_KILL_MULT</span><span class="mod-cpu">0.2%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In 1</span><span class="pn">FB_SELECT cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">In 2</span><span class="pn">KILL_INV cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">Master feedback CV → all 4 Feedback VCA level_control blocks (FB1–FB4 on P3).</span><span class="pp cv">cv</span></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ══════════ P3 · RESONATORS ══════════ -->
+<section class="page" id="page-p3" role="tabpanel">
+  <p class="pg-intro">Four delay-line string resonators. Each Delay Line output feeds back through its own VCA, creating a resonating, sustained vibration. The 4-channel mixer collects all voices. <strong>33 / 40 blocks used.</strong></p>
+  <div class="zg-section">
+    <div class="zg-header">
+      <div class="zg-badge" style="background:var(--bg-red);border-color:var(--c-red);color:var(--txt-red-name)">PAGE 3</div>
+      <div class="zg-title">Resonator Voices — 33 / 40 blocks used</div>
+    </div>
+    <div class="zg-desc">Each row = one voice: [Delay in][Delay time][Delay out][FB VCA in][FB VCA lvl][FB VCA out][Mixer in][Mixer gain]</div>
+    <div class="zoia-grid">
+      <div class="zg-m zg-rs"><span class="zn">DLY1</span><span class="zs">in</span></div><div class="zg-m zg-rs"><span class="zn">DLY1</span><span class="zs">time</span></div><div class="zg-m zg-rs"><span class="zn">DLY1</span><span class="zs">out</span></div><div class="zg-m zg-rs"><span class="zn">FB1</span><span class="zs">in·1</span></div><div class="zg-m zg-rs"><span class="zn">FB1</span><span class="zs">lvl·3</span></div><div class="zg-m zg-rs"><span class="zn">FB1</span><span class="zs">out·4</span></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">in1</span></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">gain1</span></div>
+      <div class="zg-m zg-rs"><span class="zn">DLY2</span><span class="zs">in</span></div><div class="zg-m zg-rs"><span class="zn">DLY2</span><span class="zs">time</span></div><div class="zg-m zg-rs"><span class="zn">DLY2</span><span class="zs">out</span></div><div class="zg-m zg-rs"><span class="zn">FB2</span><span class="zs">in·1</span></div><div class="zg-m zg-rs"><span class="zn">FB2</span><span class="zs">lvl·3</span></div><div class="zg-m zg-rs"><span class="zn">FB2</span><span class="zs">out·4</span></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">in2</span></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">gain2</span></div>
+      <div class="zg-m zg-rs"><span class="zn">DLY3</span><span class="zs">in</span></div><div class="zg-m zg-rs"><span class="zn">DLY3</span><span class="zs">time</span></div><div class="zg-m zg-rs"><span class="zn">DLY3</span><span class="zs">out</span></div><div class="zg-m zg-rs"><span class="zn">FB3</span><span class="zs">in·1</span></div><div class="zg-m zg-rs"><span class="zn">FB3</span><span class="zs">lvl·3</span></div><div class="zg-m zg-rs"><span class="zn">FB3</span><span class="zs">out·4</span></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">in3</span></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">gain3</span></div>
+      <div class="zg-m zg-rs"><span class="zn">DLY4</span><span class="zs">in</span></div><div class="zg-m zg-rs"><span class="zn">DLY4</span><span class="zs">time</span></div><div class="zg-m zg-rs"><span class="zn">DLY4</span><span class="zs">out</span></div><div class="zg-m zg-rs"><span class="zn">FB4</span><span class="zs">in·1</span></div><div class="zg-m zg-rs"><span class="zn">FB4</span><span class="zs">lvl·3</span></div><div class="zg-m zg-rs"><span class="zn">FB4</span><span class="zs">out·4</span></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">in4</span></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">gain4</span></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-m zg-mx"><span class="zn">RMIX</span><span class="zs">outL</span></div><div class="zg-e"></div>
+    </div>
+  </div>
+
+  <div class="tip">Each voice: GATE_VCA audio flows into Delay Line. Delay out → Feedback VCA → back into the <em>same</em> Delay Line input (they sum with the excitation signal). The feedback VCA level is the sustain amount. Delay out also goes to the Mixer for output collection.</div>
+
+  <div class="sec">Voice 1 — Fundamental (5.0 ms · ~200 Hz ref)</div>
+  <div class="mgrid">
+    <div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">DELAY_1 · Fundamental</span><span class="mod-cpu">2.0%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Options</span><span class="pn">max time: 100 ms · CV input: exponential · interpolation: off · tap tempo: off</span></div>
+        <div class="pr"><span class="pd">Knob</span><span class="pn">delay_time: 5.0 ms</span><span class="ps">(fundamental reference)</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">GATE_VCA audio_out_1</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">FB1_VCA audio_out_1</span><span class="ps">(feedback — sums with above)</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Time</span><span class="pn">PITCH_INV cv_output</span><span class="ps">str 100%</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Time</span><span class="pn">K_DETUNE cv_output</span><span class="ps">str ~8% (slight sharp detune)</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ FB1_VCA audio_in_1</span><span class="pp">audio</span></div>
+    </div></div>
+    <div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">FB1_VCA · Fundamental</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: 1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">DELAY_1 audio_out</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Level</span><span class="pn">FB_KILL_MULT cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ DELAY_1 audio_in (feedback loop) AND RESONATOR_MIX inL_1</span><span class="pp">audio</span></div>
+    </div></div>
+  </div>
+
+  <div class="sec">Voice 2 — Octave Up (2.5 ms · ~400 Hz)</div>
+  <div class="mgrid">
+    <div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">DELAY_2 · Octave Up</span><span class="mod-cpu">2.0%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Knob</span><span class="pn">delay_time: 2.5 ms</span><span class="ps">(half period of Voice 1 = one octave above)</span></div>
+        <div class="pr"><span class="pd">Options</span><span class="pn">same as DELAY_1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">GATE_VCA audio_out_1</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">FB2_VCA audio_out_1</span><span class="ps">(feedback)</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Time</span><span class="pn">PITCH_INV cv_output</span><span class="ps">str 100%</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ FB2_VCA audio_in_1</span><span class="pp">audio</span></div>
+    </div></div>
+    <div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">FB2_VCA · Octave Up</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: 1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">DELAY_2 audio_out</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Level</span><span class="pn">FB_KILL_MULT cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ DELAY_2 audio_in (feedback) AND RESONATOR_MIX inL_2</span><span class="pp">audio</span></div>
+    </div></div>
+  </div>
+
+  <div class="sec">Voice 3 — Perfect Fifth Up (3.35 ms · ~298 Hz)</div>
+  <div class="mgrid">
+    <div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">DELAY_3 · Fifth Up</span><span class="mod-cpu">2.0%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Knob</span><span class="pn">delay_time: 3.35 ms</span><span class="ps">(2/3 period of Voice 1 = perfect fifth above)</span></div>
+        <div class="pr"><span class="pd">Options</span><span class="pn">same as DELAY_1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">GATE_VCA audio_out_1</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">FB3_VCA audio_out_1</span><span class="ps">(feedback)</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Time</span><span class="pn">PITCH_INV cv_output</span><span class="ps">str 100%</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Time</span><span class="pn">DTUNE_INV cv_output</span><span class="ps">str ~8% (slight flat detune, opposite to Voice 1)</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ FB3_VCA audio_in_1</span><span class="pp">audio</span></div>
+    </div></div>
+    <div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">FB3_VCA · Fifth Up</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: 1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">DELAY_3 audio_out</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Level</span><span class="pn">FB_KILL_MULT cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ DELAY_3 audio_in (feedback) AND RESONATOR_MIX inL_3</span><span class="pp">audio</span></div>
+    </div></div>
+  </div>
+
+  <div class="sec">Voice 4 — Octave Down (10.0 ms · ~100 Hz)</div>
+  <div class="mgrid">
+    <div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">Delay Line</span><span class="mod-name">DELAY_4 · Octave Down</span><span class="mod-cpu">2.0%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Knob</span><span class="pn">delay_time: 10.0 ms</span><span class="ps">(double period of Voice 1 = one octave below)</span></div>
+        <div class="pr"><span class="pd">Options</span><span class="pn">same as DELAY_1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">GATE_VCA audio_out_1</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">FB4_VCA audio_out_1</span><span class="ps">(feedback)</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Time</span><span class="pn">PITCH_INV cv_output</span><span class="ps">str 100%</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ FB4_VCA audio_in_1</span><span class="pp">audio</span></div>
+    </div></div>
+    <div class="mod m-res"><div class="mod-hd"><span class="mod-zoia">VCA</span><span class="mod-name">FB4_VCA · Octave Down</span><span class="mod-cpu">0.3%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">channels: 1</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">DELAY_4 audio_out</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Level</span><span class="pn">FB_KILL_MULT cv_output</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out</span><span class="ps">→ DELAY_4 audio_in (feedback) AND RESONATOR_MIX inL_4</span><span class="pp">audio</span></div>
+    </div></div>
+  </div>
+
+  <div class="sec">Voice Collector</div>
+  <div class="mgrid">
+    <div class="mod m-mix"><div class="mod-hd"><span class="mod-zoia">Audio Mixer</span><span class="mod-name">RESONATOR_MIX</span><span class="mod-cpu">~8%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Options</span><span class="pn">num channels: 4 · stereo: mono · panning: off</span></div>
+        <div class="pr"><span class="pd">In 1–4</span><span class="pn">FB1_VCA, FB2_VCA, FB3_VCA, FB4_VCA audio_out</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Gains 1–4</span><span class="pn">0 dB each</span><span class="ps">(set all gain knobs to 0 dB on hardware)</span></div>
+        <div class="pr"><span class="pd">Out L</span><span class="ps">→ SV_FILTER audio_in on P4</span><span class="pp">audio</span></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ══════════ P4 · TONE & REVERB ══════════ -->
+<section class="page" id="page-p4" role="tabpanel">
+  <p class="pg-intro">Tone shaping, stereo width, and spatial reverb. The resonator mix passes through a lowpass filter (piano character), a Haas stereo spreader (natural width, no modulation), and plate reverb (acoustic body). <strong>16 / 40 blocks used.</strong></p>
+  <div class="zg-section">
+    <div class="zg-header">
+      <div class="zg-badge" style="background:var(--bg-magenta);border-color:var(--c-magenta);color:var(--txt-mag-name)">PAGE 4</div>
+      <div class="zg-title">Tone &amp; Reverb — 16 / 40 blocks used</div>
+    </div>
+    <div class="zoia-grid">
+      <div class="zg-m zg-tn"><span class="zn">SVFLT</span><span class="zs">in·1</span></div><div class="zg-m zg-tn"><span class="zn">SVFLT</span><span class="zs">freq·2</span></div><div class="zg-m zg-tn"><span class="zn">SVFLT</span><span class="zs">res·3</span></div><div class="zg-m zg-tn"><span class="zn">SVFLT</span><span class="zs">lp·4</span></div><div class="zg-m zg-tn"><span class="zn">HAAS</span><span class="zs">in·1</span></div><div class="zg-m zg-tn"><span class="zn">HAAS</span><span class="zs">dly·2</span></div><div class="zg-m zg-tn"><span class="zn">HAAS</span><span class="zs">out1·3</span></div><div class="zg-m zg-tn"><span class="zn">HAAS</span><span class="zs">out2·4</span></div>
+      <div class="zg-m zg-rv"><span class="zn">PLATE</span><span class="zs">inL·1</span></div><div class="zg-m zg-rv"><span class="zn">PLATE</span><span class="zs">inR·2</span></div><div class="zg-m zg-rv"><span class="zn">PLATE</span><span class="zs">dec·3</span></div><div class="zg-m zg-rv"><span class="zn">PLATE</span><span class="zs">loEQ·4</span></div><div class="zg-m zg-rv"><span class="zn">PLATE</span><span class="zs">hiEQ·5</span></div><div class="zg-m zg-rv"><span class="zn">PLATE</span><span class="zs">mix·6</span></div><div class="zg-m zg-rv"><span class="zn">PLATE</span><span class="zs">outL·7</span></div><div class="zg-m zg-rv"><span class="zn">PLATE</span><span class="zs">outR·8</span></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+      <div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div><div class="zg-e"></div>
+    </div>
+  </div>
+
+  <div class="mgrid">
+    <div class="mod m-body"><div class="mod-hd"><span class="mod-zoia">SV Filter</span><span class="mod-name">SV_FILTER</span><span class="mod-cpu">1.0%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Options</span><span class="pn">low pass output: on · hipass: off · bandpass: off</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">RESONATOR_MIX out_L</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Freq</span><span class="pn">K_PIANO cv_output</span><span class="ps">Piano tone: 0→~400 Hz (dark) · 0.5→~2 kHz · 1→~5 kHz (bright)</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Resonance</span><span class="pn">K_DAMPEN cv_output</span><span class="ps">0=smooth, 1=ringing singing quality</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">LP Out</span><span class="ps">→ HAAS_SPREAD audio_in</span><span class="pp">audio</span></div>
+    </div></div>
+
+    <div class="mod m-body"><div class="mod-hd"><span class="mod-zoia">Stereo Spread</span><span class="mod-name">HAAS_SPREAD</span><span class="mod-cpu">1.5%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">Option</span><span class="pn">method: haas</span></div>
+        <div class="pr"><span class="pd">Knob</span><span class="pn">delay_time: 18 ms</span><span class="ps">(natural stereo spread — adjust to taste, 8–25 ms)</span></div>
+        <div class="pr"><span class="pd">In</span><span class="pn">SV_FILTER lowpass_output</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Out 1</span><span class="ps">Clean copy → PLATE_REVERB input_L</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Out 2</span><span class="ps">Delayed copy → PLATE_REVERB input_R</span><span class="pp">audio</span></div>
+        <div class="info-tag">Haas spread = stereo width with zero modulation. No chorus artefacts.</div>
+    </div></div>
+
+    <div class="mod m-rev"><div class="mod-hd"><span class="mod-zoia">Plate Reverb</span><span class="mod-name">PLATE_REVERB</span><span class="mod-cpu">16.7%</span></div>
+      <div class="mod-body">
+        <div class="pr"><span class="pd">In L</span><span class="pn">HAAS_SPREAD audio_out_1</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">In R</span><span class="pn">HAAS_SPREAD audio_out_2</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Decay</span><span class="pn">K_REVERB cv_output</span><span class="ps">Knob sets base (2.5 s). K_REVERB scales longer/shorter.</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Low EQ</span><span class="pn">+2 dB knob</span><span class="ps">(set on hardware)</span></div>
+        <div class="pr"><span class="pd">High EQ</span><span class="pn">−4 dB knob</span><span class="ps">(set on hardware)</span></div>
+        <div class="pr"><span class="pd">Mix</span><span class="pn">K_REVERB cv_output</span><span class="ps">0=dry resonators only · 1=full reverb. Same CV source as decay.</span><span class="pp cv">cv</span></div>
+        <div class="pr"><span class="pd">Out L</span><span class="ps">→ WET_VCA_L audio_in on P1</span><span class="pp">audio</span></div>
+        <div class="pr"><span class="pd">Out R</span><span class="ps">→ WET_VCA_R audio_in on P1</span><span class="pp">audio</span></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ══════════ CONNECTIONS ══════════ -->
+<section class="page" id="page-cx" role="tabpanel">
+  <p class="pg-intro"><span class="cb-audio">Audio</span> connections carry full-rate signal. <span class="cb-cv">CV</span> connections carry control voltage. Strength is the connection attenuator (1.0 = 100%). Delay line time inputs share PITCH_INV — one source, four destinations.</p>
+  <div class="cx-filters">
+    <button class="cx-filter-btn on" onclick="filterCx('all',this)">All</button>
+    <button class="cx-filter-btn" onclick="filterCx('audio',this)">Audio</button>
+    <button class="cx-filter-btn" onclick="filterCx('cv',this)">CV / Gate</button>
+  </div>
+  <table class="cx-table" aria-label="All connections">
+    <thead><tr><th>Type</th><th>From Module</th><th>From Port</th><th>To Module</th><th>To Port</th><th>Str</th><th>Notes</th></tr></thead>
+    <tbody id="cx-body">
+      <!-- AUDIO: input path -->
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>AUDIO_IN</td><td>pedal_input_L</td><td>GATE_VCA</td><td>audio_in_1</td><td class="cx-pct">100%</td><td>Guitar → resonator excitation gate</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>AUDIO_IN</td><td>pedal_input_L</td><td>DRY_VCA</td><td>audio_in_1</td><td class="cx-pct">100%</td><td>Guitar → dry path</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>AUDIO_IN</td><td>pedal_input_L</td><td>PITCH_DET</td><td>audio_in</td><td class="cx-pct">100%</td><td>Guitar → pitch detector</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>AUDIO_IN</td><td>pedal_input_L</td><td>ENV_FOLLOW</td><td>audio_in</td><td class="cx-pct">100%</td><td>Guitar → envelope follower</td></tr>
+      <!-- AUDIO: gate to resonators -->
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>GATE_VCA</td><td>audio_out_1</td><td>DELAY_1</td><td>audio_in</td><td class="cx-pct">100%</td><td>Gated excitation → Voice 1</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>GATE_VCA</td><td>audio_out_1</td><td>DELAY_2</td><td>audio_in</td><td class="cx-pct">100%</td><td>Gated excitation → Voice 2</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>GATE_VCA</td><td>audio_out_1</td><td>DELAY_3</td><td>audio_in</td><td class="cx-pct">100%</td><td>Gated excitation → Voice 3</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>GATE_VCA</td><td>audio_out_1</td><td>DELAY_4</td><td>audio_in</td><td class="cx-pct">100%</td><td>Gated excitation → Voice 4</td></tr>
+      <!-- AUDIO: resonator loops -->
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>DELAY_1</td><td>audio_out</td><td>FB1_VCA</td><td>audio_in_1</td><td class="cx-pct">100%</td><td>Delay → feedback VCA</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>FB1_VCA</td><td>audio_out_1</td><td>DELAY_1</td><td>audio_in</td><td class="cx-pct">100%</td><td>Feedback loop (sums with excitation)</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>FB1_VCA</td><td>audio_out_1</td><td>RESONATOR_MIX</td><td>inL_1</td><td class="cx-pct">100%</td><td>Voice 1 → collector</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>DELAY_2</td><td>audio_out</td><td>FB2_VCA</td><td>audio_in_1</td><td class="cx-pct">100%</td><td>Delay → feedback VCA</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>FB2_VCA</td><td>audio_out_1</td><td>DELAY_2</td><td>audio_in</td><td class="cx-pct">100%</td><td>Feedback loop</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>FB2_VCA</td><td>audio_out_1</td><td>RESONATOR_MIX</td><td>inL_2</td><td class="cx-pct">100%</td><td>Voice 2 → collector</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>DELAY_3</td><td>audio_out</td><td>FB3_VCA</td><td>audio_in_1</td><td class="cx-pct">100%</td><td>Delay → feedback VCA</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>FB3_VCA</td><td>audio_out_1</td><td>DELAY_3</td><td>audio_in</td><td class="cx-pct">100%</td><td>Feedback loop</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>FB3_VCA</td><td>audio_out_1</td><td>RESONATOR_MIX</td><td>inL_3</td><td class="cx-pct">100%</td><td>Voice 3 → collector</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>DELAY_4</td><td>audio_out</td><td>FB4_VCA</td><td>audio_in_1</td><td class="cx-pct">100%</td><td>Delay → feedback VCA</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>FB4_VCA</td><td>audio_out_1</td><td>DELAY_4</td><td>audio_in</td><td class="cx-pct">100%</td><td>Feedback loop</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>FB4_VCA</td><td>audio_out_1</td><td>RESONATOR_MIX</td><td>inL_4</td><td class="cx-pct">100%</td><td>Voice 4 → collector</td></tr>
+      <!-- AUDIO: effects chain -->
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>RESONATOR_MIX</td><td>out_L</td><td>SV_FILTER</td><td>audio_in</td><td class="cx-pct">100%</td><td>Mixed resonators → tone filter</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>SV_FILTER</td><td>lowpass_output</td><td>HAAS_SPREAD</td><td>audio_in</td><td class="cx-pct">100%</td><td>Filtered → Haas stereo spread</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>HAAS_SPREAD</td><td>audio_out_1</td><td>PLATE_REVERB</td><td>input_L</td><td class="cx-pct">100%</td><td>Clean copy → reverb left</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>HAAS_SPREAD</td><td>audio_out_2</td><td>PLATE_REVERB</td><td>input_R</td><td class="cx-pct">100%</td><td>Delayed copy → reverb right</td></tr>
+      <!-- AUDIO: output -->
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>PLATE_REVERB</td><td>output_L</td><td>WET_VCA_L</td><td>audio_in_1</td><td class="cx-pct">100%</td><td>Wet left → output VCA</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>PLATE_REVERB</td><td>output_R</td><td>WET_VCA_R</td><td>audio_in_1</td><td class="cx-pct">100%</td><td>Wet right → output VCA</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>WET_VCA_L</td><td>audio_out_1</td><td>AUDIO_OUT</td><td>pedal_output_L</td><td class="cx-pct">100%</td><td>Wet L → output (sums with dry)</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>WET_VCA_R</td><td>audio_out_1</td><td>AUDIO_OUT</td><td>pedal_output_R</td><td class="cx-pct">100%</td><td>Wet R → output (sums with dry)</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>DRY_VCA</td><td>audio_out_1</td><td>AUDIO_OUT</td><td>pedal_output_L</td><td class="cx-pct">100%</td><td>Dry → output L (sums with wet)</td></tr>
+      <tr class="cx-audio"><td><span class="cx-type-audio">audio</span></td><td>DRY_VCA</td><td>audio_out_1</td><td>AUDIO_OUT</td><td>pedal_output_R</td><td class="cx-pct">100%</td><td>Dry → output R (sums with wet)</td></tr>
+      <!-- CV: pitch tracking -->
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>PITCH_DET</td><td>pitch_out</td><td>PITCH_FILT</td><td>cv_input</td><td class="cx-pct">100%</td><td>Raw pitch → smoothing filter</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>PITCH_FILT</td><td>cv_output</td><td>PITCH_INV</td><td>cv_input</td><td class="cx-pct">100%</td><td>Smooth pitch → invert for delay time</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>PITCH_INV</td><td>cv_output</td><td>DELAY_1</td><td>delay_time</td><td class="cx-pct">100%</td><td>Pitch CV → Voice 1 delay time</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>PITCH_INV</td><td>cv_output</td><td>DELAY_2</td><td>delay_time</td><td class="cx-pct">100%</td><td>Pitch CV → Voice 2 delay time</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>PITCH_INV</td><td>cv_output</td><td>DELAY_3</td><td>delay_time</td><td class="cx-pct">100%</td><td>Pitch CV → Voice 3 delay time</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>PITCH_INV</td><td>cv_output</td><td>DELAY_4</td><td>delay_time</td><td class="cx-pct">100%</td><td>Pitch CV → Voice 4 delay time</td></tr>
+      <!-- CV: detune -->
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_DETUNE</td><td>cv_output</td><td>DELAY_1</td><td>delay_time</td><td class="cx-pct">~8%</td><td>Detune: shifts Voice 1 slightly sharp</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_DETUNE</td><td>cv_output</td><td>DTUNE_INV</td><td>cv_input</td><td class="cx-pct">100%</td><td>Detune → invert for Voice 3</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>DTUNE_INV</td><td>cv_output</td><td>DELAY_3</td><td>delay_time</td><td class="cx-pct">~8%</td><td>Detune: shifts Voice 3 slightly flat</td></tr>
+      <!-- CV: sensitivity gate -->
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>ENV_FOLLOW</td><td>cv_output</td><td>SENS_MULT</td><td>cv_input_1</td><td class="cx-pct">100%</td><td>Amplitude → sensitivity multiplier</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_SENS</td><td>cv_output</td><td>SENS_MULT</td><td>cv_input_2</td><td class="cx-pct">100%</td><td>Sensitivity knob → multiplier</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>SENS_MULT</td><td>cv_output</td><td>GATE_LVL_MULT</td><td>cv_input_1</td><td class="cx-pct">100%</td><td>Scaled amplitude → gate level</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>SW_SUSTAIN</td><td>cv_output</td><td>SUSTAIN_INV</td><td>cv_input</td><td class="cx-pct">100%</td><td>Sustain → invert to close gate</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>SUSTAIN_INV</td><td>cv_output</td><td>GATE_LVL_MULT</td><td>cv_input_2</td><td class="cx-pct">100%</td><td>Inverted sustain → closes gate when 0</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>GATE_LVL_MULT</td><td>cv_output</td><td>GATE_VCA</td><td>level_control</td><td class="cx-pct">100%</td><td>Gate level → VCA</td></tr>
+      <!-- CV: feedback control -->
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_FEEDBACK</td><td>cv_output</td><td>FB_SELECT</td><td>cv_input_1</td><td class="cx-pct">100%</td><td>Normal feedback knob</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>V_MAXFB</td><td>cv_output</td><td>FB_SELECT</td><td>cv_input_2</td><td class="cx-pct">100%</td><td>Max feedback for sustain mode</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>SW_SUSTAIN</td><td>cv_output</td><td>FB_SELECT</td><td>in_select</td><td class="cx-pct">100%</td><td>Sustain selects max feedback</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>SW_KILL</td><td>cv_output</td><td>KILL_INV</td><td>cv_input</td><td class="cx-pct">100%</td><td>Kill → invert to multiply out feedback</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>FB_SELECT</td><td>cv_output</td><td>FB_KILL_MULT</td><td>cv_input_1</td><td class="cx-pct">100%</td><td>Selected feedback → kill multiplier</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>KILL_INV</td><td>cv_output</td><td>FB_KILL_MULT</td><td>cv_input_2</td><td class="cx-pct">100%</td><td>Inverted kill → zero on kill press</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>FB_KILL_MULT</td><td>cv_output</td><td>FB1_VCA</td><td>level_control</td><td class="cx-pct">100%</td><td>Master feedback → Voice 1 VCA</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>FB_KILL_MULT</td><td>cv_output</td><td>FB2_VCA</td><td>level_control</td><td class="cx-pct">100%</td><td>Master feedback → Voice 2 VCA</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>FB_KILL_MULT</td><td>cv_output</td><td>FB3_VCA</td><td>level_control</td><td class="cx-pct">100%</td><td>Master feedback → Voice 3 VCA</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>FB_KILL_MULT</td><td>cv_output</td><td>FB4_VCA</td><td>level_control</td><td class="cx-pct">100%</td><td>Master feedback → Voice 4 VCA</td></tr>
+      <!-- CV: tone + reverb -->
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_PIANO</td><td>cv_output</td><td>SV_FILTER</td><td>frequency</td><td class="cx-pct">100%</td><td>Piano tone → filter cutoff</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_DAMPEN</td><td>cv_output</td><td>SV_FILTER</td><td>resonance</td><td class="cx-pct">100%</td><td>Dampen → filter resonance</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_REVERB</td><td>cv_output</td><td>PLATE_REVERB</td><td>decay_time</td><td class="cx-pct">100%</td><td>Reverb knob → decay length</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_REVERB</td><td>cv_output</td><td>PLATE_REVERB</td><td>mix</td><td class="cx-pct">100%</td><td>Reverb knob → wet/dry mix</td></tr>
+      <!-- CV: dry/wet -->
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_DRYWET</td><td>cv_output</td><td>INV_DRYWET</td><td>cv_input</td><td class="cx-pct">100%</td><td>DryWet → invert for dry gain</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>INV_DRYWET</td><td>cv_output</td><td>DRY_VCA</td><td>level_control</td><td class="cx-pct">100%</td><td>Inverted → dry VCA level</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_DRYWET</td><td>cv_output</td><td>WET_VCA_L</td><td>level_control</td><td class="cx-pct">100%</td><td>DryWet → wet left VCA level</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>K_DRYWET</td><td>cv_output</td><td>WET_VCA_R</td><td>level_control</td><td class="cx-pct">100%</td><td>DryWet → wet right VCA level</td></tr>
+      <!-- CV: bypass + expression -->
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>SW_RIGHT</td><td>cv_output</td><td>BYPASS</td><td>value</td><td class="cx-pct">100%</td><td>Right stomp → hardware bypass</td></tr>
+      <tr class="cx-cv"><td><span class="cx-type-cv">cv</span></td><td>EXP_PEDAL</td><td>cv_output</td><td>K_DRYWET</td><td>value (blk 1)</td><td class="cx-pct">100%</td><td>Expression overrides DryWet knob</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════ PRESETS ══════════ -->
+<section class="page" id="page-pre" role="tabpanel">
+  <p class="pg-intro">Five named starting points. Click a card to see its full parameter values. All parameters are adjustable after loading — these are launch pads, not fixed settings.</p>
+  <div class="preset-grid">
+    <div class="preset-card" tabindex="0" onclick="showPreset('grand')" onkeydown="if(event.key==='Enter')showPreset('grand')">
+      <div class="preset-name">Grand Hall</div>
+      <div class="preset-desc">Full concert grand simulation. Rich, lush resonance with long reverb tail. The flagship sound.</div>
+      <div class="preset-vals">
+        <div>Feedback: <span>0.75</span></div><div>Reverb: <span>0.65</span></div>
+        <div>Piano: <span>0.55</span></div><div>Dry/Wet: <span>0.45</span></div>
+      </div>
+    </div>
+    <div class="preset-card" tabindex="0" onclick="showPreset('chamber')" onkeydown="if(event.key==='Enter')showPreset('chamber')">
+      <div class="preset-name">Chamber Piano</div>
+      <div class="preset-desc">Intimate, close-miked feel. Less reverb, tighter strings — like a piano in a practice room.</div>
+      <div class="preset-vals">
+        <div>Feedback: <span>0.60</span></div><div>Reverb: <span>0.40</span></div>
+        <div>Piano: <span>0.50</span></div><div>Dry/Wet: <span>0.35</span></div>
+      </div>
+    </div>
+    <div class="preset-card" tabindex="0" onclick="showPreset('upright')" onkeydown="if(event.key==='Enter')showPreset('upright')">
+      <div class="preset-name">Upright Piano</div>
+      <div class="preset-desc">Dark, slightly honky character. Short decay. Old rehearsal piano in a small room.</div>
+      <div class="preset-vals">
+        <div>Feedback: <span>0.50</span></div><div>Reverb: <span>0.30</span></div>
+        <div>Piano: <span>0.25</span></div><div>Dry/Wet: <span>0.30</span></div>
+      </div>
+    </div>
+    <div class="preset-card" tabindex="0" onclick="showPreset('halo')" onkeydown="if(event.key==='Enter')showPreset('halo')">
+      <div class="preset-name">String Halo</div>
+      <div class="preset-desc">Very subtle atmospheric shimmer. The resonance is barely there — a ghost behind your playing.</div>
+      <div class="preset-vals">
+        <div>Feedback: <span>0.80</span></div><div>Reverb: <span>0.80</span></div>
+        <div>Piano: <span>0.60</span></div><div>Dry/Wet: <span>0.22</span></div>
+      </div>
+    </div>
+    <div class="preset-card" tabindex="0" onclick="showPreset('shimmer')" onkeydown="if(event.key==='Enter')showPreset('shimmer')">
+      <div class="preset-name">Infinite Shimmer</div>
+      <div class="preset-desc">Play a note, engage SW_SUSTAIN, lift your hands. A resonant pad blooms and sustains indefinitely.</div>
+      <div class="preset-vals">
+        <div>Feedback: <span>0.85</span></div><div>Reverb: <span>0.90</span></div>
+        <div>Piano: <span>0.70</span></div><div>Dry/Wet: <span>0.60</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="preset-detail" style="display:none">
+    <div class="sec" id="preset-detail-name">Selected Preset</div>
+    <div class="preset-detail-vals" id="preset-detail-vals"></div>
+  </div>
+</section>
+
+<!-- ══════════ MIDI MAP ══════════ -->
+<section class="page" id="page-midi" role="tabpanel">
+  <p class="pg-intro">All MIDI CC assignments for live control. ZOIA receives MIDI via the 3.5 mm TRS (Type A) port — use a TRS-to-DIN adapter for standard 5-pin MIDI controllers. All CCs follow general MIDI conventions where possible.</p>
+  <table class="midi-table" aria-label="MIDI CC Map">
+    <thead><tr><th>CC #</th><th>Parameter</th><th>Range</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><span class="midi-cc">7</span></td><td>Dry / Wet Balance (K_DRYWET)</td><td>0–127 → 0.0–1.0</td><td>General MIDI volume CC. 0=dry only, 127=full wet.</td></tr>
+      <tr><td><span class="midi-cc">11</span></td><td>Expression → Dry / Wet</td><td>0–127 → 0.0–1.0</td><td>Expression pedal CC. Connects to K_DRYWET value block, overriding the knob.</td></tr>
+      <tr><td><span class="midi-cc">26</span></td><td>Sensitivity (K_SENS)</td><td>0–127 → 0.0–1.0</td><td>Gate threshold. Low = only hard playing excites resonators.</td></tr>
+      <tr><td><span class="midi-cc">27</span></td><td>Detune (K_DETUNE)</td><td>0–127 → −1.0–+1.0</td><td>CC 64 = centre (no detune). Spreads Voice 1 and Voice 3 in opposite directions.</td></tr>
+      <tr><td><span class="midi-cc">64</span></td><td>Infinite Sustain (SW_SUSTAIN)</td><td>0–127 → 0 / 1</td><td>Standard sustain pedal CC. ≥ 64 = sustain on. Latching on ZOIA.</td></tr>
+      <tr><td><span class="midi-cc">65</span></td><td>Resonance Kill (SW_KILL)</td><td>0–127 → 0 / 1</td><td>Portamento on CC. ≥ 64 = kill resonators. Momentary — release to resume.</td></tr>
+      <tr><td><span class="midi-cc">71</span></td><td>Resonance / Dampen (K_DAMPEN)</td><td>0–127 → 0.0–1.0</td><td>SV Filter resonance. High = ringing, singing string quality.</td></tr>
+      <tr><td><span class="midi-cc">72</span></td><td>Feedback / Sustain (K_FEEDBACK)</td><td>0–127 → 0.0–0.95</td><td>Release time CC. Controls resonator loop feedback. Do not exceed 0.95 (self-oscillation).</td></tr>
+      <tr><td><span class="midi-cc">74</span></td><td>Piano Tone (K_PIANO)</td><td>0–127 → 0.0–1.0</td><td>Brightness CC. 0=dark upright, 64=concert grand, 127=harpsichord-like.</td></tr>
+      <tr><td><span class="midi-cc">91</span></td><td>Reverb Level (K_REVERB)</td><td>0–127 → 0.0–1.0</td><td>Reverb send CC. Controls both plate reverb mix and decay time simultaneously.</td></tr>
+    </tbody>
+  </table>
+  <div class="note">ZOIA MIDI in is via 3.5 mm TRS Type A. Use a TRS-A → DIN-5 adapter if your controller has a standard 5-pin MIDI output. MIDI channel: set via ZOIA Config Menu → MIDI Channel.</div>
+</section>
+
+</main>
+
+<script>
+const PATCH_DATA = {
+  name: "Sympathetic String Resonator",
+  version: "1.0",
+  cpu: 46,
+  knobs: [
+    {id:"K_DTUNE",  label:"Detune",       default:0,    unit:"",  min:-1,   max:1,    midi_cc:27},
+    {id:"K_FDBK",   label:"Feedback",     default:0.65, unit:"",  min:0,    max:0.95, midi_cc:72},
+    {id:"K_RVB",    label:"Reverb",       default:0.5,  unit:"",  min:0,    max:1,    midi_cc:91},
+    {id:"K_PIANO",  label:"Piano Tone",   default:0.5,  unit:"",  min:0,    max:1,    midi_cc:74},
+    {id:"K_DAMP",   label:"Resonance",    default:0.35, unit:"",  min:0,    max:1,    midi_cc:71},
+    {id:"K_DW",     label:"Dry / Wet",    default:0.45, unit:"",  min:0,    max:1,    midi_cc:7},
+    {id:"K_SENS",   label:"Sensitivity",  default:0.70, unit:"",  min:0,    max:1,    midi_cc:26}
+  ],
+  presets: {
+    "grand": {
+      name:"Grand Hall",
+      desc:"Full concert grand — lush resonance, long reverb.",
+      values:{K_DTUNE:0.15, K_FDBK:0.75, K_RVB:0.65, K_PIANO:0.55, K_DAMP:0.45, K_DW:0.45, K_SENS:0.70}
+    },
+    "chamber": {
+      name:"Chamber Piano",
+      desc:"Intimate, close-miked practice room piano.",
+      values:{K_DTUNE:0.10, K_FDBK:0.60, K_RVB:0.40, K_PIANO:0.50, K_DAMP:0.35, K_DW:0.35, K_SENS:0.65}
+    },
+    "upright": {
+      name:"Upright Piano",
+      desc:"Dark, short-decay old rehearsal piano.",
+      values:{K_DTUNE:0.05, K_FDBK:0.50, K_RVB:0.30, K_PIANO:0.25, K_DAMP:0.30, K_DW:0.30, K_SENS:0.60}
+    },
+    "halo": {
+      name:"String Halo",
+      desc:"Very subtle atmospheric shimmer behind your playing.",
+      values:{K_DTUNE:0.20, K_FDBK:0.80, K_RVB:0.80, K_PIANO:0.60, K_DAMP:0.50, K_DW:0.22, K_SENS:0.50}
+    },
+    "shimmer": {
+      name:"Infinite Shimmer",
+      desc:"Engage SW_SUSTAIN after a note to build an infinite pad.",
+      values:{K_DTUNE:0.25, K_FDBK:0.85, K_RVB:0.90, K_PIANO:0.70, K_DAMP:0.60, K_DW:0.60, K_SENS:0.40}
+    }
+  }
+};
+
+function show(id, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-selected','false');});
+  document.getElementById('page-'+id).classList.add('on');
+  btn.classList.add('on');
+  btn.setAttribute('aria-selected','true');
+}
+
+function filterCx(type, btn) {
+  document.querySelectorAll('.cx-filter-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('#cx-body tr').forEach(row=>{
+    if(type==='all'){row.style.display='';return;}
+    row.style.display=row.classList.contains('cx-'+type)?'':'none';
+  });
+}
+
+function showPreset(id) {
+  const p=PATCH_DATA.presets[id];
+  if(!p)return;
+  document.getElementById('preset-detail-name').textContent=p.name+' — Full Parameters';
+  const c=document.getElementById('preset-detail-vals');
+  c.innerHTML='';
+  PATCH_DATA.knobs.forEach(k=>{
+    const v=p.values[k.id];
+    if(v===undefined)return;
+    const d=document.createElement('div');
+    d.className='preset-val-card';
+    d.innerHTML='<div class="preset-val-key">'+k.label+'</div><div class="preset-val-num">'+v+'</div>';
+    c.appendChild(d);
+  });
+  const det=document.getElementById('preset-detail');
+  det.style.display='block';
+  det.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// CPU bar
+(function(){
+  const cpu=PATCH_DATA.cpu;
+  const bar=document.getElementById('cpu-bar');
+  const num=document.getElementById('cpu-num');
+  if(!bar)return;
+  bar.style.width=cpu+'%';
+  const col=cpu<60?'var(--c-green)':cpu<80?'var(--c-mango)':'var(--c-red)';
+  bar.style.background=col;
+  if(num){num.textContent='~'+cpu+'%';num.style.color=col;}
+})();
+</script>
+</body>
+</html>
